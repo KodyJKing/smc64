@@ -1,0 +1,17 @@
+# Directories
+.vs/
+bin/
+obj/
+tmp/
+
+vendor/*/bin/
+vendor/*/obj/
+
+# Files
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+
+scripts/user
+paired_sensors.txt

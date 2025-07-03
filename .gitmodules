@@ -1,0 +1,9 @@
+[submodule "vendor/asmjit/asmjit"]
+	path = vendor/asmjit/asmjit
+	url = https://github.com/asmjit/asmjit.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "vendor/Detours"]
+	path = vendor/Detours
+	url = https://github.com/microsoft/Detours.git

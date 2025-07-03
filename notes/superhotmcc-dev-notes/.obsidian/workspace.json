@@ -1,0 +1,162 @@
+{
+  "main": {
+    "id": "1a71340c04a2a5af",
+    "type": "split",
+    "children": [
+      {
+        "id": "786e7a296f5a1c54",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "20fdac7c0aa36829",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ReplaySystem.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5fd2174c67253b78",
+    "type": "split",
+    "children": [
+      {
+        "id": "ec6c71b1580bcd0b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2ec52077613fd054",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "a34fb49d534e471f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "5f1471abf3f68879",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "fa6a49a059ee6291",
+    "type": "split",
+    "children": [
+      {
+        "id": "abd0300e63ad302b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "57e76ddedde0489b",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "ReplaySystem.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "16737cadf3fa6213",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "ReplaySystem.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "abc99beee85e11d0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "0d744c6543d597e2",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "ReplaySystem.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "20fdac7c0aa36829",
+  "lastOpenFiles": [
+    "Reversing.md",
+    "Replay.md",
+    "ReplaySystem.md",
+    "Entity Handle to Entity Pointer.md",
+    "Reversing Halo1.md",
+    "Reversing_Halo1.md",
+    "MASM.md",
+    "Todo.md",
+    "Updating.md",
+    "Welcome.md"
+  ]
+}

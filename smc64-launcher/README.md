@@ -1,0 +1,1 @@
+A minimal dll injector to load the mod. This is only used in development, letting us hot swap builds of the mod without restarting the game. The release version uses a modified xaudio dll to load the mod (via [MSDetours setdll.exe](https://github.com/microsoft/Detours/wiki/SampleSetdll)).
