@@ -8,7 +8,7 @@ namespace Console {
     void alloc() {
         AllocConsole();
         freopen_s(&f, "CONOUT$", "w", stdout);
-        SetConsoleTitleA("SuperHot MCC");
+        SetConsoleTitleA("Super Master Chief 64 Console");
 
         // Hide close button on console window (closing the console seems to close/crash the game)
         HWND consoleWindow = GetConsoleWindow();

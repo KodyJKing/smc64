@@ -51,7 +51,7 @@ namespace Overlay {
         ImGui::SetWindowPos(ImVec2(displaySize.x - winSize.x - 10, displaySize.y - winSize.y - 10), ImGuiCond_Once);
 
         // Tabs
-        if (ImGui::BeginTabBar("SuperHot MCC Tabs")) {
+        if (ImGui::BeginTabBar("SMC64 Tabs")) {
             if (ImGui::BeginTabItem("About")) {
                 const char* config =
                     #ifdef _DEBUG

@@ -9,18 +9,14 @@ namespace HaloCE::Mod {
         bool adrenalineMode = false;
 
         float timeScale = 0.1f;
-        bool enableTimeScale = true;
-        bool overrideTimeScale = false;
+        bool enableTimeScale = false;
+        bool overrideTimeScale = true;
         bool poseInterpolation = true;
         bool timescaleDeadzoning = false;
         
         float playerDamageScale = 3.0f;
         float npcDamageScale = 2.0f;
     } settings = {};
-
-    namespace Adrenaline {
-        extern float adrenaline;
-    }
 
     void init();
     void free();

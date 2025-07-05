@@ -14,6 +14,7 @@
 #include "Rewind.hpp"
 #include "TimeScale.hpp"
 #include "DllMain.hpp"
+#include "Mario.hpp"
 
 namespace HaloCE::Mod {
 
@@ -21,66 +22,6 @@ namespace HaloCE::Mod {
     float timescaleUpdateDeadzone = 0.05f;
 
     uintptr_t halo1 = 0;
-
-    //////////////////////////////////////////////////////////////////
-    // Adrenaline system
-
-    namespace Adrenaline {
-
-        float adrenaline = 0.0f;
-
-        const float adrenalineDecayRate = 0.002f;
-
-        void tick() {
-            if (adrenaline > 0.0f) {
-                adrenaline -= adrenalineDecayRate;
-                if (adrenaline < 0.0f)
-                    adrenaline = 0.0f;
-            }
-        }
-
-        float timescaleModifier() {
-            return Math::smoothstep(0.0f, 0.1f, adrenaline);
-        }
-
-        bool isEnemy(Halo1::Entity* entity) {
-            static std::unordered_set<std::string> enemyTags = {
-                "characters\\elite\\elite",
-                "characters\\grunt\\grunt",
-                "characters\\jackal\\jackal",
-                "characters\\hunter\\hunter",
-                "characters\\flood_infection\\flood_infection",
-                "characters\\floodcombat_human\\floodcombat_human",
-                "characters\\floodcombat_elite\\floodcombat elite",
-                "characters\\floodcarrier\\floodcarrier",
-                "characters\\flood_infection\\flood_infection",
-                "characters\\sentinel\\sentinel"
-            };
-
-            auto tag = entity->tag();
-            if (!tag) return false;
-
-            auto tagPath = tag->getResourcePath();
-            if (!tagPath) return false;
-
-            return enemyTags.count( tagPath );
-        }
-
-        void onDeath(uint32_t entityHandle) {
-            auto rec = Halo1::getEntityRecord( entityHandle );
-            if (!rec) return;
-            auto entity = rec->entity();
-            if (!entity) return;
-            if (isEnemy( entity )) {
-                adrenaline += 0.5f;
-                if (adrenaline > 1.0f)
-                    adrenaline = 1.0f;
-            }
-            if (rec->typeId == Halo1::TypeID_Player) {
-                adrenaline = 0.0f;
-            }
-        }
-    }
 
     //////////////////////////////////////////////////////////////////
     // Time scale helpers
@@ -109,9 +50,6 @@ namespace HaloCE::Mod {
             if (shield > 1.0f) shield = 1.0f;
             slowdown *= shield;
         }
-
-        if (settings.adrenalineMode)
-            slowdown *= Adrenaline::timescaleModifier();
 
         result = 1.0f - slowdown;
 
@@ -184,10 +122,11 @@ namespace HaloCE::Mod {
     void hkUpdateAllEntities() {
         UnloadLock lock; // No unloading while we're still executing hook code.
 
+        Mario::update(); // Update Mario state.
+
         TimeScale::update();
         originalUpdateAllEntities();
         clearStaleAnimationStates();
-        Adrenaline::tick();
         tickCount++;
     }
     
@@ -329,7 +268,6 @@ namespace HaloCE::Mod {
         
         if (newHealth <= 0.0 && oldHealth > 0.0) {
             std::cout << "Entity " << entityHandle << " died." << std::endl;
-            Adrenaline::onDeath(entityHandle);
         }
     }
 
@@ -464,8 +402,11 @@ namespace HaloCE::Mod {
         halo1 = (uintptr_t) Utils::waitForModule(moduleName);
         std::cout << moduleName << ": " << (void*) halo1 << std::endl;
 
+
         hookFunctions();
         TimeScale::init();
+
+        Mario::init();
 
         // #define PATCH_TAGS
         #ifdef PATCH_TAGS
@@ -479,6 +420,8 @@ namespace HaloCE::Mod {
         if (!isInstalled)
             return;
         isInstalled = false;
+
+        Mario::free();
 
         #ifdef PATCH_TAGS
         unpatchTags();

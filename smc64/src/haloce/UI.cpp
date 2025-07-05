@@ -3,6 +3,7 @@
 #include "overlay/ESP.hpp"
 #include "UI.hpp"
 #include "Halo1.hpp"
+#include "Mario.hpp"
 #include "halomcc/HaloMCC.hpp"
 #include "utils/ImGuiUtils.hpp"
 #include <iostream>
@@ -23,7 +24,6 @@ namespace HaloCE::Mod::UI {
     void checkHotKeys();
     void settingsTab();
     void devTab();
-    void adrenalineBar();
 
     bool showEsp = false;
 
@@ -35,9 +35,6 @@ namespace HaloCE::Mod::UI {
             renderESP();
             Overlay::ESP::endESPWindow();
         }
-
-        if (HaloCE::Mod::settings.adrenalineMode)
-            adrenalineBar();
     }
 
     void checkHotKeys() {
@@ -61,12 +58,6 @@ namespace HaloCE::Mod::UI {
     }
 
     void settingsTab() {
-        ImGui::Checkbox("Adrenaline Mode", &HaloCE::Mod::settings.adrenalineMode);
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Slow motion is scaled by adrenaline.\nKill enemies to gain adrenaline.");
-
-        ImGui::Checkbox("Panic Mode", &HaloCE::Mod::settings.panicMode);
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Slow motion is scaled by shields.");
-
         ImGui::SeparatorText("Damage Scale");
         ImGui::SliderFloat("Player", &HaloCE::Mod::settings.playerDamageScale, 0.0f, 5.0f, "%.1f");
         ImGui::SliderFloat("NPC", &HaloCE::Mod::settings.npcDamageScale, 0.0f, 5.0f, "%.1f");
@@ -141,29 +132,13 @@ namespace HaloCE::Mod::UI {
         }
     }
 
-    void adrenalineBar() {
-        ImGui::Begin("Adrenaline", 0, 
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |  ImGuiWindowFlags_NoMove | 
-            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground
-        );
-
-        ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-        ImGui::SetWindowPos(ImVec2( (displaySize.x - size.x) / 2.0f, 0));
-
-        float adrenaline = HaloCE::Mod::Adrenaline::adrenaline;
-        ImGui::ProgressBar(adrenaline, ImVec2(0, 0));
-        ImGui::End();
-    }
-
-
     /////////////////////////////////////////////////////////////////////////////////////////////
     // ESP
     // Todo: Move into Halo1ESP.cpp
 
     struct ESPSettings {
         bool anchorHighlight = false;
-        float fovScale = 0.637f;
+        float fovScale = 0.627f;
         float maxDistance = 100.0f;
         float maxBSPVertexDistance = 20.0f;
         struct Filter {
@@ -496,7 +471,20 @@ namespace HaloCE::Mod::UI {
         if (bspVertices == nullptr || bspVertexCount == 0)
             return;
 
+        uint32_t bspEdgeCount = Halo1::getBSPEdgeCount();
+        Halo1::BSPEdge* bspEdges = Halo1::getBSPEdgeArray();
+        if (bspEdges == nullptr || bspEdgeCount == 0)
+            return;
+
+        uint32_t bspSurfaceCount = Halo1::getBSPSurfaceCount();
+        Halo1::BSPSurface* bspSurfaces = Halo1::getBSPSurfaceArray();
+        if (bspSurfaces == nullptr || bspSurfaceCount == 0)
+            return;
+
         bool gamePaused = HaloMCC::isPauseMenuOpen();
+
+        //// Draw BSP vertices
+
         byte alpha = gamePaused ? 0x40 : 0xFF;
         auto color = IM_COL32( 255, 255, 0, alpha );
         float radius = 0.05f;
@@ -509,35 +497,91 @@ namespace HaloCE::Mod::UI {
             ESP::drawPoint( pos, color );
         }
 
-        uint32_t bspEdgeCount = Halo1::getBSPEdgeCount();
-        Halo1::BSPEdge* bspEdges = Halo1::getBSPEdgeArray();
-        if (bspEdges == nullptr || bspEdgeCount == 0)
-            return;
+        //// Draw BSP edges
+
+        // alpha = gamePaused ? 0x20 : 0x40;
+        // color = IM_COL32( 255, 255, 0, alpha );
+
+        // for (uint32_t i = 0; i < bspEdgeCount; i++) {
+        //     auto edge = &bspEdges[i];
+        //     if (edge->startVertex >= bspVertexCount || edge->endVertex >= bspVertexCount)
+        //         continue; // Invalid edge, skip it.
+        //     auto startVertex = &bspVertices[edge->startVertex];
+        //     auto endVertex = &bspVertices[edge->endVertex];
+
+        //     auto toStart = startVertex->pos - camera.pos;
+        //     auto toEnd = endVertex->pos - camera.pos;
+        //     if (toStart.length() > espSettings.maxBSPVertexDistance || toEnd.length() > espSettings.maxBSPVertexDistance)
+        //         continue; // Skip edges that are too far away.
+            
+        //     auto toStartDot = toStart.dot( camera.fwd );
+        //     auto toEndDot = toEnd.dot( camera.fwd );
+        //     if (toStartDot < 0.0f || toEndDot < 0.0f)
+        //         continue; // Skip edges that are behind the camera.
+            
+        //     auto startPos = startVertex->pos;
+        //     auto endPos = endVertex->pos;
+        //     ESP::drawLine( startPos, endPos, color );
+        // }
+
+        //// Draw BSP surfaces
 
         alpha = gamePaused ? 0x20 : 0x40;
-        color = IM_COL32( 255, 255, 0, alpha );
+        color = IM_COL32( 0, 255, 0, alpha );
 
         for (uint32_t i = 0; i < bspEdgeCount; i++) {
             auto edge = &bspEdges[i];
-            if (edge->startVertex >= bspVertexCount || edge->endVertex >= bspVertexCount)
-                continue; // Invalid edge, skip it.
-            auto startVertex = &bspVertices[edge->startVertex];
-            auto endVertex = &bspVertices[edge->endVertex];
 
-            auto toStart = startVertex->pos - camera.pos;
-            auto toEnd = endVertex->pos - camera.pos;
-            if (toStart.length() > espSettings.maxBSPVertexDistance || toEnd.length() > espSettings.maxBSPVertexDistance)
+            auto p0 = &bspVertices[edge->startVertex];
+            auto p1 = &bspVertices[edge->endVertex];
+            // Bail early if p0 or p1 are invalid.
+            auto toP0 = p0->pos - camera.pos;
+            auto toP1 = p1->pos - camera.pos;
+            if (toP0.length() > espSettings.maxBSPVertexDistance ||
+                toP1.length() > espSettings.maxBSPVertexDistance)
                 continue; // Skip edges that are too far away.
-            
-            auto toStartDot = toStart.dot( camera.fwd );
-            auto toEndDot = toEnd.dot( camera.fwd );
-            if (toStartDot < 0.0f || toEndDot < 0.0f)
+            auto toP0Dot = toP0.dot( camera.fwd );
+            auto toP1Dot = toP1.dot( camera.fwd );
+            if (toP0Dot < 0.0f || toP1Dot < 0.0f)
                 continue; // Skip edges that are behind the camera.
             
-            auto startPos = startVertex->pos;
-            auto endPos = endVertex->pos;
-            ESP::drawLine( startPos, endPos, color );
+            uint32_t surfaces[2] = { edge->leftSurface, edge->rightSurface };
+            for (uint32_t j = 0; j < 2; j++) {
+                if (surfaces[j] >= bspSurfaceCount)
+                    continue; // Invalid surface, skip it.
+                auto surface = &bspSurfaces[surfaces[j]];
+                // Get the first vertex of the first edge of the surface.
+                if (surface->firstEdgeIndex >= bspEdgeCount)
+                    continue; // Invalid surface, skip it.
+                
+                auto firstEdge = &bspEdges[surface->firstEdgeIndex];
+                if (firstEdge->startVertex >= bspVertexCount)
+                    continue; // Invalid edge, skip it.
+                auto firstVertex = &bspVertices[firstEdge->startVertex];
+
+                // // Draw triangle formed between edge and firstVertex, if it's not degenerate.
+                if (edge->startVertex == firstEdge->startVertex ||
+                    edge->endVertex == firstEdge->startVertex) {
+                    // Degenerate, skip.
+                    continue;
+                }
+
+                auto p2 = firstVertex;
+
+                auto toP2 = p2->pos - camera.pos;
+                if (toP2.length() > espSettings.maxBSPVertexDistance)
+                    continue; // Skip triangles that are too far away.
+                auto toP2Dot = toP2.dot( camera.fwd );
+                if (toP2Dot < 0.0f)
+                    continue; // Skip triangles that are behind the camera.
+                
+                // Draw the triangle.
+                ESP::drawLine( p0->pos, p1->pos, color );
+                ESP::drawLine( p1->pos, p2->pos, color );
+                ESP::drawLine( p2->pos, p0->pos, color );
+            }
         }
+
     }
 
     void renderESP() {
@@ -560,6 +604,9 @@ namespace HaloCE::Mod::UI {
         renderESP_entities();
 
         renderESP_BSP();
+
+        // Mario debugRender
+        HaloCE::Mod::Mario::debugRender();
     }
 
 }

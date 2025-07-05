@@ -1,0 +1,2 @@
+- Preprocess Halo BSP to make mesh extraction easier.
+    - Extract a list of edges for each surface.

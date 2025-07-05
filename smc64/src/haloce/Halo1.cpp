@@ -366,4 +366,19 @@ namespace Halo1 {
         return (BSPEdge*) edgeArrayAddress;
     }
 
+    BSPSurface* getBSPSurfaceArray() {
+        CollisionBSP* collisionBSP = (CollisionBSP*) getBSPPointer();
+        if ( !collisionBSP || !Memory::isAllocated( (uintptr_t) collisionBSP ) )
+            return nullptr;
+        uint64_t surfaceArrayAddress = Halo1::translateMapAddress( collisionBSP->surfaces.offset );
+        if ( !surfaceArrayAddress ) return nullptr;
+        return (BSPSurface*) surfaceArrayAddress;
+    }
+    uint32_t getBSPSurfaceCount() {
+        CollisionBSP* collisionBSP = (CollisionBSP*) getBSPPointer();
+        if ( !collisionBSP || !Memory::isAllocated( (uintptr_t) collisionBSP ) )
+            return 0;
+        return collisionBSP->surfaces.count;
+    }
+
 }

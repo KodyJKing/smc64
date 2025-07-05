@@ -17,6 +17,7 @@ project "smc64"
         "../vendor/imgui/*.cpp",
         "../vendor/imgui/backends/imgui_impl_win32.*",
         "../vendor/imgui/backends/imgui_impl_dx11.*",
+        "../vendor/libsm64/include/*.h"
     }
 
     includedirs {
@@ -25,6 +26,7 @@ project "smc64"
         "../vendor/imgui/backends",
         "../vendor/imgui",
         "../vendor/zydis",
+        "../vendor/libsm64/include",
     }
 
     pchheader "pch.h"
@@ -34,6 +36,7 @@ project "smc64"
     links { 
         "MinHook",
         "Zydis",
+        "../vendor/libsm64/sm64",
     }
 
     filter "system:windows"
@@ -52,33 +55,3 @@ project "smc64"
     filter "configurations:Release"
         runtime "Release"
         optimize "On"
-
--- local function updateBuildNum()
-
---     local filePath = "./src/buildnum.h"
-
---     local file = io.open(filePath, "r")
---     if file == nil then
---         print("Error: Could not open file " .. filePath)
---         os.exit(1)
---     end
---     local text = file:read("a")
---     file:close()
---     local numText = string.gsub(text, "#define BUILDNUM ", "")
---     local buildNum = tonumber(numText)
---     if buildNum == nil then
---         print("Error: Could not parse build number from " .. numText)
---         os.exit(1)
---     end
---     buildNum = buildNum + 1
-
---     file = io.open(filePath, "w")
---     if file == nil then
---         print("Error: Could not open file " .. filePath)
---         os.exit(1)
---     end
---     file:write("#define BUILDNUM " .. buildNum .. "\n")
---     file:close()
-
--- end
--- updateBuildNum()

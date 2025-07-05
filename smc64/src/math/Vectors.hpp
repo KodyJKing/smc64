@@ -21,6 +21,7 @@ struct Vec3 {
     float dot( const Vec3& other );
 
     float length();
+    float lengthSquared();
 
     // Returns a normalized *copy* of this vector.
     Vec3 normalize();

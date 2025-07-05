@@ -33,6 +33,10 @@ float Vec3::length() {
     return sqrt( x * x + y * y + z * z );
 }
 
+float Vec3::lengthSquared() {
+    return x * x + y * y + z * z;
+}
+
 Vec3 Vec3::normalize() {
     float len = length();
     return Vec3{ x / len, y / len, z / len };

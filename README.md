@@ -8,11 +8,7 @@ Superhot-MCC brings the time dilation mechanics of SUPERHOT to Halo CE.
 
 ## Installation
 
-Download the latest [release](https://github.com/KodyJKing/superhot-mcc/releases) and follow the instructions in `SMC64_REAMDE.md`.
-
-### Map Files
-
-For the intended experience, you will need to use [these maps](https://drive.google.com/file/d/1HuGOeBXWkw4GbMptUdh8bU79_zxIDhpp/view?usp=drive_link). Just back up your existing maps and replace them with these. They should be under `<MCCPath>/halo1/maps`. The map mods limit the speed of "hitscan" projectiles and add tracers to them. Eventually these may be hosted on the Steam Workshop.
+Download the latest [release](https://github.com/KodyJKing/smc64/releases) and follow the instructions in `SMC64_REAMDE.md`.
 
 ## Developer Setup
 
@@ -23,8 +19,6 @@ git clone --recursive
 ``` 
 
 Install [Visual Studio 2022](https://visualstudio.microsoft.com/) and add MSBuild to your PATH. Location may vary. For me, it's located under `C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin`.
-
-Make sure to install the modded map files.
 
 ## Building and Running
 
