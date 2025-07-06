@@ -55,6 +55,192 @@ Vec3 Vec3::lerp( Vec3& b, float t ) {
 }
 
 ////////////////////////////////////////
+// Vec3i
+
+Vec3i Vec3i::operator+( const Vec3i& b ) { return Vec3i{ x + b.x, y + b.y, z + b.z }; }
+Vec3i Vec3i::operator-( const Vec3i& b ) { return Vec3i{ x - b.x, y - b.y, z - b.z }; }
+Vec3i Vec3i::operator*( int32_t scalar ) { return Vec3i{ x * scalar, y * scalar, z * scalar }; }
+Vec3i Vec3i::operator/( int32_t scalar ) { return Vec3i{ x / scalar, y / scalar, z / scalar }; }
+Vec3i& Vec3i::operator+=( const Vec3i& b ) { x += b.x; y += b.y; z += b.z; return *this; }
+Vec3i& Vec3i::operator-=( const Vec3i& b ) { x -= b.x; y -= b.y; z -= b.z; return *this; }
+Vec3i& Vec3i::operator*=( int32_t scalar ) { x *= scalar; y *= scalar; z *= scalar; return *this; }
+Vec3i& Vec3i::operator/=( int32_t scalar ) { x /= scalar; y /= scalar; z /= scalar; return *this; }
+float Vec3i::length() {
+    return sqrt( static_cast<float>( x * x + y * y + z * z ) );
+}
+Vec3 Vec3i::toVec3() {
+    return Vec3{ static_cast<float>( x ), static_cast<float>( y ), static_cast<float>( z ) };
+}
+
+////////////////////////////////////////
+// Vec4
+
+Vec4 Vec4::operator+( const Vec4& b ) { return Vec4{ x + b.x, y + b.y, z + b.z, w + b.w }; }
+Vec4 Vec4::operator-( const Vec4& b ) { return Vec4{ x - b.x, y - b.y, z - b.z, w - b.w }; }
+Vec4 Vec4::operator*( float scalar ) { return Vec4{ x * scalar, y * scalar, z * scalar, w * scalar }; }
+Vec4 Vec4::operator/( float scalar ) { return Vec4{ x / scalar, y / scalar, z / scalar, w / scalar }; }
+Vec4& Vec4::operator+=( const Vec4& b ) { x += b.x; y += b.y; z += b.z; w += b.w; return *this; }
+Vec4& Vec4::operator-=( const Vec4& b ) { x -= b.x; y -= b.y; z -= b.z; w -= b.w; return *this; }
+Vec4& Vec4::operator*=( float scalar ) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
+Vec4& Vec4::operator/=( float scalar ) { x /= scalar; y /= scalar; z /= scalar; w /= scalar; return *this; }
+
+float Vec4::dot( const Vec4& b ) {
+    return x * b.x + y * b.y + z * b.z + w * b.w;
+}
+
+////////////////////////////////////////
+// Matrix4
+
+Matrix4 Matrix4::operator*( const Matrix4& b ) {
+    Matrix4 result;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            result.m[i * 4 + j] = m[i * 4 + 0] * b.m[0 * 4 + j] +
+                                  m[i * 4 + 1] * b.m[1 * 4 + j] +
+                                  m[i * 4 + 2] * b.m[2 * 4 + j] +
+                                  m[i * 4 + 3] * b.m[3 * 4 + j];
+        }
+    }
+    return result;
+}
+
+Matrix4 Matrix4::operator*( float scalar ) {
+    Matrix4 result;
+    for (int i = 0; i < 16; i++) {
+        result.m[i] = m[i] * scalar;
+    }
+    return result;
+}
+
+Matrix4 Matrix4::operator/( float scalar ) {
+    Matrix4 result;
+    for (int i = 0; i < 16; i++) {
+        result.m[i] = m[i] / scalar;
+    }
+    return result;
+}
+
+Matrix4& Matrix4::operator*=( const Matrix4& b ) {
+    *this = *this * b;
+    return *this;
+}
+
+Matrix4& Matrix4::operator*=( float scalar ) {
+    for (int i = 0; i < 16; i++) {
+        m[i] *= scalar;
+    }
+    return *this;
+}
+
+Matrix4& Matrix4::operator/=( float scalar ) {
+    for (int i = 0; i < 16; i++) {
+        m[i] /= scalar;
+    }
+    return *this;
+}
+
+Vec3 Matrix4::transform( Vec3 v, float w ) {
+    return Vec3{
+        m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * w,
+        m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * w,
+        m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * w
+    };
+}
+
+Vec4 Matrix4::transform( Vec4 v ) {
+    return Vec4{
+        m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
+        m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w,
+        m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
+        m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w
+    };
+}
+
+Matrix4 Matrix4::identity() {
+    return Matrix4{
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+}
+
+Matrix4 Matrix4::translation( Vec3 translation ) {
+    const float x = translation.x, y = translation.y, z = translation.z;
+    return Matrix4{
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        x, y, z, 1
+    };
+}
+
+Matrix4 Matrix4::scale( Vec3 scale ) {
+    const float x = scale.x, y = scale.y, z = scale.z;
+    return Matrix4{
+        x, 0, 0, 0,
+        0, y, 0, 0,
+        0, 0, z, 0,
+        0, 0, 0, 1
+    };
+}
+
+Matrix4 Matrix4::inverse() {
+    // Helper function to calculate 3x3 determinant
+    auto det3x3 = [](float a11, float a12, float a13,
+                     float a21, float a22, float a23,
+                     float a31, float a32, float a33) -> float {
+        return a11 * (a22 * a33 - a23 * a32) - 
+               a12 * (a21 * a33 - a23 * a31) + 
+               a13 * (a21 * a32 - a22 * a31);
+    };
+
+    // Calculate cofactors for the adjugate matrix
+    float c00 = det3x3(m[5], m[6], m[7], m[9], m[10], m[11], m[13], m[14], m[15]);
+    float c01 = -det3x3(m[4], m[6], m[7], m[8], m[10], m[11], m[12], m[14], m[15]);
+    float c02 = det3x3(m[4], m[5], m[7], m[8], m[9], m[11], m[12], m[13], m[15]);
+    float c03 = -det3x3(m[4], m[5], m[6], m[8], m[9], m[10], m[12], m[13], m[14]);
+
+    // Calculate determinant using first row cofactors
+    float det = m[0] * c00 + m[1] * c01 + m[2] * c02 + m[3] * c03;
+    
+    if (fabs(det) < 1e-6f) {
+        // Matrix is singular, return identity matrix
+        return Matrix4::identity();
+    }
+
+    float invDet = 1.0f / det;
+
+    Matrix4 inv;
+    // First row
+    inv.m[0] = c00 * invDet;
+    inv.m[1] = c01 * invDet;
+    inv.m[2] = c02 * invDet;
+    inv.m[3] = c03 * invDet;
+
+    // Second row
+    inv.m[4] = -det3x3(m[1], m[2], m[3], m[9], m[10], m[11], m[13], m[14], m[15]) * invDet;
+    inv.m[5] = det3x3(m[0], m[2], m[3], m[8], m[10], m[11], m[12], m[14], m[15]) * invDet;
+    inv.m[6] = -det3x3(m[0], m[1], m[3], m[8], m[9], m[11], m[12], m[13], m[15]) * invDet;
+    inv.m[7] = det3x3(m[0], m[1], m[2], m[8], m[9], m[10], m[12], m[13], m[14]) * invDet;
+
+    // Third row
+    inv.m[8] = det3x3(m[1], m[2], m[3], m[5], m[6], m[7], m[13], m[14], m[15]) * invDet;
+    inv.m[9] = -det3x3(m[0], m[2], m[3], m[4], m[6], m[7], m[12], m[14], m[15]) * invDet;
+    inv.m[10] = det3x3(m[0], m[1], m[3], m[4], m[5], m[7], m[12], m[13], m[15]) * invDet;
+    inv.m[11] = -det3x3(m[0], m[1], m[2], m[4], m[5], m[6], m[12], m[13], m[14]) * invDet;
+
+    // Fourth row
+    inv.m[12] = -det3x3(m[1], m[2], m[3], m[5], m[6], m[7], m[9], m[10], m[11]) * invDet;
+    inv.m[13] = det3x3(m[0], m[2], m[3], m[4], m[6], m[7], m[8], m[10], m[11]) * invDet;
+    inv.m[14] = -det3x3(m[0], m[1], m[3], m[4], m[5], m[7], m[8], m[9], m[11]) * invDet;
+    inv.m[15] = det3x3(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10]) * invDet;
+
+    return inv;
+}
+
+
+////////////////////////////////////////
 // Quaternion
 
 Quaternion Quaternion::operator+( Quaternion b ) { return Quaternion{ x + b.x, y + b.y, z + b.z, w + b.w }; }

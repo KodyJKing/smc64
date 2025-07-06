@@ -1,11 +1,10 @@
 #include "libsm64.h"
 #include "Halo1.hpp"
+#include "Coordinates.hpp"
 
 #include <vector>
 
 namespace HaloCE::Mod::StaticGeometry {
-
-    float const scaleFactor = 100.0f;
 
     // Convert Halo CE static geometry to Super Mario 64 format
     std::vector<SM64Surface> haloGeometryToMario() {
@@ -67,15 +66,16 @@ namespace HaloCE::Mod::StaticGeometry {
 
                 // Create a SM64Surface from the triangle.
                 SM64Surface sm64Surface;
-                sm64Surface.type = 0; // Default type
-                sm64Surface.force = 0; // Default force
-                sm64Surface.terrain = 0; // Default terrain
+                sm64Surface.type    = 0x0015;
+                sm64Surface.force   = 0;
+                sm64Surface.terrain = 0x0000;
 
-                Halo1::BSPVertex* p[3] = { p0, p1, p2 };
+                Halo1::BSPVertex* p[3] = { p0, p2, p1 };
                 for (int k = 0; k < 3; k++) {
-                    sm64Surface.vertices[k][0] = (int32_t) (p[k]->pos.x * scaleFactor);
-                    sm64Surface.vertices[k][1] = (int32_t) (p[k]->pos.y * scaleFactor);
-                    sm64Surface.vertices[k][2] = (int32_t) (p[k]->pos.z * scaleFactor);
+                    Vec3 marioPos = Coordinates::haloToMario(p[k]->pos);
+                    sm64Surface.vertices[k][0] = (int32_t) (marioPos.x);
+                    sm64Surface.vertices[k][1] = (int32_t) (marioPos.y);
+                    sm64Surface.vertices[k][2] = (int32_t) (marioPos.z);
                 }
 
                 result.push_back(sm64Surface);

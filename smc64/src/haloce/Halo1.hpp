@@ -270,6 +270,8 @@ namespace Halo1 {
 
     EntityRecord* getPlayerRecord();
 
+    std::optional<Vec3> getPlayerPosition();
+
     bool isPlayerHandle( uint32_t entityHandle );
     bool isPlayerControlled( EntityRecord* rec );
 

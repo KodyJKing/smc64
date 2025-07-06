@@ -260,6 +260,16 @@ namespace Halo1 {
         return rec;
     }
 
+    std::optional<Vec3> getPlayerPosition() {
+        auto rec = getPlayerRecord();
+        if ( !rec )
+            return std::nullopt;
+        auto entity = rec->entity();
+        if ( !entity )
+            return std::nullopt;
+        return entity->pos;
+    }
+
     bool isPlayerHandle( uint32_t entityHandle ) {
         auto rec = getEntityRecord( entityHandle );
         return rec && rec->typeId == TypeID_Player;

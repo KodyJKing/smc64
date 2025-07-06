@@ -1,5 +1,4 @@
 #include "haloce/Mario.hpp"
-#include "math/Vectors.hpp"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
@@ -17,7 +16,8 @@
 #include "Halo1.hpp"
 #include "Mario.hpp"
 #include "StaticGeometry.hpp"
-
+#include "math/Vectors.hpp"
+#include "Coordinates.hpp"
 
 namespace HaloCE::Mod::Mario {
 
@@ -62,7 +62,14 @@ namespace HaloCE::Mod::Mario {
     void initMario() {
         // Create a Mario instance at the origin.
         if (marioId < 0) {
-            marioId = sm64_mario_create(0, 0, 0);
+            marioId = sm64_mario_create(99999.0f, 99999.0f, 99999.0f);
+            auto playerPos = Halo1::getPlayerPosition();
+            if (playerPos.has_value()) {
+                auto pos = playerPos.value();
+                // Convert Halo CE coordinates to Super Mario 64 coordinates
+                auto marioPos = Coordinates::haloToMario(pos);
+                sm64_set_mario_position(marioId, marioPos.x, marioPos.y, marioPos.z);
+            }
         }
         if (marioId < 0) {
             printf("Failed to create Mario instance.\n");
@@ -158,7 +165,8 @@ namespace HaloCE::Mod::Mario {
     void update() {
 
         // Check spacebar input
-        if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+        auto random = rand() % 100;
+        if (random < 5) {
             marioInputs.buttonA = 1;
         } else {
             marioInputs.buttonA = 0;
@@ -166,20 +174,23 @@ namespace HaloCE::Mod::Mario {
 
         // Get player entity
         if (GetAsyncKeyState(VK_NUMPAD6)) {
-            Halo1::EntityRecord* playerRecord = Halo1::getPlayerRecord();
-            if (playerRecord) {
-                Halo1::Entity* playerEntity = playerRecord->entity();
-                if (playerEntity) {
-                    auto pos = playerEntity->pos;
-                    auto vel = playerEntity->vel;
-                    
-                    const float scaleFactor = 100.0f;
-                    sm64_set_mario_position(marioId, pos.x * scaleFactor, pos.y * scaleFactor, pos.z * scaleFactor);
-                }
+            auto playerPos = Halo1::getPlayerPosition();
+            if (playerPos.has_value()) {
+                auto pos = playerPos.value();
+                // Convert Halo CE coordinates to Super Mario 64 coordinates
+                auto marioPos = Coordinates::haloToMario(pos);
+                sm64_set_mario_position(marioId, marioPos.x, marioPos.y, marioPos.z);
+                sm64_mario_heal(marioId, 0xFF);
             }
         }
 
+        uint64_t currentTime = GetTickCount64();
+        // Update Mario inputs based on keyboard state
+        marioInputs.stickX = sinf(currentTime / 3000.0f); // Simulate left/right movement
+        marioInputs.stickY = cosf(currentTime / 3000.0f); // Simulate forward/backward movement
+
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
+        sm64_set_mario_water_level(marioId, -999999.99f);
     }
 
     void debugRender() {
@@ -194,12 +205,13 @@ namespace HaloCE::Mod::Mario {
             Vec3* pos = (Vec3*)&marioGeometry.position[i * 3 * 3];
             Vec3* color = (Vec3*)&marioGeometry.color[i * 3 * 3];
 
-            const float scaleFactor = 100.0f;
-
             // Render triangle wireframe
             for (int i = 0; i < 3; i++) {
-                Vec3 p1 = pos[i] / scaleFactor;
-                Vec3 p2 = pos[(i + 1) % 3] / scaleFactor;
+                Vec3 p1 = pos[i];
+                Vec3 p2 = pos[(i + 1) % 3];
+
+                Vec3 haloP1 = Coordinates::marioToHalo(p1);
+                Vec3 haloP2 = Coordinates::marioToHalo(p2);
 
                 // Convert color
                 ImU32 colorIm = IM_COL32(
@@ -209,9 +221,28 @@ namespace HaloCE::Mod::Mario {
                     255 // Full opacity
                 );
 
-                Overlay::ESP::drawLine(p1, p2, colorIm);
+                Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
             }
         }
+
+        // // Render static surfaces.
+        // for (size_t i = 0; i < staticSurfacesCount; i++) {
+        //     SM64Surface& surface = staticSurfaces[i];
+        //     Vec3i* pos = reinterpret_cast<Vec3i*>(&surface.vertices[0][0]);
+
+        //     // Render triangle wireframe
+        //     for (int i = 0; i < 3; i++) {
+        //         Vec3 p1 = pos[i].toVec3();
+        //         Vec3 p2 = pos[(i + 1) % 3].toVec3() ;
+
+        //         Vec3 haloP1 = Coordinates::marioToHalo(p1);
+        //         Vec3 haloP2 = Coordinates::marioToHalo(p2);
+
+        //         ImU32 colorIm = IM_COL32(0, 255, 0, 255); // Green color for static surfaces
+
+        //         Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
+        //     }
+        // }
 
     }
 }

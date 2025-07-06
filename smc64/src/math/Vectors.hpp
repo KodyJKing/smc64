@@ -33,6 +33,65 @@ struct Vec3 {
     Vec3 lerp( Vec3& other, float t );
 };
 
+struct Vec3i {
+    int32_t x, y, z;
+
+    Vec3i operator+( const Vec3i& other );
+    Vec3i operator-( const Vec3i& other );
+    Vec3i operator*( int32_t scalar );
+    Vec3i operator/( int32_t scalar );
+
+    Vec3i& operator+=( const Vec3i& other );
+    Vec3i& operator-=( const Vec3i& other );
+    Vec3i& operator*=( int32_t scalar );
+    Vec3i& operator/=( int32_t scalar );
+
+    float length();
+
+    Vec3 toVec3();
+};
+
+struct Vec4 {
+    float x, y, z, w;
+
+    Vec4 operator+( const Vec4& other );
+    Vec4 operator-( const Vec4& other );
+    Vec4 operator*( float scalar );
+    Vec4 operator/( float scalar );
+
+    Vec4& operator+=( const Vec4& other );
+    Vec4& operator-=( const Vec4& other );
+    Vec4& operator*=( float scalar );
+    Vec4& operator/=( float scalar );
+
+    float dot( const Vec4& other );
+};
+
+struct Matrix4 {
+    union {
+        float m[16]; // Column-major order
+        struct {
+            Vec4 x, y, z, w; 
+        } columns;
+    };
+
+    Matrix4 operator*( const Matrix4& other );
+    Matrix4 operator*( float scalar );
+    Matrix4 operator/( float scalar );
+    Matrix4& operator*=( const Matrix4& other );
+    Matrix4& operator*=( float scalar );
+    Matrix4& operator/=( float scalar );
+
+    Vec3 transform( Vec3 v, float w = 0.0f );
+    Vec4 transform( Vec4 v );
+
+    static Matrix4 identity();
+    static Matrix4 translation( Vec3 translation );
+    static Matrix4 scale( Vec3 scale );
+
+    Matrix4 inverse();
+};
+
 struct Quaternion {
     float x, y, z, w;
 

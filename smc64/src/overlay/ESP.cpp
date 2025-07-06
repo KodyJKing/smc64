@@ -19,7 +19,29 @@ namespace Overlay::ESP {
             }
 
             if (b.z < 0) {
-                Vec3 intercept = a + (b - a) * (a.z / (a.z - b.z));
+                Vec3 intercept = b + (a - b) * (b.z / (b.z - a.z));
+                return Line{a, intercept};
+            }
+
+            return *this;
+        }
+
+        Line clipTo(Vec3 normal, Vec3 point) {
+            float distance = point.dot(normal);
+            float dA = a.dot(normal) - distance;
+            float dB = b.dot(normal) - distance;
+
+            if (dA < 0 && dB < 0) {
+                return Line{Vec3{0, 0, 0}, Vec3{0, 0, 0}};
+            }
+
+            if (dA < 0) {
+                Vec3 intercept = a + (b - a) * (dA / (dA - dB));
+                return Line{intercept, b};
+            }
+
+            if (dB < 0) {
+                Vec3 intercept = b + (a - b) * (dB / (dB - dA));
                 return Line{a, intercept};
             }
 
@@ -51,13 +73,21 @@ namespace Overlay::ESP {
     }
 
     void drawLine(Vec3 a, Vec3 b, ImU32 color) {
+
+        Line worldLine = Line{a, b};
+        worldLine = worldLine.clipTo(camera.fwd, camera.pos);
+
+        a = worldLine.a;
+        b = worldLine.b;
+
         Vec3 screenA = worldToScreen(a);
         Vec3 screenB = worldToScreen(b);
 
         if (screenA.z < 0 && screenB.z < 0)
             return;
 
-        Line line = Line{screenA, screenB}.clip();
+        Line line = Line{screenA, screenB};
+        // line = line.clip();
 
         ImGui::GetWindowDrawList()->AddLine(
             ImVec2{line.a.x, line.a.y},
