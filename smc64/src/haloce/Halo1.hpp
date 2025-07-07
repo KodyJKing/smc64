@@ -307,6 +307,11 @@ namespace Halo1 {
         uint32_t leftSurface, rightSurface; // Indices into the BSPSurface array
     };
 
+    struct BSPPlane {
+        Vec3 normal; // Normal vector of the plane
+        float distance; // Distance from the origin to the plane
+    };
+
     struct BSPSurface {
         uint32_t planeIndex; // Index into the BSPPlane array
         uint32_t firstEdgeIndex; // Index into the BSPEdge array
@@ -333,6 +338,9 @@ namespace Halo1 {
 
     uint32_t getBSPEdgeCount();
     BSPEdge* getBSPEdgeArray();
+
+    uint32_t getBSPPlaneCount();
+    BSPPlane* getBSPPlaneArray();
 
     BSPSurface* getBSPSurfaceArray();
     uint32_t getBSPSurfaceCount();

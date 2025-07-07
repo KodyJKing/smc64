@@ -225,24 +225,51 @@ namespace HaloCE::Mod::Mario {
             }
         }
 
-        // // Render static surfaces.
-        // for (size_t i = 0; i < staticSurfacesCount; i++) {
-        //     SM64Surface& surface = staticSurfaces[i];
-        //     Vec3i* pos = reinterpret_cast<Vec3i*>(&surface.vertices[0][0]);
+        // Render static surfaces.
+        for (size_t i = 0; i < staticSurfacesCount; i++) {
+            SM64Surface& surface = staticSurfaces[i];
+            Vec3i* pos = reinterpret_cast<Vec3i*>(&surface.vertices[0][0]);
 
-        //     // Render triangle wireframe
-        //     for (int i = 0; i < 3; i++) {
-        //         Vec3 p1 = pos[i].toVec3();
-        //         Vec3 p2 = pos[(i + 1) % 3].toVec3() ;
+            Vec3 center = (pos[0].toVec3() + pos[1].toVec3() + pos[2].toVec3()) / 3.0f;
+            Vec3 haloCenter = Coordinates::marioToHalo(center);
 
-        //         Vec3 haloP1 = Coordinates::marioToHalo(p1);
-        //         Vec3 haloP2 = Coordinates::marioToHalo(p2);
+            Camera& camera = Overlay::ESP::camera;
+            Vec3 toCenter = haloCenter - camera.pos;
+            if (toCenter.length() > 60.0f) {
+                continue; // Skip rendering if the surface is too far away
+            }
 
-        //         ImU32 colorIm = IM_COL32(0, 255, 0, 255); // Green color for static surfaces
+            // Render triangle wireframe
+            for (int i = 0; i < 3; i++) {
+                Vec3 p1 = pos[i].toVec3();
+                Vec3 p2 = pos[(i + 1) % 3].toVec3() ;
 
-        //         Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
-        //     }
-        // }
+                Vec3 haloP1 = Coordinates::marioToHalo(p1);
+                Vec3 haloP2 = Coordinates::marioToHalo(p2);
+
+                ImU32 colorIm = IM_COL32(0, 255, 0, 40); // Green color for static surfaces
+
+                Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
+            }
+
+            Vec3 p0 = pos[0].toVec3();
+            Vec3 p1 = pos[1].toVec3();
+            Vec3 p2 = pos[2].toVec3();
+
+            Vec3 haloP0 = Coordinates::marioToHalo(p0);
+            Vec3 haloP1 = Coordinates::marioToHalo(p1);
+            Vec3 haloP2 = Coordinates::marioToHalo(p2);
+
+            Vec3 edge1 = haloP1 - haloP0;
+            Vec3 edge2 = haloP2 - haloP0;
+            Vec3 haloNormal = edge2.cross(edge1).normalize();
+
+            // Draw surface normal
+            ImU32 normalColor = IM_COL32(255, 0, 0, 160); // Red color for normal
+            Overlay::ESP::drawCircle(haloCenter, 0.05f, normalColor, true);
+            Overlay::ESP::drawLine(haloCenter, haloCenter + haloNormal * 0.5f, normalColor);
+
+        }
 
     }
 }

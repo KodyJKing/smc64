@@ -18,6 +18,8 @@
 #include "TimeScale.hpp"
 #include "TagBrowser.hpp"
 
+#include <Windows.h>
+
 namespace HaloCE::Mod::UI {
 
     void renderESP();
@@ -140,7 +142,7 @@ namespace HaloCE::Mod::UI {
         bool anchorHighlight = false;
         float fovScale = 0.627f;
         float maxDistance = 100.0f;
-        float maxBSPVertexDistance = 20.0f;
+        float maxBSPVertexDistance = 100.0f;
         struct Filter {
             bool biped = true;
             bool vehicle = false;
@@ -535,12 +537,12 @@ namespace HaloCE::Mod::UI {
             auto p0 = &bspVertices[edge->startVertex];
             auto p1 = &bspVertices[edge->endVertex];
 
-            // // Bail early if p0 or p1 are invalid.
-            // auto toP0 = p0->pos - camera.pos;
-            // auto toP1 = p1->pos - camera.pos;
-            // if (toP0.length() > espSettings.maxBSPVertexDistance ||
-            //     toP1.length() > espSettings.maxBSPVertexDistance)
-            //     continue; // Skip edges that are too far away.
+            // Bail early if p0 or p1 are invalid.
+            auto toP0 = p0->pos - camera.pos;
+            auto toP1 = p1->pos - camera.pos;
+            if (toP0.length() > espSettings.maxBSPVertexDistance ||
+                toP1.length() > espSettings.maxBSPVertexDistance)
+                continue; // Skip edges that are too far away.
             // auto toP0Dot = toP0.dot( camera.fwd );
             // auto toP1Dot = toP1.dot( camera.fwd );
             // if (toP0Dot < 0.0f || toP1Dot < 0.0f)
@@ -569,9 +571,9 @@ namespace HaloCE::Mod::UI {
 
                 auto p2 = firstVertex;
 
-                // auto toP2 = p2->pos - camera.pos;
-                // if (toP2.length() > espSettings.maxBSPVertexDistance)
-                //     continue; // Skip triangles that are too far away.
+                auto toP2 = p2->pos - camera.pos;
+                if (toP2.length() > espSettings.maxBSPVertexDistance)
+                    continue; // Skip triangles that are too far away.
                 // auto toP2Dot = toP2.dot( camera.fwd );
                 // if (toP2Dot < 0.0f)
                 //     continue; // Skip triangles that are behind the camera.
@@ -580,6 +582,13 @@ namespace HaloCE::Mod::UI {
                 ESP::drawLine( p0->pos, p1->pos, color );
                 ESP::drawLine( p1->pos, p2->pos, color );
                 ESP::drawLine( p2->pos, p0->pos, color );
+
+                // Render text for surface material.
+                Vec3 textPos = (p0->pos + p1->pos + p2->pos) / 3.0f;
+                auto material = surface->material;
+                char materialText[255] = {0};
+                sprintf( materialText, "%X", material );
+                ESP::drawText( textPos, materialText, color );
             }
         }
 
@@ -604,7 +613,7 @@ namespace HaloCE::Mod::UI {
 
         // renderESP_entities();
 
-        renderESP_BSP();
+        // renderESP_BSP();
 
         // Mario debugRender
         HaloCE::Mod::Mario::debugRender();

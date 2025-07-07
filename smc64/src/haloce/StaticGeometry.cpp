@@ -58,7 +58,8 @@ namespace HaloCE::Mod::StaticGeometry {
 
                 auto v01 = p1->pos - p0->pos;
                 auto v02 = p2->pos - p0->pos;
-                auto crossMagSq = v01.cross(v02).lengthSquared();
+                auto cross = v01.cross(v02);
+                auto crossMagSq = cross.lengthSquared();
                 if (crossMagSq < 0.01f) {
                     // Degenerate triangle, skip.
                     continue;
@@ -70,7 +71,17 @@ namespace HaloCE::Mod::StaticGeometry {
                 sm64Surface.force   = 0;
                 sm64Surface.terrain = 0x0000;
 
+                if (surface->planeIndex >= Halo1::getBSPPlaneCount()) {
+                    // Invalid plane index, skip this surface.
+                    continue;
+                }
+                Halo1::BSPPlane* plane = &Halo1::getBSPPlaneArray()[surface->planeIndex];
+
                 Halo1::BSPVertex* p[3] = { p0, p2, p1 };
+                if (cross.dot(plane->normal) < 0) {
+                    std::swap(p[1], p[2]);
+                }
+
                 for (int k = 0; k < 3; k++) {
                     Vec3 marioPos = Coordinates::haloToMario(p[k]->pos);
                     sm64Surface.vertices[k][0] = (int32_t) (marioPos.x);

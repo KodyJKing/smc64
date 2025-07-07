@@ -26,23 +26,29 @@ namespace Overlay::ESP {
             return *this;
         }
 
-        Line clipTo(Vec3 normal, Vec3 point) {
-            float distance = point.dot(normal);
-            float dA = a.dot(normal) - distance;
-            float dB = b.dot(normal) - distance;
+        Line clipTo(Vec3 unitNormal, Vec3 point, float n) {
+            float distance = point.dot(unitNormal);
+            float dA = a.dot(unitNormal) - distance - n;
+            float dB = b.dot(unitNormal) - distance - n;
 
             if (dA < 0 && dB < 0) {
                 return Line{Vec3{0, 0, 0}, Vec3{0, 0, 0}};
             }
 
             if (dA < 0) {
-                Vec3 intercept = a + (b - a) * (dA / (dA - dB));
-                return Line{intercept, b};
+                Vec3 ab = a - b;
+                float abRate = ab.dot(unitNormal);
+                float interceptTime = -dA / abRate;
+                Vec3 aPrime = a + ab * interceptTime;
+                return Line{aPrime, b};
             }
 
             if (dB < 0) {
-                Vec3 intercept = b + (a - b) * (dB / (dB - dA));
-                return Line{a, intercept};
+                Vec3 ba = b - a;
+                float baRate = ba.dot(unitNormal);
+                float interceptTime = -dB / baRate;
+                Vec3 bPrime = b + ba * interceptTime;
+                return Line{a, bPrime};
             }
 
             return *this;
@@ -75,7 +81,7 @@ namespace Overlay::ESP {
     void drawLine(Vec3 a, Vec3 b, ImU32 color) {
 
         Line worldLine = Line{a, b};
-        worldLine = worldLine.clipTo(camera.fwd, camera.pos);
+        worldLine = worldLine.clipTo(camera.fwd, camera.pos, 0.1f);
 
         a = worldLine.a;
         b = worldLine.b;
