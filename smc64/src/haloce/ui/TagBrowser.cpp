@@ -4,8 +4,10 @@
 #include <mutex>
 #include <string>
 #include "imgui.h"
-#include "Halo1.hpp"
+#include "haloce/Halo1.hpp"
 #include "utils/Strings.hpp"
+#include "Interpretations.hpp"
+#include "memory/Memory.hpp"
 
 namespace HaloCE::Mod::UI {
 
@@ -45,7 +47,33 @@ namespace HaloCE::Mod::UI {
 
     bool showTagBrowser = false;
 
+    // Tag to inspect using interpretation ui.
+    Halo1::Tag* inspectTag = nullptr;
+
+    void inspectWindow() {
+        if (inspectTag == nullptr || !Memory::isAllocated((uintptr_t) inspectTag))
+            return;
+
+        ImGui::Begin("Tag Inspector");
+
+            ImGui::Text("TagID: %X", inspectTag->tagID);
+            auto groupID = inspectTag->groupIDStr();
+            ImGui::Text("GroupID: %s", groupID.c_str());
+            ImGui::Text("Path: %s", inspectTag->getResourcePath());
+            ImGui::Separator();
+
+            auto tagData = inspectTag->getData();
+            if (tagData != nullptr && Memory::isAllocated((uintptr_t) tagData)) {
+                interpretPointer( tagData );
+            } else {
+                ImGui::Text("Invalid tag data pointer: %p", tagData);
+            }
+        ImGui::End();
+    }
+
     void tagBrowser() {
+
+        inspectWindow();
 
         ImGui::Begin("Tag Browser", &showTagBrowser, ImGuiWindowFlags_AlwaysAutoResize);
         
@@ -195,27 +223,37 @@ namespace HaloCE::Mod::UI {
                     } else {
                         char text[2048] = {0};
 
+                        auto inspectOnLeftClick = [&]() {
+                            if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+                                inspectTag = tag;
+                            }
+                        };
+
                         ImGui::Text("%04d", index);
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy index to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( std::to_string(index).c_str() );
+                        inspectOnLeftClick();
 
                         ImGui::SameLine();
                         sprintf_s( text, "%X", tag->tagID );
                         ImGui::Text(text);
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy TagID to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( text );
+                        inspectOnLeftClick();
 
                         // ImGui::SameLine();
                         // sprintf_s( text, "%p", tag );
                         // ImGui::Text( "%s", text );
                         // if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy tag pointer to clipboard");
                         // if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( text );
+                        // inspectOnLeftClick();
 
                         ImGui::SameLine();
                         auto groupID = tag->groupIDStr();
                         ImGui::Text("%s", groupID.c_str());
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy GroupID to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( groupID.c_str() );
+                        inspectOnLeftClick();
 
                         ImGui::SameLine();
                         auto pDataAddress = &tag->dataAddress;
@@ -223,6 +261,7 @@ namespace HaloCE::Mod::UI {
                         ImGui::Text("%s", text);
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy data address pointer to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( text );
+                        inspectOnLeftClick();
 
                         ImGui::SameLine();
                         auto data = tag->getData();
@@ -230,12 +269,13 @@ namespace HaloCE::Mod::UI {
                         ImGui::Text("%s", text);
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy data pointer to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( text );
+                        inspectOnLeftClick();
 
                         ImGui::SameLine();
                         ImGui::Text("%s", path);
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Right click to copy path to clipboard");
                         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) ImGui::SetClipboardText( path );
-
+                        inspectOnLeftClick();
                     }
                 } else {
                     ImGui::Text("%04d NULL", index);
