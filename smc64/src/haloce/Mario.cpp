@@ -122,7 +122,8 @@ namespace HaloCE::Mod::Mario {
     // Public:
     
     void init() {
-
+        // #define ENABLE_MARIO 1
+        #ifdef ENABLE_MARIO
         // Get location of host exe file using Windows API
         char path[MAX_PATH];
         GetModuleFileNameA(nullptr, path, MAX_PATH);
@@ -146,9 +147,11 @@ namespace HaloCE::Mod::Mario {
 
         initTestLevel();
         initMario();
+        #endif
     }
 
     void free() {
+        #ifdef ENABLE_MARIO
         sm64_global_terminate();
 
         if (texture) {
@@ -160,17 +163,17 @@ namespace HaloCE::Mod::Mario {
             rom = nullptr;
             romSize = 0;
         }
+        #endif
     }
 
     void update() {
+        #ifdef ENABLE_MARIO
 
-        // Check spacebar input
-        auto random = rand() % 100;
-        if (random < 5) {
-            marioInputs.buttonA = 1;
-        } else {
-            marioInputs.buttonA = 0;
-        }
+        #define MAYBE_PRESS(btn, prob) if (rand() % 100 < prob) { marioInputs.button##btn = 1; } else { marioInputs.button##btn = 0; }
+        MAYBE_PRESS(A, 5);
+        MAYBE_PRESS(B, 2);
+        MAYBE_PRESS(Z, 1);
+        #undef MAYBE_PRESS
 
         // Get player entity
         if (GetAsyncKeyState(VK_NUMPAD6)) {
@@ -185,15 +188,25 @@ namespace HaloCE::Mod::Mario {
         }
 
         uint64_t currentTime = GetTickCount64();
+        
+        static float xSign = 1.0f;
+        // Random chance to flip xSign
+        if (rand() % 100 < 10) {
+            xSign *= -1.0f;
+        }
+
         // Update Mario inputs based on keyboard state
-        marioInputs.stickX = sinf(currentTime / 3000.0f); // Simulate left/right movement
+        marioInputs.stickX = sinf(currentTime / 3000.0f) * xSign; // Simulate left/right movement
         marioInputs.stickY = cosf(currentTime / 3000.0f); // Simulate forward/backward movement
 
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
+
+        #endif
     }
 
     void debugRender() {
+        #ifdef ENABLE_MARIO
 
         // Draw list
         ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -225,6 +238,8 @@ namespace HaloCE::Mod::Mario {
             }
         }
 
+        // #define ENABLE_DEBUG_MARIO_GEOMETRY 1
+        #ifdef ENABLE_DEBUG_MARIO_GEOMETRY
         // Render static surfaces.
         for (size_t i = 0; i < staticSurfacesCount; i++) {
             SM64Surface& surface = staticSurfaces[i];
@@ -270,6 +285,8 @@ namespace HaloCE::Mod::Mario {
             Overlay::ESP::drawLine(haloCenter, haloCenter + haloNormal * 0.5f, normalColor);
 
         }
+        #endif // ENABLE_DEBUG_MARIO_GEOMETRY
 
+        #endif // ENABLE_MARIO
     }
 }

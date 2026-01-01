@@ -37,6 +37,7 @@ namespace HaloCE::Mod::UI {
         GROUP_ID("Shader", "shdr")
         GROUP_ID("Light", "ligh")
         GROUP_ID("BSP", "sbsp")
+        GROUP_ID("Collision Model", "coll")
         #undef GROUP_ID
     };
 

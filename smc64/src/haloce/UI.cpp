@@ -65,6 +65,49 @@ namespace HaloCE::Mod::UI {
         ImGui::SliderFloat("NPC", &HaloCE::Mod::settings.npcDamageScale, 0.0f, 5.0f, "%.1f");
     }
 
+    void interpretations(uint32_t value) {
+        auto result = Halo1::interpretU32(value);
+        if (result.mapPointer) {
+            ImGui::Text("Map Pointer: %p", (void*) result.mapPointer);
+        }
+        if (result.tag) {
+            ImGui::Separator();
+            ImGui::Text("Tag: %p", (void*) result.tag);
+            ImGui::Text("Tag Path: %s", result.tag->getResourcePath());
+        }
+        if (result.entity) {
+            ImGui::Separator();
+            ImGui::Text("Entity: %p", (void*) result.entity);
+            ImGui::Text("Entity Tag Path: %s", result.entity->getTagResourcePath());
+            ImGui::Text("Entity Tag ID: %X", result.entity->tagID);
+        }
+    }
+
+    void interpretEntity(Halo1::Entity* entity) {
+        // Scrollable region with all the entity's data interpreted as u32 values.
+        ImGui::BeginChild("Entity Data", ImVec2(0, 300), true, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+        if (!entity) {
+            ImGui::Text("Entity is null.");
+            ImGui::EndChild();
+            return;
+        }
+        uint32_t* entityAddr = (uint32_t*) entity;
+        for (int i = 0; i < 200; i++) {
+            if (!Memory::isAllocated( (uintptr_t) &entityAddr[i] ) ) break;
+            uint32_t value = entityAddr[i];
+            if (value == 0) continue;
+            if (!Halo1::hasInterpretation(value)) continue;
+            char label[255] = {0};
+            snprintf(label, 255, "%02X: %08X", i * 4, value);
+            if (ImGui::CollapsingHeader(label)) {
+                ImGui::Indent(20.0f);
+                interpretations(value);
+                ImGui::Unindent(20.0f);
+            }
+        }
+        ImGui::EndChild();
+    }
+
     void devTab() {
         if (ImGui::CollapsingHeader("Time Scale")) {
             ImGui::Checkbox("Enable Time Scale", &HaloCE::Mod::settings.enableTimeScale);
@@ -123,6 +166,43 @@ namespace HaloCE::Mod::UI {
                 renderAddressInput("From Map Relative Address", address, 255, "%p", Halo1::translateMapAddress);
                 renderAddressInput("To Map Relative Address", address2, 255, "%X", Halo1::translateToMapAddress);
 
+            ImGui::EndChild();
+
+            ImGui::BeginChild("##Interpret U32", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+                static char u32input[255] = {0};
+                ImGui::InputText("U32 Input", u32input, sizeof(u32input));
+                uint32_t value = 0;
+                try {
+                    value = std::stoul(u32input, nullptr, 16);
+                } catch (...) {
+                    value = 0;
+                }
+                if (value) {
+                    Halo1::Interpretations result = Halo1::interpretU32(value);
+                    ImGui::Text("Interpretations of %X:", value);
+                    ImGui::Separator();
+                    interpretations(value);
+                }
+            ImGui::EndChild();
+
+            ImGui::BeginChild("##Interpret Object Fields", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+                static char addressInput[255] = {0};
+                ImGui::InputText("Address", addressInput, sizeof(addressInput));
+                uintptr_t pointerValue = 0;
+                try {
+                    pointerValue = std::stoull(addressInput, nullptr, 16);
+                } catch (...) {
+                    pointerValue = 0;
+                }
+                Halo1::Entity* entity = (Halo1::Entity*) pointerValue;
+                if (entity && Memory::isAllocated( (uintptr_t) entity ) ) {
+                    ImGui::Text("Interpreting object fields %p", (void*) entity);
+                    ImGui::Separator();
+                    interpretEntity(entity);
+                    // highlightEntity = entity; // For ESP highlighting.
+                } else {
+                    ImGui::Text("Entity not found for handle %X", pointerValue);
+                }
             ImGui::EndChild();
 
             if (ImGui::Button("Tag Browser"))
@@ -499,33 +579,6 @@ namespace HaloCE::Mod::UI {
             ESP::drawPoint( pos, color );
         }
 
-        //// Draw BSP edges
-
-        // alpha = gamePaused ? 0x20 : 0x40;
-        // color = IM_COL32( 255, 255, 0, alpha );
-
-        // for (uint32_t i = 0; i < bspEdgeCount; i++) {
-        //     auto edge = &bspEdges[i];
-        //     if (edge->startVertex >= bspVertexCount || edge->endVertex >= bspVertexCount)
-        //         continue; // Invalid edge, skip it.
-        //     auto startVertex = &bspVertices[edge->startVertex];
-        //     auto endVertex = &bspVertices[edge->endVertex];
-
-        //     auto toStart = startVertex->pos - camera.pos;
-        //     auto toEnd = endVertex->pos - camera.pos;
-        //     if (toStart.length() > espSettings.maxBSPVertexDistance || toEnd.length() > espSettings.maxBSPVertexDistance)
-        //         continue; // Skip edges that are too far away.
-            
-        //     auto toStartDot = toStart.dot( camera.fwd );
-        //     auto toEndDot = toEnd.dot( camera.fwd );
-        //     if (toStartDot < 0.0f || toEndDot < 0.0f)
-        //         continue; // Skip edges that are behind the camera.
-            
-        //     auto startPos = startVertex->pos;
-        //     auto endPos = endVertex->pos;
-        //     ESP::drawLine( startPos, endPos, color );
-        // }
-
         //// Draw BSP surfaces
 
         alpha = gamePaused ? 0x20 : 0x40;
@@ -543,10 +596,6 @@ namespace HaloCE::Mod::UI {
             if (toP0.length() > espSettings.maxBSPVertexDistance ||
                 toP1.length() > espSettings.maxBSPVertexDistance)
                 continue; // Skip edges that are too far away.
-            // auto toP0Dot = toP0.dot( camera.fwd );
-            // auto toP1Dot = toP1.dot( camera.fwd );
-            // if (toP0Dot < 0.0f || toP1Dot < 0.0f)
-            //     continue; // Skip edges that are behind the camera.
             
             uint32_t surfaces[2] = { edge->leftSurface, edge->rightSurface };
             for (uint32_t j = 0; j < 2; j++) {
@@ -574,21 +623,18 @@ namespace HaloCE::Mod::UI {
                 auto toP2 = p2->pos - camera.pos;
                 if (toP2.length() > espSettings.maxBSPVertexDistance)
                     continue; // Skip triangles that are too far away.
-                // auto toP2Dot = toP2.dot( camera.fwd );
-                // if (toP2Dot < 0.0f)
-                //     continue; // Skip triangles that are behind the camera.
                 
                 // Draw the triangle.
                 ESP::drawLine( p0->pos, p1->pos, color );
                 ESP::drawLine( p1->pos, p2->pos, color );
                 ESP::drawLine( p2->pos, p0->pos, color );
 
-                // Render text for surface material.
-                Vec3 textPos = (p0->pos + p1->pos + p2->pos) / 3.0f;
-                auto material = surface->material;
-                char materialText[255] = {0};
-                sprintf( materialText, "%X", material );
-                ESP::drawText( textPos, materialText, color );
+                // // Render text for surface material.
+                // Vec3 textPos = (p0->pos + p1->pos + p2->pos) / 3.0f;
+                // auto material = surface->material;
+                // char materialText[255] = {0};
+                // sprintf( materialText, "%X", material );
+                // ESP::drawText( textPos, materialText, color );
             }
         }
 
@@ -611,9 +657,9 @@ namespace HaloCE::Mod::UI {
         camera.fov = haloCam->fov * espSettings.fovScale;
         camera.verticalFov = true;
 
-        // renderESP_entities();
+        renderESP_entities();
 
-        // renderESP_BSP();
+        renderESP_BSP();
 
         // Mario debugRender
         HaloCE::Mod::Mario::debugRender();
