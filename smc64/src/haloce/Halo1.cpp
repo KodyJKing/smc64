@@ -78,7 +78,7 @@ namespace Halo1 {
     static const uintptr_t entityArrayOffset = 0x2D9CDF8;
     static const uintptr_t pEntityListOffset = 0x1C42248;
     static const uintptr_t playerCamOffset = 0x2D9B9C0;
-    static const uintptr_t playerHandleOffset = 0x29AE480U;
+    static const uintptr_t playerHandleOffset = 0x1C563F0U;
     static const uintptr_t playerControllerOffset = 0x2D8FE70U;
 
     EntityList* getEntityListPointer() { return *(EntityList**) ( dllBase() + pEntityListOffset ); }
