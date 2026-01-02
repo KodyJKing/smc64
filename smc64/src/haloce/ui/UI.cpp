@@ -153,27 +153,6 @@ namespace HaloCE::Mod::UI
 
             ImGui::EndChild();
 
-            ImGui::BeginChild("##Interpret U32", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
-            static char u32input[255] = {0};
-            ImGui::InputText("U32 Input", u32input, sizeof(u32input));
-            uint32_t value = 0;
-            try
-            {
-                value = std::stoul(u32input, nullptr, 16);
-            }
-            catch (...)
-            {
-                value = 0;
-            }
-            if (value)
-            {
-                Halo1::Interpretations result = Halo1::interpretU32(value);
-                ImGui::Text("Interpretations of %X:", value);
-                ImGui::Separator();
-                interpretations(value);
-            }
-            ImGui::EndChild();
-
             ImGui::BeginChild("##Interpret Object Fields", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
             static char addressInput[255] = {0};
             ImGui::InputText("Address", addressInput, sizeof(addressInput));

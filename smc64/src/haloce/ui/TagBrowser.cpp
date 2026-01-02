@@ -49,12 +49,13 @@ namespace HaloCE::Mod::UI {
 
     // Tag to inspect using interpretation ui.
     Halo1::Tag* inspectTag = nullptr;
+    bool showInspectWindow = false;
 
     void inspectWindow() {
-        if (inspectTag == nullptr || !Memory::isAllocated((uintptr_t) inspectTag))
+        if (!showInspectWindow || inspectTag == nullptr || !Memory::isAllocated((uintptr_t) inspectTag))
             return;
 
-        ImGui::Begin("Tag Inspector");
+        ImGui::Begin("Tag Inspector", &showInspectWindow);
 
             ImGui::Text("TagID: %X", inspectTag->tagID);
             auto groupID = inspectTag->groupIDStr();
@@ -226,6 +227,7 @@ namespace HaloCE::Mod::UI {
                         auto inspectOnLeftClick = [&]() {
                             if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
                                 inspectTag = tag;
+                                showInspectWindow = true;
                             }
                         };
 

@@ -3,7 +3,7 @@
 #include "haloce/Halo1.hpp"
 #include "memory/Memory.hpp"
 #include "utils/Strings.hpp"
-
+#include "haloce/utils/Interpret.hpp"
 namespace HaloCE::Mod::UI {
     void interpretations(uint32_t value) {
         auto result = Halo1::interpretU32(value);
