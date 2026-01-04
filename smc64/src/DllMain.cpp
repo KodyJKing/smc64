@@ -27,7 +27,7 @@ namespace ModHost {
 DWORD WINAPI MainThread(LPVOID _hModule) {
     HMODULE hModule = (HMODULE) _hModule;
     Console::alloc();
-    // Console::toggleConsole();
+    Console::toggleConsole();
 
     std::cout << "Load method: " << (Utils::isInjected() ? "Injection" : "Imported") << std::endl;
     if (!Utils::isInjected()) { // Give the game some time to load.

@@ -344,4 +344,8 @@ namespace Halo1 {
 
     BSPSurface* getBSPSurfaceArray();
     uint32_t getBSPSurfaceCount();
+
+    // = Collision Geometry ==========
+
+    uint32_t collisionGeometryTagId(Tag* objectTag);
 }

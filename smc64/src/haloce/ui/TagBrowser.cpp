@@ -8,6 +8,7 @@
 #include "utils/Strings.hpp"
 #include "Interpretations.hpp"
 #include "memory/Memory.hpp"
+#include "cheatengine/Messages.hpp"
 
 namespace HaloCE::Mod::UI {
 
@@ -48,8 +49,23 @@ namespace HaloCE::Mod::UI {
     bool showTagBrowser = false;
 
     // Tag to inspect using interpretation ui.
-    Halo1::Tag* inspectTag = nullptr;
+    extern "C" __declspec(dllexport) Halo1::Tag* inspectTag = nullptr;
     bool showInspectWindow = false;
+
+    void setInspectTag(Halo1::Tag* tag) {
+        // Shift key down?
+        if (ImGui::GetIO().KeyShift) {
+            // Open in hex view instead
+            if (tag != nullptr) {
+                std::string path = tag->getResourcePath();
+                std::string caption = "Tag Data: " + path;
+                CE::Messages::openHexView( (uintptr_t) tag->getData(), caption );
+            }
+            return;
+        }
+        inspectTag = tag;
+        showInspectWindow = true;
+    }
 
     void inspectWindow() {
         if (!showInspectWindow || inspectTag == nullptr || !Memory::isAllocated((uintptr_t) inspectTag))
@@ -226,8 +242,7 @@ namespace HaloCE::Mod::UI {
 
                         auto inspectOnLeftClick = [&]() {
                             if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
-                                inspectTag = tag;
-                                showInspectWindow = true;
+                                setInspectTag( tag );
                             }
                         };
 

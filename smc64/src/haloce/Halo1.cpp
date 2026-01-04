@@ -405,4 +405,12 @@ namespace Halo1 {
             return 0;
         return collisionBSP->surfaces.count;
     }
+
+    // = Collision Geometry ==========
+
+    uint32_t collisionGeometryTagId( Tag* objectTag ) {
+        if ( !objectTag || !Memory::isAllocated( (uintptr_t) objectTag ) ) return NULL_HANDLE;
+        // The collision geometry tag ID is stored at offset 0x7C in the object tag data.
+        return Memory::safeRead<uint32_t>( (uintptr_t) objectTag->getData() + 0x7C ).value_or( NULL_HANDLE );
+    }
 }

@@ -18,6 +18,7 @@
 #include "haloce/TimeScale.hpp"
 #include "TagBrowser.hpp"
 #include "Interpretations.hpp"
+#include "cheatengine/Messages.hpp"
 
 #include <Windows.h>
 
@@ -33,7 +34,7 @@ namespace HaloCE::Mod::UI
 
     bool showEsp = false;
 
-    Halo1::Entity *highlightEntity = nullptr;
+    extern "C" __declspec(dllexport) Halo1::Entity *highlightEntity = nullptr;
 
     void topLevelRender()
     {
@@ -102,8 +103,7 @@ namespace HaloCE::Mod::UI
                 ImGui::SetTooltip("Enable pose interpolation (F3)");
         }
 
-        if (ImGui::CollapsingHeader("Tools"))
-        {
+        if (ImGui::CollapsingHeader("Tools")) {
             // Translate map address
             ImGui::BeginChild("##Translate Map Address", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
 
@@ -153,6 +153,26 @@ namespace HaloCE::Mod::UI
 
             ImGui::EndChild();
 
+            ImGui::BeginChild("##Interpret U32", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+            static char u32input[255] = {0};
+            ImGui::InputText("U32 Input", u32input, sizeof(u32input));
+            uint32_t value = 0;
+            try
+            {
+                value = std::stoul(u32input, nullptr, 16);
+            }
+            catch (...)
+            {
+                value = 0;
+            }
+            if (value)
+            {
+                ImGui::Text("Interpretations of %X:", value);
+                ImGui::Separator();
+                interpretations(value);
+            }
+            ImGui::EndChild();
+
             ImGui::BeginChild("##Interpret Object Fields", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
             static char addressInput[255] = {0};
             ImGui::InputText("Address", addressInput, sizeof(addressInput));
@@ -194,6 +214,10 @@ namespace HaloCE::Mod::UI
             if (ImGui::IsItemHovered())
                 ImGui::SetTooltip("Toggle ESP (F1)");
         }
+
+        // if (ImGui::Button("Test IPC")) {
+        //     CE::Messages::openHexView(0x12345678);
+        // }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,6 +292,7 @@ namespace HaloCE::Mod::UI
             bool tagPath = true;
             bool animation;
             bool bones;
+            bool collision;
         } view = {};
 
         bool paused = HaloMCC::isPauseMenuOpen();
@@ -327,8 +352,7 @@ namespace HaloCE::Mod::UI
                 ImGui::Text("AnimSet: %X, Anim: %d, Frame: %d, %d bones", entity->animSetTagID, entity->animId, entity->animFrame, entity->boneCount());
 
             VIEW_TOGGLE(bones);
-            if (paused || view.bones)
-            {
+            if (paused || view.bones) {
                 auto boneTransforms = entity->getBoneTransforms();
                 ImGui::Text("Bones: %p", boneTransforms);
                 if (view.bones && boneTransforms)
@@ -343,6 +367,35 @@ namespace HaloCE::Mod::UI
                     }
                     ImGui::EndChild();
                 }
+            }
+
+            VIEW_TOGGLE(collision);
+            if (paused || view.collision) {
+
+                ImGui::BeginChild("Collision Geometry", ImVec2(0, 0),  ImGuiChildFlags_AutoResizeY);
+                {
+                    auto collisionTagId = Halo1::collisionGeometryTagId(tag);
+                    ImGui::Text("Collision Tag ID: %X", collisionTagId);
+                    ImGui::Indent(20.0f);
+                    if (view.collision && collisionTagId != NULL_HANDLE) {
+                        auto collisionTag = Halo1::getTag(collisionTagId);
+                        if (collisionTag) {
+                            auto collisionPath = collisionTag->getResourcePath();
+                            ImGui::Text("Tag Path: %s", collisionPath ? collisionPath : "null");
+
+                            auto collisionData = collisionTag->getData();
+                            char buffer[256];
+                            snprintf(buffer, sizeof(buffer), "%p", collisionData);
+                            ImGuiUtils::renderCopyableText("Tag Data:", buffer);
+                        } else {
+                            ImGui::Text("Tag not found");
+                        }
+                    }
+                    ImGui::Unindent(20.0f);
+                }
+                ImGui::EndChild();
+
+
             }
         }
     }
@@ -360,8 +413,7 @@ namespace HaloCE::Mod::UI
         if (ImGui::BeginTabBar("ESP Tabs"))
         {
 
-            if (ImGui::BeginTabItem("Entities"))
-            {
+            if (ImGui::BeginTabItem("Entities")) {
                 ImGui::Text("%p", highlightEntity);
 
                 // Copy button
@@ -369,16 +421,21 @@ namespace HaloCE::Mod::UI
                 bool copyHotkeyDown = ImGui::GetIO().KeyShift && ImGui::IsKeyPressed(ImGuiKey_C, false);
                 if (copyHotkeyDown)
                     ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 255, 0, 255));
-                if (ImGui::Button("copy") || copyHotkeyDown)
-                {
+                if (ImGui::Button("copy") || copyHotkeyDown) {
                     char text[255] = {0};
                     snprintf(text, 255, "%p", highlightEntity);
                     ImGui::SetClipboardText(text);
                 }
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip("Copy pointer to clipboard (Shift+C)");
+                ImGui::SetTooltip("Copy pointer to clipboard (Shift+C)");
                 if (copyHotkeyDown)
-                    ImGui::PopStyleColor();
+                ImGui::PopStyleColor();
+                
+                // Browse button
+                ImGui::SameLine();
+                if (ImGui::Button("browse")) {
+                    CE::Messages::openHexView((uintptr_t)highlightEntity);
+                }
 
                 ImGui::SameLine();
                 ImGui::Checkbox("anchor", &espSettings.anchorHighlight);

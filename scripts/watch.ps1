@@ -3,8 +3,8 @@
 param(
     [string]$watchPath,
     [string]$command,
-    [string]$extensions = ".cpp, .hpp, .c, .h, .lua, .ps1, .bat, .rc",
-    [string]$ignorePaths = "bin, obj, .git"
+    [string]$extensions = ".cpp, .hpp, .c, .h, .ps1, .bat, .rc",
+    [string]$ignorePaths = "bin, obj, .git, cheat-engine"
 )
 
 $global:process = $null
