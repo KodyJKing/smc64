@@ -6,6 +6,7 @@ end
 dofile("lua/functions/globals.lua")
 dofile("lua/highlight_entity_memview.lua")
 dofile("lua/ipc.lua")
+dofile("lua/functions/plot.lua")
 
 local forms = reloadPackage("lua/functions/forms")
 

@@ -753,8 +753,6 @@ namespace HaloCE::Mod::UI
         if (!Halo1::isGameLoaded())
             return;
 
-        ImGui::ProgressBar(getGlobalTimeScale(), ImVec2(200.0f, 0.0f));
-
         espWindow();
 
         // Setup ESP camera to match player camera.

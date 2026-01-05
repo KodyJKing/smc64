@@ -22,14 +22,12 @@ end
 function onMessage(message)
     -- print("Recieved message")
     -- pprint(message)
-
     -- -- Print as hex:
     -- local line = ''
     -- for i=1, message.length do
     --     line = line .. string.format("%02X ", message.data[i])
     -- end
     -- print(line)
-
     messages.handleMessage(message)
 end
 

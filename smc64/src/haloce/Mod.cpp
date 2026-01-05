@@ -323,26 +323,26 @@ namespace HaloCE::Mod {
             MH_CreateHook( p##func, hk##func, (void**) &original##func ); \
             MH_EnableHook( p##func );
 
-        HOOK_FUNC( UpdateEntity, 0xB3A06CU );
-        HOOK_FUNC( AnimateBones, 0xC41984U );
-        HOOK_FUNC( UpdateAllEntities, 0xB35654U );
-        HOOK_FUNC( DamageEntity, 0xB9FBD0U );
-        HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
-        HOOK_FUNC( UpdateContrail, 0xBD77D0U );
-        HOOK_FUNC( UpdateActor, 0xC04A14U );
+        // HOOK_FUNC( UpdateEntity, 0xB3A06CU );
+        // HOOK_FUNC( AnimateBones, 0xC41984U );
+        // HOOK_FUNC( UpdateAllEntities, 0xB35654U );
+        // HOOK_FUNC( DamageEntity, 0xB9FBD0U );
+        // HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
+        // HOOK_FUNC( UpdateContrail, 0xBD77D0U );
+        // HOOK_FUNC( UpdateActor, 0xC04A14U );
 
         #undef HOOK_FUNC
     }
 
     void unhookFunctions() {
         std::cout << "\nUnhooking functions." << std::endl;
-        MH_RemoveHook( (void*) originalUpdateEntity );
-        MH_RemoveHook( (void*) originalAnimateBones );
-        MH_RemoveHook( (void*) originalUpdateAllEntities );
-        MH_RemoveHook( (void*) originalDamageEntity );
-        MH_RemoveHook( (void*) originalGetShieldDamageResist );
-        MH_RemoveHook( (void*) originalUpdateContrail );
-        MH_RemoveHook( (void*) originalUpdateActor );
+        // MH_RemoveHook( (void*) originalUpdateEntity );
+        // MH_RemoveHook( (void*) originalAnimateBones );
+        // MH_RemoveHook( (void*) originalUpdateAllEntities );
+        // MH_RemoveHook( (void*) originalDamageEntity );
+        // MH_RemoveHook( (void*) originalGetShieldDamageResist );
+        // MH_RemoveHook( (void*) originalUpdateContrail );
+        // MH_RemoveHook( (void*) originalUpdateActor );
     }
 
     //////////////////////////////////////////////////////////////////

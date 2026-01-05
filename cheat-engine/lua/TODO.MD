@@ -1,0 +1,4 @@
+- Experiment with coloring memory in hexview by what instructions access them.
+    - Build a graph of instructions and use force directed layout to assign colors.
+        - Connect nearby instructions to help clustering.
+        - Connect instructions to their return addresses.
