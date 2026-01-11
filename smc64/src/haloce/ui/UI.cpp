@@ -19,6 +19,7 @@
 #include "TagBrowser.hpp"
 #include "Interpretations.hpp"
 #include "cheatengine/Messages.hpp"
+#include "DrawBSP.hpp"
 
 #include <Windows.h>
 
@@ -284,6 +285,8 @@ namespace HaloCE::Mod::UI
         {
             bool pos = true;
             bool vel;
+            bool fwd;
+            bool up;
             bool health;
             bool shield;
             bool tag;
@@ -339,6 +342,12 @@ namespace HaloCE::Mod::UI
             VIEW_TOGGLE(vel);
             if (paused || view.vel)
                 ImGui::Text("Velocity: %.2f, %.2f, %.2f", vel.x, vel.y, vel.z);
+            VIEW_TOGGLE(fwd);
+            if (paused || view.fwd)
+                ImGui::Text("Forward: %.2f, %.2f, %.2f", entity->fwd.x, entity->fwd.y, entity->fwd.z);
+            VIEW_TOGGLE(up);
+            if (paused || view.up)
+                ImGui::Text("Up: %.2f, %.2f, %.2f", entity->up.x, entity->up.y, entity->up.z);
 
             VIEW_TOGGLE(health);
             if (paused || view.health)
@@ -387,6 +396,12 @@ namespace HaloCE::Mod::UI
                             char buffer[256];
                             snprintf(buffer, sizeof(buffer), "%p", collisionData);
                             ImGuiUtils::renderCopyableText("Tag Data:", buffer);
+
+                            auto bsp = Halo1::getObjectCollisionBSP(tag);
+                            if (bsp) {
+                                auto verticesBP = bsp->vertices;
+                                ImGui::Text("BSP Vertices: Count %d, Offset %X", verticesBP.count, verticesBP.offset);
+                            }
                         } else {
                             ImGui::Text("Tag not found");
                         }
@@ -765,6 +780,16 @@ namespace HaloCE::Mod::UI
         camera.verticalFov = true;
 
         renderESP_entities();
+
+        if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
+            auto bspTag = Halo1::getObjectCollisionBSP(highlightEntity->tag());
+            if (bspTag != nullptr && Memory::isAllocated((uintptr_t)bspTag)) {
+                Vec3 x = highlightEntity->fwd.normalize();
+                Vec3 z = highlightEntity->up.normalize();
+                Vec3 y = z.cross(x).normalize();
+                HaloCE::Mod::UI::drawBSP(bspTag, highlightEntity->pos, x, y, z);
+            }
+        }
 
         // renderESP_BSP();
 

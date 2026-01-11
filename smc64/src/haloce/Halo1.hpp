@@ -348,4 +348,6 @@ namespace Halo1 {
     // = Collision Geometry ==========
 
     uint32_t collisionGeometryTagId(Tag* objectTag);
+
+    CollisionBSP* getObjectCollisionBSP( Tag* objectCollTag );
 }

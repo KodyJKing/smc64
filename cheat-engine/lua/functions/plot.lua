@@ -36,22 +36,6 @@ function module.plotDataAtAddress(address, count, stride, maxValue)
     module.plotPoints(data)
 end
 
--- function testPlot()
---     local points = {}
---     for i=1,100 do
---         x = i
---         y = math.sin(i/10)*10
---         z = math.cos(i/10)*10
---         table.insert(points, x)
---         table.insert(points, y)
---         table.insert(points, z)
---         -- table.insert(points, {x=i, y=math.sin(i/10)*10, z=math.cos(i/10)*10})
---     end
---     module.plotPoints(points)
--- end
-
--- testPlot()
-
 function module.promptToPlot(address)
     if not address then
         address = inputQuery("Plot Data", "Enter the base address (hex):", "")
@@ -59,13 +43,16 @@ function module.promptToPlot(address)
     if not address then return end
     address = tonumber(address, 16)
 
-    local countStr = inputQuery("Plot Data", "Enter the number of points:", "100")
-    if not countStr then return end
-    local count = tonumber(countStr)
+    local address2 = inputQuery("Plot Data", "Enter the address of the second point (hex):", "")
+    if not address2 then return end
+    address2 = tonumber(address2, 16)
 
-    local strideStr = inputQuery("Plot Data", "Enter the stride (in bytes):", "0C")
-    if not strideStr then return end
-    local stride = tonumber(strideStr, 16)
+    local lastAddress = inputQuery("Plot Data", "Enter the address of the last point (hex):", "")
+    if not lastAddress then return end
+    lastAddress = tonumber(lastAddress, 16)
+
+    local stride = (address2 - address) / 4
+    local count = math.floor((lastAddress - address) / (stride * 4)) --+ 1
 
     module.plotDataAtAddress(address, count, stride)
 end

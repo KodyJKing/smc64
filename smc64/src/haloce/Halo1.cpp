@@ -413,4 +413,25 @@ namespace Halo1 {
         // The collision geometry tag ID is stored at offset 0x7C in the object tag data.
         return Memory::safeRead<uint32_t>( (uintptr_t) objectTag->getData() + 0x7C ).value_or( NULL_HANDLE );
     }
+
+    Tag* getCollisionGeometryTag( Tag* objectTag ) {
+        uint32_t collisionTagId = collisionGeometryTagId( objectTag );
+        if ( collisionTagId == NULL_HANDLE ) return nullptr;
+        Tag* collisionTag = getTag( collisionTagId );
+        if ( !collisionTag || !Memory::isAllocated( (uintptr_t) collisionTag ) ) return nullptr;
+        return collisionTag;
+    }
+
+    CollisionBSP* getObjectCollisionBSP( Tag* objTag ) {
+        Tag* collisionTag = getCollisionGeometryTag( objTag );
+        if ( !collisionTag ) return nullptr;
+
+        void* tagData = collisionTag->getData();
+        if ( !tagData ) return nullptr;
+
+        uint32_t node0MapAddress = Memory::safeRead<uint32_t>( (uintptr_t) tagData + 0x290 ).value_or( 0 );
+        void* node0 = (void*) translateMapAddress( node0MapAddress );
+        uint32_t bsp0MapAddress = Memory::safeRead<uint32_t>( (uintptr_t) node0 + 0x38 ).value_or( 0 );
+        return (CollisionBSP*) translateMapAddress( bsp0MapAddress );
+    }
 }

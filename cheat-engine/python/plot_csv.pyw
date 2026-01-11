@@ -25,6 +25,30 @@ def load_vec3_csv(path):
                 zs.append(z)
             except ValueError:
                 continue
+    
+    # Hack: Add bounds points to prevent stretching.
+    minx, maxx = min(xs), max(xs)
+    miny, maxy = min(ys), max(ys)
+    minz, maxz = min(zs), max(zs)
+    avex = (minx + maxx) / 2
+    avey = (miny + maxy) / 2
+    avez = (minz + maxz) / 2
+
+    range_max = max(maxx - minx, maxy - miny, maxz - minz)
+
+    minx = avex - range_max/2
+    maxx = avex + range_max/2
+    miny = avey - range_max/2
+    maxy = avey + range_max/2
+    minz = avez - range_max/2
+    maxz = avez + range_max/2
+
+    xs.append(minx)
+    xs.append(maxx)
+    ys.append(miny)
+    ys.append(maxy)
+    zs.append(minz)
+    zs.append(maxz)
 
     return xs, ys, zs
 
