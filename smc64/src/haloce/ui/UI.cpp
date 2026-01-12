@@ -20,6 +20,7 @@
 #include "Interpretations.hpp"
 #include "cheatengine/Messages.hpp"
 #include "DrawBSP.hpp"
+#include "DrawEntityCollision.hpp"
 
 #include <Windows.h>
 
@@ -274,6 +275,22 @@ namespace HaloCE::Mod::UI
 
     // Halo1::Entity* highlightEntity = nullptr;
 
+    struct View {
+        bool pos = true;
+        bool vel;
+        bool fwd;
+        bool up;
+        bool health;
+        bool shield;
+        bool tag;
+        bool tagID;
+        bool tagCC;
+        bool tagPath = true;
+        bool animation;
+        bool bones;
+        bool collision = true;
+    } view = {};
+
     void highlightedEntityDetails()
     {
         Halo1::Entity *entity = highlightEntity;
@@ -281,22 +298,6 @@ namespace HaloCE::Mod::UI
         if (entity == nullptr || !Memory::isAllocated((uintptr_t)entity))
             return;
 
-        static struct View
-        {
-            bool pos = true;
-            bool vel;
-            bool fwd;
-            bool up;
-            bool health;
-            bool shield;
-            bool tag;
-            bool tagID;
-            bool tagCC;
-            bool tagPath = true;
-            bool animation;
-            bool bones;
-            bool collision;
-        } view = {};
 
         bool paused = HaloMCC::isPauseMenuOpen();
 
@@ -379,39 +380,7 @@ namespace HaloCE::Mod::UI
             }
 
             VIEW_TOGGLE(collision);
-            if (paused || view.collision) {
-
-                ImGui::BeginChild("Collision Geometry", ImVec2(0, 0),  ImGuiChildFlags_AutoResizeY);
-                {
-                    auto collisionTagId = Halo1::collisionGeometryTagId(tag);
-                    ImGui::Text("Collision Tag ID: %X", collisionTagId);
-                    ImGui::Indent(20.0f);
-                    if (view.collision && collisionTagId != NULL_HANDLE) {
-                        auto collisionTag = Halo1::getTag(collisionTagId);
-                        if (collisionTag) {
-                            auto collisionPath = collisionTag->getResourcePath();
-                            ImGui::Text("Tag Path: %s", collisionPath ? collisionPath : "null");
-
-                            auto collisionData = collisionTag->getData();
-                            char buffer[256];
-                            snprintf(buffer, sizeof(buffer), "%p", collisionData);
-                            ImGuiUtils::renderCopyableText("Tag Data:", buffer);
-
-                            auto bsp = Halo1::getObjectCollisionBSP(tag);
-                            if (bsp) {
-                                auto verticesBP = bsp->vertices;
-                                ImGui::Text("BSP Vertices: Count %d, Offset %X", verticesBP.count, verticesBP.offset);
-                            }
-                        } else {
-                            ImGui::Text("Tag not found");
-                        }
-                    }
-                    ImGui::Unindent(20.0f);
-                }
-                ImGui::EndChild();
-
-
-            }
+            if (paused) ImGui::Text("Collision");
         }
     }
 
@@ -781,13 +750,9 @@ namespace HaloCE::Mod::UI
 
         renderESP_entities();
 
-        if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
-            auto bspTag = Halo1::getObjectCollisionBSP(highlightEntity->tag());
-            if (bspTag != nullptr && Memory::isAllocated((uintptr_t)bspTag)) {
-                Vec3 x = highlightEntity->fwd.normalize();
-                Vec3 z = highlightEntity->up.normalize();
-                Vec3 y = z.cross(x).normalize();
-                HaloCE::Mod::UI::drawBSP(bspTag, highlightEntity->pos, x, y, z);
+        if (view.collision) {
+            if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
+                drawEntityCollision(highlightEntity);
             }
         }
 

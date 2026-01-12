@@ -8,6 +8,8 @@
 #include <vector>
 #include "math/Vectors.hpp"
 
+#include "memory/Memory.hpp"
+
 #define NULL_HANDLE 0xFFFFFFFF
 
 namespace Halo1 {
@@ -325,6 +327,15 @@ namespace Halo1 {
         uint32_t count;
         uint32_t offset;   // Use translateMapAddress to get the actual pointer
         uint32_t bullshit; // Not sure what this does.
+
+        template <typename T>
+        T* get(size_t index, bool safe = true) {
+            if (index >= count) return nullptr;
+            uint64_t baseAddress = Halo1::translateMapAddress(offset);
+            if (!baseAddress) return nullptr;
+            if (safe && !Memory::isAllocated(baseAddress + index * sizeof(T))) return nullptr;
+            return (T*)(baseAddress + index * sizeof(T));
+        }
     };
 
     struct CollisionBSP {
@@ -347,7 +358,26 @@ namespace Halo1 {
 
     // = Collision Geometry ==========
 
+    struct ObjectCollisionTagData {
+        char pad[0x28C];
+        BlockPointer collisionNodes;
+    };
+    static_assert(offsetof(ObjectCollisionTagData, collisionNodes.offset) == 0x290, "ObjectCollisionTagData::collisionNodes.count offset is not 0x290 bytes");
+
+    struct CollisionNode {
+        char name[0x2C];
+        uint16_t region;
+        uint16_t parentNode;
+        uint16_t nextSiblingNode;
+        uint16_t firstChildNode;
+        BlockPointer collisionBsps;
+    };
+    static_assert(sizeof(CollisionNode) == 0x40, "CollisionNode size is not 0x40 bytes");
+    static_assert(offsetof(CollisionNode, collisionBsps.offset) == 0x38, "CollisionNode::collisionBsps offset is not 0x38 bytes");
+
     uint32_t collisionGeometryTagId(Tag* objectTag);
+
+    Tag* getCollisionGeometryTag( Tag* objectTag );
 
     CollisionBSP* getObjectCollisionBSP( Tag* objectCollTag );
 }

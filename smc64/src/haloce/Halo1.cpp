@@ -411,6 +411,7 @@ namespace Halo1 {
     uint32_t collisionGeometryTagId( Tag* objectTag ) {
         if ( !objectTag || !Memory::isAllocated( (uintptr_t) objectTag ) ) return NULL_HANDLE;
         // The collision geometry tag ID is stored at offset 0x7C in the object tag data.
+        // Todo: Create a type for object tag data.
         return Memory::safeRead<uint32_t>( (uintptr_t) objectTag->getData() + 0x7C ).value_or( NULL_HANDLE );
     }
 
@@ -422,16 +423,30 @@ namespace Halo1 {
         return collisionTag;
     }
 
-    CollisionBSP* getObjectCollisionBSP( Tag* objTag ) {
+    CollisionNode* getObjectCollisionNode( Tag* objTag, size_t nodeIndex ) {
         Tag* collisionTag = getCollisionGeometryTag( objTag );
         if ( !collisionTag ) return nullptr;
 
         void* tagData = collisionTag->getData();
         if ( !tagData ) return nullptr;
 
-        uint32_t node0MapAddress = Memory::safeRead<uint32_t>( (uintptr_t) tagData + 0x290 ).value_or( 0 );
-        void* node0 = (void*) translateMapAddress( node0MapAddress );
-        uint32_t bsp0MapAddress = Memory::safeRead<uint32_t>( (uintptr_t) node0 + 0x38 ).value_or( 0 );
-        return (CollisionBSP*) translateMapAddress( bsp0MapAddress );
+        ObjectCollisionTagData* collisionData = (ObjectCollisionTagData*) tagData;
+        if ( nodeIndex >= collisionData->collisionNodes.count ) return nullptr;
+
+        return collisionData->collisionNodes.get<CollisionNode>( nodeIndex );
+    }
+
+    CollisionBSP* getObjectCollisionBSP( Tag* objTag ) {
+        Tag* collisionTag = getCollisionGeometryTag( objTag );
+        if ( !collisionTag ) return nullptr;
+
+        ObjectCollisionTagData* tagData = (ObjectCollisionTagData*) collisionTag->getData();
+        if ( !tagData ) return nullptr;
+
+        CollisionNode* node0 = tagData->collisionNodes.get<CollisionNode>( 0 );
+        if ( !node0 ) return nullptr;
+        
+        // We cannot provide an index here yet because we do not know the true size of this structure.
+        return node0->collisionBsps.get<CollisionBSP>( 0 );
     }
 }
