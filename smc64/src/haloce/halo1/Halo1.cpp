@@ -8,70 +8,9 @@
 
 namespace Halo1 {
 
-    uintptr_t dllBase() {
-        return (uintptr_t) GetModuleHandleA( "halo1.dll" );
-    }
-
     // === Methods ===
 
     Entity* EntityRecord::entity() { return getEntityPointer( this ); }
-
-    char* Tag::getResourcePath() { return (char*) translateMapAddress( resourcePathAddress ); }
-    void* Tag::getData() { return (void*) translateMapAddress( dataAddress ); }
-    std::string Tag::groupIDStr() {
-        auto fourccA = Strings::fourccToString( groupID );
-        auto fourccB = Strings::fourccToString( parentGroupID );
-        auto fourccC = Strings::fourccToString( grandparentGroupID );
-        return "[" + fourccC + " > " + fourccB + " > " + fourccA + "]";
-    }
-
-    Tag* Entity::tag() { return Halo1::getTag( tagID ); }
-    char* Entity::getTagResourcePath() {
-        auto pTag = tag();
-        if ( !pTag ) return nullptr;
-        return pTag->getResourcePath();
-    };
-    bool Entity::fromResourcePath( const char* str ) {
-        auto resourcePath = getTagResourcePath();
-        return resourcePath && strncmp( resourcePath, str, 1024 ) == 0;
-    }
-
-    uint16_t boneCount(void* anim) {
-        return Memory::safeRead<uint16_t>( (uintptr_t) anim + 0x2c ).value_or( 0 );
-    }
-
-    uint16_t Entity::boneCount() {
-        return bonesByteCount / sizeof( Transform );
-
-        // This is a good example of how to traverse animation tag data, so I'm keeping it around.
-        //
-        // auto animSetTag = Halo1::getTag(animSetTagID);
-        // if ( !animSetTag ) return 0;
-        // void* animSetData = animSetTag->getData();
-        // if ( !animSetData ) return 0;
-        // uint32_t animArrayAddress = Memory::safeRead<uint32_t>( (uintptr_t) animSetData + 0x78 ).value_or( 0 );
-        // uintptr_t animArray = Halo1::translateMapAddress( animArrayAddress );
-        // if ( !animArray ) return 0;
-        // int animIndex = 0;
-        // size_t sizeOfAnimation = 0xb4;
-        // uintptr_t anim = animArray + animIndex * sizeOfAnimation;
-        // return Halo1::boneCount( (void*) anim );
-    }
-
-    Transform* Entity::getBoneTransforms() {
-        if ( !bonesOffset ) return nullptr;
-        return (Transform*) ( (uintptr_t) this + bonesOffset );
-    }
-
-    std::vector<Transform> Entity::copyBoneTransforms() {
-        std::vector<Transform> result;
-        auto boneCount = this->boneCount();
-        if ( !boneCount ) return result;
-        auto bones = this->getBoneTransforms();
-        for ( uint16_t i = 0; i < boneCount; i++ )
-            result.push_back( bones[i] );
-        return result;
-    }
 
     // === Pointers ===
 
@@ -134,45 +73,6 @@ namespace Halo1 {
         return header && Memory::isAllocated( (uintptr_t) header ) && checkMapHeader( header );
     }
 
-    static const uintptr_t relocatedMapBaseOffset = 0x2D9CE10U;
-    static const uintptr_t mapBaseOffset = 0x2EA3410U;
-
-    uint64_t translateMapAddress( uint32_t address ) {
-        uint64_t relocatedMapBase = *(uint64_t*) ( dllBase() + relocatedMapBaseOffset );
-        uint64_t mapBase = *(uint64_t*) ( dllBase() + mapBaseOffset );
-        return address + ( relocatedMapBase - mapBase );
-    }
-
-    uint32_t translateToMapAddress( uint64_t absoluteAddress ) {
-        uint64_t relocatedMapBase = *(uint64_t*) ( dllBase() + relocatedMapBaseOffset );
-        uint64_t mapBase = *(uint64_t*) ( dllBase() + mapBaseOffset );
-        return (uint32_t) ( absoluteAddress - ( relocatedMapBase - mapBase ) );
-    }
-
-    Tag* getTag( uint32_t tagID ) {
-        if (tagID == NULL_HANDLE)
-            return nullptr;
-        Tag* tagArray = *(Tag**) ( dllBase() + 0x1C34FB0U );
-        return &tagArray[tagID & 0xFFFF];
-    }
-
-    Tag* findTag( const char* path, uint32_t fourCC) {
-        if ( !validTagPath( path ) ) return nullptr;
-        Tag* tagArray = *(Tag**) ( dllBase() + 0x1C34FB0U );
-        for ( uint32_t i = 0; i < 0x10000; i++ ) {
-            auto tag = &tagArray[i];
-            if ( !tagExists( tag ) ) break;
-            if ( strcmp( tag->getResourcePath(), path ) == 0 && tag->groupID == fourCC )
-                return tag;
-        }
-        return nullptr;
-    }
-
-    Tag* findTag( const char* path, const char* fourCC ) {
-        uint32_t fourCCValue = Strings::stringToFourcc( fourCC );
-        return findTag( path, fourCCValue );
-    }
-
     WeaponProjectileData* getProjectileData( Tag* tag, uint32_t projectileIndex) {
         if ( !tag ) return nullptr;
         auto data = (WeaponTagData*) tag->getData();
@@ -181,34 +81,7 @@ namespace Halo1 {
         auto projectileData = (WeaponProjectileData*) translateMapAddress( data->projectileData.offset );
         return &projectileData[projectileIndex];
     }
-
-    bool validTagPath( const char* path ) {
-        // Must match [a-zA-Z0-9_ \.\\-]+
-        // Must be atleast 3 characters long.
-        // Also must contain atleast one backslash.
-        int backslashCount = 0;
-        for ( size_t i = 0; i < 512; i++ ) {
-            char c = path[i];
-            if ( c == 0 ) 
-                return backslashCount > 0 && i > 2;
-            if ( 
-                !(c >= 'a' && c <= 'z') &&
-                !(c >= 'A' && c <= 'Z') &&
-                !(c >= '0' && c <= '9') && 
-                c != '_'   && c != ' '  &&
-                c != '\\'  && c != '.'  && c != '-'
-            )
-                return false;
-            if ( c == '\\' ) 
-                backslashCount++;
-        }
-        return true;
-    }
     
-    bool tagExists( Tag* tag ) {
-        return tag && Memory::isAllocated( (uintptr_t) tag->getData() ) && Memory::isAllocated( (uintptr_t) tag->getResourcePath() );
-    }
-
     EntityRecord* getEntityRecord( EntityList* pEntityList, uint32_t entityHandle ) {
         if ( entityHandle == 0xFFFFFFFF )
             return nullptr;
