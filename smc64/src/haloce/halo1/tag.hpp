@@ -22,7 +22,18 @@ namespace Halo1 {
         char* getResourcePath();
         void* getData();
         std::string groupIDStr();
+
+        template<typename T>
+        T* getDataAs() {
+            return (T*) getData();
+        }
     };
+
+    template<typename T>
+    T* getTagDataAs(Tag* tag) {
+        if (!tag) return nullptr;
+        return (T*) tag->getData();
+    }
 
     // Represents a block of structs in a tag's data.
     struct BlockPointer {

@@ -3,6 +3,9 @@
 namespace Halo1 {
 
     Camera* getPlayerCameraPointer() { return (Camera*) ( dllBase() + 0x2D9B9C0 ); }
+
+    bool isCameraLoaded() { return Memory::isAllocated( (uintptr_t) getPlayerCameraPointer() ); }
+
     uint32_t getPlayerHandle() { return *(uint32_t*) ( dllBase() + 0x1C563F0U ); }
     PlayerController* getPlayerControllerPointer() { return * (PlayerController**) ( dllBase() + 0x2D8FE70U ); }
 
