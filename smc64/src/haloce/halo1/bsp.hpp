@@ -4,6 +4,7 @@
 #include "math/Vectors.hpp"
 #include "memory/Memory.hpp"
 #include "common.hpp"
+#include "map.hpp"
 
 namespace Halo1 {
     #pragma pack(push, 1)

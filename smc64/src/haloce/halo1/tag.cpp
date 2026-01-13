@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "utils/Strings.hpp"
 #include "memory/Memory.hpp"
+#include "map.hpp"
 
 namespace Halo1 {
     

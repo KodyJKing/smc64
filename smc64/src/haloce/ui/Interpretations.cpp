@@ -1,6 +1,6 @@
 #include "Interpretations.hpp"
 #include "imgui.h"
-#include "haloce/halo1/Halo1.hpp"
+#include "haloce/halo1/halo1.hpp"
 #include "memory/Memory.hpp"
 #include "utils/Strings.hpp"
 #include "haloce/utils/Interpret.hpp"

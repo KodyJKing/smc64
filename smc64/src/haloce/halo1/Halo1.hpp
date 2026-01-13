@@ -13,29 +13,16 @@
 #include "common.hpp"
 #include "math.hpp"
 #include "tag.hpp"
-#include "entity/entity.hpp"
+#include "entity/index.hpp"
+#include "camera.hpp"
+#include "player.hpp"
+#include "map.hpp"
 
 #define NULL_HANDLE 0xFFFFFFFF
 
 namespace Halo1 {
 
     #pragma pack(push, 1)
-        struct MapHeader {
-            uint32_t magicHeader; // Should be 1751474532 ('head' in ascii fourcc)
-            uint32_t cacheVersion;
-            uint32_t fileSize;
-            uint32_t paddingLength; // Only used on Xbox
-            uint32_t tagDataOffset;
-            uint32_t tagDataSize;
-            char pad0[8];
-            char mapName[32];
-            char buildVersion[32];
-            uint32_t scenarioType;
-            uint32_t checksum;
-            char pad1[0x794];
-            uint32_t magicFooter; // Should be 1718579060 ('foot' in ascii fourcc)
-        };
-
         struct ArrayPointer {
             uint32_t count;
             uint32_t offset; // Use translateMapAddress to get the actual pointer
@@ -52,41 +39,6 @@ namespace Halo1 {
             float maxRateOfFire;
             char pad_000C[0x108];
         }; // Size = 0x114
-
-        struct Camera {
-            char pad0[4];
-            Vec3 pos;
-            char pad1[16];
-            float fov;
-            Vec3 fwd;
-            Vec3 up;
-        };
-
-        namespace PlayerActionFlags {
-            const uint32_t crouch     = 1 << 0;
-            const uint32_t jump       = 1 << 1;
-            const uint32_t flash      = 1 << 4;
-            const uint32_t melee      = 1 << 7;
-            const uint32_t reload     = 1 << 10;
-            const uint32_t shoot      = 1 << 11;
-            const uint32_t grenade1   = 1 << 12;
-            const uint32_t grenade2   = 1 << 13;
-        }
-        struct PlayerController {
-            uint8_t pad_0000[16];  // 0000
-            uint32_t playerHandle; // 0010
-            uint32_t actions;      // 0014
-            uint8_t pad_0018[4];   // 0018
-            float yaw;             // 001C
-            float pitch;           // 0020
-            float walkY;           // 0024
-            float walkX;           // 0028
-            float gunTrigger;      // 002C
-            uint8_t pad_0030[8];   // 0030
-            float targetIndicator; // 0038
-            uint8_t pad_003C[360]; // 003C
-            uint32_t targetHandle; // 01A4
-        };
     #pragma pack(pop)
 
     // Created with ReClass.NET 1.2 by KN4CK3R
@@ -105,78 +57,7 @@ namespace Halo1 {
         float homing; //0x01EC
     }; //Size: 0x01F0
 
-    // =======================================================
-
-    enum EntityCategory {
-        EntityCategory_Biped,
-        EntityCategory_Vehicle,
-        EntityCategory_Weapon,
-        EntityCategory_Equipment,
-        EntityCategory_Garbage,
-        EntityCategory_Projectile,
-        EntityCategory_Scenery,
-        EntityCategory_Machine,
-        EntityCategory_Control,
-        EntityCategory_LightFixture,
-        EntityCategory_Placeholder,
-        EntityCategory_SoundScenery,
-    };
-
-    enum TypeID {
-        TypeID_Player = 0x0DE4,
-        TypeID_Marine = 0x0E58,
-        TypeID_Jackal = 0x1184,
-        TypeID_Grunt = 0x0CFC,
-        TypeID_Elite = 0x1110,
-        TypeID_VehicleA = 0x0AF4,
-        TypeID_VehicleB = 0x06E0,
-        TypeID_Projectile = 0x0290,
-    };
-
-    // =======================================================
-
-    EntityList* getEntityListPointer();
-    Camera* getPlayerCameraPointer();
-    uint32_t getPlayerHandle();
-    PlayerController * getPlayerControllerPointer();
-    char* getMapName();
-    MapHeader* getMapHeader();
-
-    bool isOnMap( const char* mapName );
-
-    uint64_t translateMapAddress( uint32_t address );
-
-    uint32_t translateToMapAddress(uint64_t absoluteAddress);
-
     WeaponProjectileData * getProjectileData(Tag * tag, uint32_t projectileIndex);
-
-    uint16_t boneCount(void * anim);
-
-    void foreachEntityRecord( std::function<void( EntityRecord* )> cb );
-    void foreachEntityRecordIndexed( std::function<void( EntityRecord*, uint16_t i )> cb );
-
-    Entity* getEntityPointer( EntityRecord* pRecord );
-    Entity* getEntityPointer( uint32_t entityHandle );
-    EntityRecord* getEntityRecord( uint32_t entityHandle );
-    EntityRecord* getEntityRecord( EntityList* pEntityList, uint32_t entityHandle );
-
-    uint32_t indexToEntityHandle( uint16_t index );
-
-    EntityRecord* getPlayerRecord();
-
-    std::optional<Vec3> getPlayerPosition();
-
-    bool isPlayerHandle( uint32_t entityHandle );
-    bool isPlayerControlled( EntityRecord* rec );
-
-    bool isReloading( Entity* entity );
-    bool isDoingMelee( Entity* entity );
-
-    bool isTransport( Entity* entity );
-    bool isRidingTransport( Entity* entity );
-
-    bool printEntity( EntityRecord* pRecord );
-    void printEntities();
 
     extern float fovScale;
     extern float clippingNear;

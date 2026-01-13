@@ -1,77 +1,12 @@
 // Reverse engineered Halo 1 structures and access functions go here.
 
-#include "Halo1.hpp"
+#include "halo1.hpp"
 #include <Windows.h>
 #include <iostream>
 #include "memory/Memory.hpp"
 #include "utils/Strings.hpp"
 
 namespace Halo1 {
-
-    // === Methods ===
-
-    Entity* EntityRecord::entity() { return getEntityPointer( this ); }
-
-    // === Pointers ===
-
-    static const uintptr_t entityArrayOffset = 0x2D9CDF8;
-    static const uintptr_t pEntityListOffset = 0x1C42248;
-    static const uintptr_t playerCamOffset = 0x2D9B9C0;
-    static const uintptr_t playerHandleOffset = 0x1C563F0U;
-    static const uintptr_t playerControllerOffset = 0x2D8FE70U;
-
-    EntityList* getEntityListPointer() { return *(EntityList**) ( dllBase() + pEntityListOffset ); }
-    uintptr_t getEntityArrayBase() { return *(uintptr_t*) ( dllBase() + entityArrayOffset ); }
-    Camera* getPlayerCameraPointer() { return (Camera*) ( dllBase() + playerCamOffset ); }
-    uint32_t getPlayerHandle() { return *(uint32_t*) ( dllBase() + playerHandleOffset ); }
-    PlayerController* getPlayerControllerPointer() { return * (PlayerController**) ( dllBase() + playerControllerOffset ); }
-
-    // No longer includes file path, only the map name.
-    char* getMapName() {
-        MapHeader* header = getMapHeader();
-        if ( !header ) return nullptr;
-        return header->mapName;
-    }
-
-    bool checkMapHeader(MapHeader* header) {
-        if (!header) {
-            // std::cout << "Error: header is null" << std::endl;
-            return false;
-        }
-        if ( !Memory::isAllocated( (uintptr_t) header ) ) {
-            // std::cout << "Error: header is not allocated" << std::endl;
-            return false;
-        }
-        if (header->magicHeader != 1751474532) {
-            // std::cout << "Error: magicHeader is not 1751474532" << std::endl;
-            return false;
-        }
-        if (header->magicFooter != 1718579060) {
-            // std::cout << "Error: magicFooter is not 1718579060" << std::endl;
-            // std::cout << offsetof(MapHeader, magicFooter) << std::endl;
-            return false;
-        }
-        return true;
-    }
-
-    MapHeader* getMapHeader() {
-        MapHeader* result = (MapHeader*) ( dllBase() + 0x2B22744U );
-        if ( !checkMapHeader( result ) )
-            return nullptr;
-        return result;
-    }
-
-    bool isOnMap( const char* mapName ) {
-        auto actualMapName = getMapName();
-        if ( !actualMapName )
-            return false;
-        return strncmp( mapName, actualMapName, strnlen( mapName, 32 ) ) == 0;
-    }
-
-    bool isMapLoaded() {
-        auto header = getMapHeader();
-        return header && Memory::isAllocated( (uintptr_t) header ) && checkMapHeader( header );
-    }
 
     WeaponProjectileData* getProjectileData( Tag* tag, uint32_t projectileIndex) {
         if ( !tag ) return nullptr;
@@ -81,135 +16,11 @@ namespace Halo1 {
         auto projectileData = (WeaponProjectileData*) translateMapAddress( data->projectileData.offset );
         return &projectileData[projectileIndex];
     }
-    
-    EntityRecord* getEntityRecord( EntityList* pEntityList, uint32_t entityHandle ) {
-        if ( entityHandle == 0xFFFFFFFF )
-            return nullptr;
-        uint32_t i = entityHandle & 0xFFFF;
-        auto recordAddress = (uintptr_t) pEntityList + pEntityList->entityListOffset + i * sizeof( EntityRecord );
-        return (EntityRecord*) recordAddress;
-    }
-    EntityRecord* getEntityRecord( uint32_t entityHandle ) { return getEntityRecord( getEntityListPointer(), entityHandle ); }
-
-    void foreachEntityRecordIndexed( std::function<void( EntityRecord*, uint16_t i )> cb ) {
-        auto pEntityList = getEntityListPointer();
-        if ( !pEntityList )
-            return;
-        for ( uint16_t i = 0; i < pEntityList->capacity; i++ ) {
-            auto pRecord = getEntityRecord( pEntityList, i );
-            if ( pRecord->entityArrayOffset == -1 )
-                continue;
-            cb( pRecord, i );
-        }
-    }
-
-    void foreachEntityRecord( std::function<void( EntityRecord* )> cb ) {
-        foreachEntityRecordIndexed( [&cb]( EntityRecord* rec, uint16_t i ) { cb( rec ); } );
-    }
-
-    Entity* getEntityPointer( EntityRecord* pRecord ) {
-        if ( !pRecord || pRecord->entityArrayOffset == -1 )
-            return nullptr;
-        uintptr_t entityAddress = getEntityArrayBase() + 0x34 + (INT_PTR) pRecord->entityArrayOffset;
-        return (Entity*) entityAddress;
-    }
-
-    Entity* getEntityPointer( uint32_t entityHandle ) {
-        return getEntityPointer( getEntityRecord( entityHandle ) );
-    }
-
-    uint32_t indexToEntityHandle( uint16_t index ) {
-        auto rec = getEntityRecord( index );
-        if ( !rec ) return 0xFFFFFFFF;
-        return rec->id << 16 | index;
-    }
-
-    // ================
-
-    EntityRecord* getPlayerRecord() {
-        auto rec = getEntityRecord( getPlayerHandle() );
-        if ( !rec || !rec->entity() )
-            return nullptr;
-        return rec;
-    }
-
-    std::optional<Vec3> getPlayerPosition() {
-        auto rec = getPlayerRecord();
-        if ( !rec )
-            return std::nullopt;
-        auto entity = rec->entity();
-        if ( !entity )
-            return std::nullopt;
-        return entity->pos;
-    }
-
-    bool isPlayerHandle( uint32_t entityHandle ) {
-        auto rec = getEntityRecord( entityHandle );
-        return rec && rec->typeId == TypeID_Player;
-    }
-
-    bool isPlayerControlled( EntityRecord* rec ) {
-        auto entity = getEntityPointer( rec );
-        if ( !entity )
-            return false;
-
-        return rec->typeId == TypeID_Player
-            || isPlayerHandle( entity->parentHandle )
-            // || isPlayerHandle( entity->vehicleRiderHandle )
-            // || isPlayerHandle( entity->controllerHandle )
-            // || isPlayerHandle( entity->projectileParentHandle )
-            // || rec->typeId == 0x0454
-            ;
-    }
-
-    bool isReloading( Entity* entity ) { return entity->weaponAnim == 0x05; }
-    bool isDoingMelee( Entity* entity ) { return entity->weaponAnim == 0x07; }
-
-    bool isTransport( Entity* entity ) {
-        return
-            entity->fromResourcePath( "vehicles\\pelican\\pelican" ) ||
-            entity->fromResourcePath( "vehicles\\c_dropship\\c_dropship" );
-    }
-
-    bool isRidingTransport( Entity* entity ) {
-        if ( !entity )
-            return false;
-        auto vehicleRec = getEntityRecord( entity->parentHandle );
-        if ( !vehicleRec )
-            return false;
-        auto vehicle = getEntityPointer( vehicleRec );
-        return isTransport( vehicle );
-    }
-
-    // ======================
-
-    bool printEntity( EntityRecord* pRecord ) {
-        auto pEntity = getEntityPointer( pRecord );
-        if ( !pEntity )
-            return true;
-        std::cout << "Position: ";
-        std::cout << pEntity->pos.toString() << std::endl;
-        std::cout << "Type ID: " << pRecord->typeId;
-        std::cout << ", Health: " << pEntity->health;
-        std::cout << ", Shield: " << pEntity->shield << std::endl << std::endl;
-        return true;
-    }
-
-    void printEntities() {
-        auto pEntityList = getEntityListPointer();
-        if ( pEntityList ) {
-            std::cout << "Entity list at: " << pEntityList << "\n";
-            std::cout << "Entities: \n\n";
-            foreachEntityRecord( []( EntityRecord* rec ) { printEntity( rec ); } );
-        }
-    }
 
     // =======================
 
-    bool isEntityListLoaded() { return Memory::isAllocated( (uintptr_t) getEntityListPointer() ); }
-    bool isEntityArrayLoaded() { return Memory::isAllocated( (uintptr_t) getEntityArrayBase() ); }
     bool isCameraLoaded() { return Memory::isAllocated( (uintptr_t) getPlayerCameraPointer() ); }
-    bool isGameLoaded() { return GetModuleHandleA( "halo1.dll" ) && isMapLoaded() && Halo1::isCameraLoaded() && isEntityListLoaded() && isEntityArrayLoaded(); }
+    bool isGameLoaded() { return GetModuleHandleA( "halo1.dll" ) && isMapLoaded() && Halo1::isCameraLoaded() && areEntitiesLoaded(); }
 
     // = BSP =======================
 

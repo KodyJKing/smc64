@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../common.hpp"
-#include "../tag.hpp"
+#include <stdint.h>
 #include <vector>
 #include "math/Vectors.hpp"
-
 #include "../math.hpp"
+#include "../tag.hpp"
 
 namespace Halo1 {
 
@@ -94,4 +93,30 @@ namespace Halo1 {
         int32_t entityListOffset; 
     };
 
+    enum EntityCategory {
+        EntityCategory_Biped,
+        EntityCategory_Vehicle,
+        EntityCategory_Weapon,
+        EntityCategory_Equipment,
+        EntityCategory_Garbage,
+        EntityCategory_Projectile,
+        EntityCategory_Scenery,
+        EntityCategory_Machine,
+        EntityCategory_Control,
+        EntityCategory_LightFixture,
+        EntityCategory_Placeholder,
+        EntityCategory_SoundScenery,
+    };
+
+    enum TypeID {
+        TypeID_Player = 0x0DE4,
+        TypeID_Marine = 0x0E58,
+        TypeID_Jackal = 0x1184,
+        TypeID_Grunt = 0x0CFC,
+        TypeID_Elite = 0x1110,
+        TypeID_VehicleA = 0x0AF4,
+        TypeID_VehicleB = 0x06E0,
+        TypeID_Projectile = 0x0290,
+    };
+    
 }

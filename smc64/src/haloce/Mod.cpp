@@ -10,7 +10,7 @@
 #include "math/Math.hpp"
 #include "asm/AsmHelper.hpp"
 #include "memory/Memory.hpp"
-#include "halo1/Halo1.hpp"
+#include "halo1/halo1.hpp"
 #include "Rewind.hpp"
 #include "TimeScale.hpp"
 #include "DllMain.hpp"
