@@ -20,7 +20,8 @@
 #include "Interpretations.hpp"
 #include "cheatengine/Messages.hpp"
 #include "DrawBSP.hpp"
-#include "DrawEntityCollision.hpp"
+// #include "DrawEntityCollision.hpp"
+#include "DrawEntity.hpp"
 
 #include <Windows.h>
 
@@ -359,7 +360,7 @@ namespace HaloCE::Mod::UI
 
             VIEW_TOGGLE(animation);
             if (paused || view.animation)
-                ImGui::Text("AnimSet: %X, Anim: %d, Frame: %d, %d bones", entity->animSetTagID, entity->animId, entity->animFrame, entity->boneCount());
+                ImGui::Text("AnimSet: %X, Anim: %d, Frame: %d, %d bones", entity->animSetTagID, entity->animId, entity->animFrame, entity->bones.count());
 
             VIEW_TOGGLE(bones);
             if (paused || view.bones) {
@@ -368,7 +369,7 @@ namespace HaloCE::Mod::UI
                 if (view.bones && boneTransforms)
                 {
                     ImGui::BeginChild("Bones", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
-                    for (int i = 0; i < entity->boneCount(); i++)
+                    for (int i = 0; i < entity->bones.count(); i++)
                     {
                         auto bone = boneTransforms[i];
                         auto pos = bone.translation;
@@ -594,17 +595,17 @@ namespace HaloCE::Mod::UI
                 color = IM_COL32(64, 64, 255, alpha);
                 radius = 0.2f;
 
-                // Draw coordinate frame on highlighted entity
-                auto red = IM_COL32(255, 64, 64, alpha);
-                auto green = IM_COL32(64, 255, 64, alpha);
-                auto blue = IM_COL32(64, 64, 255, alpha);
-                Vec3 pos = displayPos(entity);
-                Vec3 ex = Vec3{1, 0, 0} * 0.5f;
-                Vec3 ey = Vec3{0, 1, 0} * 0.5f;
-                Vec3 ez = Vec3{0, 0, 1} * 0.5f;
-                ESP::drawLine(pos, pos + ex, red);
-                ESP::drawLine(pos, pos + ey, green);
-                ESP::drawLine(pos, pos + ez, blue);
+                // // Draw coordinate frame on highlighted entity
+                // auto red = IM_COL32(255, 64, 64, alpha);
+                // auto green = IM_COL32(64, 255, 64, alpha);
+                // auto blue = IM_COL32(64, 64, 255, alpha);
+                // Vec3 pos = displayPos(entity);
+                // Vec3 ex = Vec3{1, 0, 0} * 0.5f;
+                // Vec3 ey = Vec3{0, 1, 0} * 0.5f;
+                // Vec3 ez = Vec3{0, 0, 1} * 0.5f;
+                // ESP::drawLine(pos, pos + ex, red);
+                // ESP::drawLine(pos, pos + ey, green);
+                // ESP::drawLine(pos, pos + ez, blue);
 
                 float nudgeSpeed = 0.1f;
                 if (ImGui::GetIO().KeyShift)
@@ -752,7 +753,7 @@ namespace HaloCE::Mod::UI
 
         if (view.collision) {
             if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
-                drawEntityCollision(highlightEntity);
+                drawEntity(highlightEntity);
             }
         }
 

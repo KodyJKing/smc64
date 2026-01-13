@@ -19,4 +19,6 @@ namespace Halo1 {
     }; // This size has not been confirmed
     static_assert(sizeof(WeaponProjectileData) == 0x114, "Halo1::WeaponProjectileData has incorrect size.");
 
+    WeaponProjectileData * getProjectileData(Tag * tag, uint32_t projectileIndex);
+
 }

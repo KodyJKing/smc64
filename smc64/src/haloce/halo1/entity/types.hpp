@@ -8,6 +8,17 @@
 
 namespace Halo1 {
 
+    template<typename T>
+    struct ChildArrayHeader {
+        uint16_t byteCount;
+        uint16_t offset;
+        uint16_t count() { return byteCount / sizeof(T); }
+        T* get( void* parent, uint16_t index ) {
+            if ( offset == 0 ) return nullptr;
+            return (T*) ( (uintptr_t) parent + offset + index * sizeof(T) );
+        }
+    };
+
     class Entity {
         public:
         uint32_t tagID; 
@@ -36,9 +47,9 @@ namespace Halo1 {
         uint32_t childHandle; 
         uint32_t parentHandle;
         char pad_00DC[204];
-        uint16_t bonesByteCount;
-        uint16_t bonesOffset;
-        char pad_01AC[84];
+        ChildArrayHeader<Transform> bones;
+        ChildArrayHeader<WorldTransform> worldBones;
+        char pad_01B0[80];
         uint32_t projectileParentHandle; 
         float heat; 
         float plasmaUsed; 
@@ -69,9 +80,11 @@ namespace Halo1 {
         bool fromResourcePath( const char* str );
 
         uint16_t boneCount();
-        Transform* getBoneTransforms();
+        Transform* getBoneTransforms() { return bones.get( this, 0 ); }
         std::vector<Transform> copyBoneTransforms();
     };
+    static_assert( offsetof(Entity, pad_01B0) == 0x1B0 );
+    static_assert( offsetof(Entity, pad_02FE) == 0x2FE );
 
     class EntityRecord {
         public:

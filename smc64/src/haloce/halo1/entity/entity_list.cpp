@@ -4,40 +4,14 @@
 
 namespace Halo1 {
 
-    Tag* Entity::tag() { return Halo1::getTag( tagID ); }
-    char* Entity::getTagResourcePath() {
-        auto pTag = tag();
-        if ( !pTag ) return nullptr;
-        return pTag->getResourcePath();
-    };
-    bool Entity::fromResourcePath( const char* str ) {
-        auto resourcePath = getTagResourcePath();
-        return resourcePath && strncmp( resourcePath, str, 1024 ) == 0;
-    }
-
-    Transform* Entity::getBoneTransforms() {
-        if ( !bonesOffset ) return nullptr;
-        return (Transform*) ( (uintptr_t) this + bonesOffset );
-    }
-
-    std::vector<Transform> Entity::copyBoneTransforms() {
-        std::vector<Transform> result;
-        auto boneCount = this->boneCount();
-        if ( !boneCount ) return result;
-        auto bones = this->getBoneTransforms();
-        for ( uint16_t i = 0; i < boneCount; i++ )
-            result.push_back( bones[i] );
-        return result;
-    }
-
-    Entity* EntityRecord::entity() { return getEntityPointer( this ); }
-
     EntityList* getEntityListPointer() { return *(EntityList**) ( dllBase() + 0x1C42248 ); }
     uintptr_t getEntityArrayBase() { return *(uintptr_t*) ( dllBase() + 0x2D9CDF8 ); }
 
     bool isEntityListLoaded() { return Memory::isAllocated( (uintptr_t) getEntityListPointer() ); }
     bool isEntityArrayLoaded() { return Memory::isAllocated( (uintptr_t) getEntityArrayBase() ); }
     bool areEntitiesLoaded() { return isEntityListLoaded() && isEntityArrayLoaded(); }
+
+    Entity* EntityRecord::entity() { return getEntityPointer( this ); }
 
     EntityRecord* getEntityRecord( EntityList* pEntityList, uint32_t entityHandle ) {
         if ( entityHandle == 0xFFFFFFFF ) return nullptr;

@@ -370,11 +370,24 @@ halo1.dll+C505F1: 83 CB 04                 - or ebx,04
     </CheatEntry>
     <CheatEntry>
       <ID>73</ID>
-      <Description>"No description"</Description>
-      <ShowAsHex>1</ShowAsHex>
+      <Description>"worldBoneTransforms"</Description>
       <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>1D07820245C</Address>
+      <VariableType>Float</VariableType>
+      <Address>1FFF3D480D0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>74</ID>
+      <Description>"worldBoneTransformsOffset"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>2 Bytes</VariableType>
+      <Address>1FFF3D47D36</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>75</ID>
+      <Description>"No description"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>2 Bytes</VariableType>
+      <Address>1FFF3D47B88</Address>
     </CheatEntry>
   </CheatEntries>
   <CheatCodes>
@@ -2234,7 +2247,9 @@ halo1.dll+C505F1: 83 CB 04                 - or ebx,04
         <Element Offset="420" Vartype="4 Bytes" Bytesize="4" OffsetHex="000001A4" DisplayMethod="hexadecimal"/>
         <Element Offset="424" Vartype="2 Bytes" Bytesize="2" OffsetHex="000001A8" Description="bonesByteCOunt" DisplayMethod="unsigned integer"/>
         <Element Offset="426" Vartype="2 Bytes" Bytesize="2" OffsetHex="000001AA" Description="bonesOffset" DisplayMethod="hexadecimal"/>
-        <Element Offset="428" Vartype="4 Bytes" Bytesize="4" RLECount="3" OffsetHex="000001AC" DisplayMethod="hexadecimal"/>
+        <Element Offset="428" Vartype="2 Bytes" Bytesize="2" OffsetHex="000001AC" Description="worldBonesByteCount" DisplayMethod="hexadecimal"/>
+        <Element Offset="430" Vartype="2 Bytes" Bytesize="2" OffsetHex="000001AE" Description="worldBonesOffset" DisplayMethod="hexadecimal"/>
+        <Element Offset="432" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="000001B0" DisplayMethod="hexadecimal"/>
         <Element Offset="440" Vartype="4 Bytes" Bytesize="4" RLECount="5" OffsetHex="000001B8" DisplayMethod="unsigned integer"/>
         <Element Offset="460" Vartype="4 Bytes" Bytesize="4" OffsetHex="000001CC" Description="previousWeaponOwnerHandle" DisplayMethod="hexadecimal"/>
         <Element Offset="464" Vartype="4 Bytes" Bytesize="4" OffsetHex="000001D0" DisplayMethod="unsigned integer"/>

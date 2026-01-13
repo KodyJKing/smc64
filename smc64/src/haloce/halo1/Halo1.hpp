@@ -13,7 +13,6 @@
 #include "tags/index.hpp"
 
 namespace Halo1 {
-    WeaponProjectileData * getProjectileData(Tag * tag, uint32_t projectileIndex);
     bool isCameraLoaded();
     bool isGameLoaded();
 }

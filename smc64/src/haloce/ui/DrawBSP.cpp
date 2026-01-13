@@ -44,26 +44,23 @@ namespace HaloCE::Mod::UI  {
         Halo1::BSPSurface* bspSurfaces = (Halo1::BSPSurface*) Halo1::translateMapAddress( bsp->surfaces.offset );
         if ( !bspSurfaces ) return;
 
-        //// Draw BSP vertices
-
+        
         uint8_t alpha = 0xFF;
         auto color = IM_COL32(255, 255, 0, alpha);
-        float radius = 0.05f;
-
-        for (uint32_t i = 0; i < bspVertexCount; i++)
-        {
-            auto vertex = &bspVertices[i];
-            Vec3 pos = vertex->pos;
-            ESP::drawPoint(toWorld(pos), color);
-        }
+        
+        // //// Draw BSP vertices
+        // for (uint32_t i = 0; i < bspVertexCount; i++) {
+        //     auto vertex = &bspVertices[i];
+        //     Vec3 pos = vertex->pos;
+        //     ESP::drawPoint(toWorld(pos), color);
+        // }
 
         //// Draw BSP surfaces
 
-        alpha = 0x40;
-        color = IM_COL32(0, 255, 0, alpha);
+        alpha = 0x20;
+        color = IM_COL32(255, 255, 255, alpha);
 
-        for (uint32_t i = 0; i < bspEdgeCount; i++)
-        {
+        for (uint32_t i = 0; i < bspEdgeCount; i++) {
             auto edge = &bspEdges[i];
 
             auto p0 = &bspVertices[edge->startVertex];
