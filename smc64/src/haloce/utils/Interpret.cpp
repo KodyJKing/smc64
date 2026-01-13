@@ -1,5 +1,5 @@
 #include "haloce/utils/Interpret.hpp"
-#include "haloce/Halo1.hpp"
+#include "haloce/halo1/Halo1.hpp"
 #include "memory/Memory.hpp"
 
 namespace Halo1 {

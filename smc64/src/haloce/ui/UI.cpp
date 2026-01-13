@@ -2,7 +2,7 @@
 #include "haloce/Mod.hpp"
 #include "overlay/ESP.hpp"
 #include "UI.hpp"
-#include "haloce/Halo1.hpp"
+#include "haloce/halo1/Halo1.hpp"
 #include "haloce/Mario.hpp"
 #include "halomcc/HaloMCC.hpp"
 #include "utils/ImGuiUtils.hpp"

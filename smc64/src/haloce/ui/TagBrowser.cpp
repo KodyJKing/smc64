@@ -4,7 +4,7 @@
 #include <mutex>
 #include <string>
 #include "imgui.h"
-#include "haloce/Halo1.hpp"
+#include "haloce/halo1/Halo1.hpp"
 #include "utils/Strings.hpp"
 #include "Interpretations.hpp"
 #include "memory/Memory.hpp"

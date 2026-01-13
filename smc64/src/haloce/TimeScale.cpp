@@ -1,7 +1,7 @@
 // This module handles tracking timescale based on player activity.
 // It should probably should be renamed to something like ActivityTracker.
 
-#include "Halo1.hpp"
+#include "halo1/Halo1.hpp"
 #include "math/Math.hpp"
 #include "math/Vectors.hpp"
 #include <iostream>

@@ -1,5 +1,5 @@
 #pragma once
-#include "haloce/Halo1.hpp"
+#include "haloce/halo1/Halo1.hpp"
 
 namespace Halo1 {
     struct Interpretations {

@@ -1,5 +1,5 @@
 #include "libsm64.h"
-#include "Halo1.hpp"
+#include "halo1/Halo1.hpp"
 #include "Coordinates.hpp"
 
 #include <vector>
