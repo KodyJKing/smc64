@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 #include <string>
+#include "map.hpp"
+#include "memory/Memory.hpp"
 
 namespace Halo1 {
     // Thanks to Kavawuvi for documentation on the map format and tag structure.
@@ -20,6 +22,22 @@ namespace Halo1 {
         char* getResourcePath();
         void* getData();
         std::string groupIDStr();
+    };
+
+    // Represents a block of structs in a tag's data.
+    struct BlockPointer {
+        uint32_t count;
+        uint32_t offset;   // Use translateMapAddress to get the actual pointer
+        uint32_t bullshit; // Not sure what this does.
+
+        template <typename T>
+        T* get(size_t index, bool safe = true) {
+            if (index >= count) return nullptr;
+            uint64_t baseAddress = Halo1::translateMapAddress(offset);
+            if (!baseAddress) return nullptr;
+            if (safe && !Memory::isAllocated(baseAddress + index * sizeof(T))) return nullptr;
+            return (T*)(baseAddress + index * sizeof(T));
+        }
     };
 
     Tag* getTag( uint32_t tagID );

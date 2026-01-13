@@ -17,20 +17,17 @@
 #include "camera.hpp"
 #include "player.hpp"
 #include "map.hpp"
+#include "bsp/index.hpp"
+#include "tags/index.hpp"
 
 #define NULL_HANDLE 0xFFFFFFFF
 
 namespace Halo1 {
 
     #pragma pack(push, 1)
-        struct ArrayPointer {
-            uint32_t count;
-            uint32_t offset; // Use translateMapAddress to get the actual pointer
-        };
-        
         struct WeaponTagData {
             char pad_0000[0x4FC];
-            ArrayPointer projectileData;
+            BlockPointer projectileData;
         };
 
         struct WeaponProjectileData {
@@ -59,98 +56,7 @@ namespace Halo1 {
 
     WeaponProjectileData * getProjectileData(Tag * tag, uint32_t projectileIndex);
 
-    extern float fovScale;
-    extern float clippingNear;
-    extern float clippingFar;
-    // HRESULT getCameraMatrix( float w, float h, XMMATRIX& result );
-    Vec3 projectPoint( float w, float h, const Vec3 point );
-
     bool isCameraLoaded();
     bool isGameLoaded();
 
-    // = BSP =======================
-
-    #pragma pack(push, 1)
-    struct BSPVertex {
-        Vec3 pos;
-        uint32_t firstEdgeIndex;
-    };
-
-    struct BSPEdge {
-        uint32_t startVertex, endVertex;    // Indices into the BSPVertex array
-        uint32_t forwardEdge, backwardEdge; // Indices into the BSPEdge array
-        uint32_t leftSurface, rightSurface; // Indices into the BSPSurface array
-    };
-
-    struct BSPPlane {
-        Vec3 normal; // Normal vector of the plane
-        float distance; // Distance from the origin to the plane
-    };
-
-    struct BSPSurface {
-        uint32_t planeIndex; // Index into the BSPPlane array
-        uint32_t firstEdgeIndex; // Index into the BSPEdge array
-        uint8_t flags;
-        uint8_t breakableSurface;
-        uint16_t material;
-    };
-    static_assert(sizeof(BSPSurface) == 12, "BSPSurface must be 12 bytes long");
-
-    struct BlockPointer {
-        uint32_t count;
-        uint32_t offset;   // Use translateMapAddress to get the actual pointer
-        uint32_t bullshit; // Not sure what this does.
-
-        template <typename T>
-        T* get(size_t index, bool safe = true) {
-            if (index >= count) return nullptr;
-            uint64_t baseAddress = Halo1::translateMapAddress(offset);
-            if (!baseAddress) return nullptr;
-            if (safe && !Memory::isAllocated(baseAddress + index * sizeof(T))) return nullptr;
-            return (T*)(baseAddress + index * sizeof(T));
-        }
-    };
-
-    struct CollisionBSP {
-        BlockPointer bsp3DNodes, planes, leaves, bsp2DRefs, bsp2DNodes, surfaces, edges, vertices;
-    };
-    #pragma pack(pop)
-
-    uintptr_t getBSPPointer();
-    uint32_t getBSPVertexCount();
-    BSPVertex* getBSPVertexArray();
-
-    uint32_t getBSPEdgeCount();
-    BSPEdge* getBSPEdgeArray();
-
-    uint32_t getBSPPlaneCount();
-    BSPPlane* getBSPPlaneArray();
-
-    BSPSurface* getBSPSurfaceArray();
-    uint32_t getBSPSurfaceCount();
-
-    // = Collision Geometry ==========
-
-    struct ObjectCollisionTagData {
-        char pad[0x28C];
-        BlockPointer collisionNodes;
-    };
-    static_assert(offsetof(ObjectCollisionTagData, collisionNodes.offset) == 0x290, "ObjectCollisionTagData::collisionNodes.count offset is not 0x290 bytes");
-
-    struct CollisionNode {
-        char name[0x2C];
-        uint16_t region;
-        uint16_t parentNode;
-        uint16_t nextSiblingNode;
-        uint16_t firstChildNode;
-        BlockPointer collisionBsps;
-    };
-    static_assert(sizeof(CollisionNode) == 0x40, "CollisionNode size is not 0x40 bytes");
-    static_assert(offsetof(CollisionNode, collisionBsps.offset) == 0x38, "CollisionNode::collisionBsps offset is not 0x38 bytes");
-
-    uint32_t collisionGeometryTagId(Tag* objectTag);
-
-    Tag* getCollisionGeometryTag( Tag* objectTag );
-
-    CollisionBSP* getObjectCollisionBSP( Tag* objectCollTag );
 }

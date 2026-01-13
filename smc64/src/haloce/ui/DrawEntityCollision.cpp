@@ -13,7 +13,7 @@ namespace HaloCE::Mod::UI  {
 
         auto collisionTag = getCollisionGeometryTag(entity->tag());
         if (collisionTag == nullptr) return;
-        auto collisionData = (Halo1::ObjectCollisionTagData*) collisionTag->getData();
+        auto collisionData = (Halo1::CollisionTagData*) collisionTag->getData();
         if (collisionData == nullptr) return;
         
         auto nodeCount = collisionData->collisionNodes.count;
