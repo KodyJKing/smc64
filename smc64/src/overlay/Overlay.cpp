@@ -11,7 +11,7 @@
 #include "version.h"
 
 // Todo: Remove reference to game specific code.
-#include "haloce/UI.hpp"
+#include "haloce/ui/UI.hpp"
 #include "haloce/halo1.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
