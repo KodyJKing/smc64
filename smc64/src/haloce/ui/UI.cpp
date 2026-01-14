@@ -20,13 +20,11 @@
 #include "Interpretations.hpp"
 #include "cheatengine/Messages.hpp"
 #include "DrawBSP.hpp"
-// #include "DrawEntityCollision.hpp"
 #include "DrawEntity.hpp"
 
 #include <Windows.h>
 
-namespace HaloCE::Mod::UI
-{
+namespace HaloCE::Mod::UI {
 
     void renderESP();
     void checkHotKeys();

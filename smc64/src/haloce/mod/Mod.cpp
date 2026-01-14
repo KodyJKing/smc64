@@ -10,70 +10,13 @@
 #include "math/Math.hpp"
 #include "asm/AsmHelper.hpp"
 #include "memory/Memory.hpp"
-#include "halo1/halo1.hpp"
-#include "Rewind.hpp"
-#include "TimeScale.hpp"
+#include "../halo1/halo1.hpp"
 #include "DllMain.hpp"
 #include "Mario.hpp"
 
 namespace HaloCE::Mod {
 
-    // Deadzoning is intended to prevent discrete actions (like spawning projectiles) from being spammed when an entity should be nearly frozen.
-    float timescaleUpdateDeadzone = 0.05f;
-
     uintptr_t halo1 = 0;
-
-    //////////////////////////////////////////////////////////////////
-    // Time scale helpers
-
-    float getPlayerShield() {
-        auto playerHandle = Halo1::getPlayerHandle();
-        if (!playerHandle) return 0;
-        auto playerRec = Halo1::getEntityRecord( playerHandle );
-        if (!playerRec) return 0;
-        auto player = playerRec->entity();
-        if (!player) return 0;
-        return player->shield;
-    }
-
-    float getGlobalTimeScale() {
-        if (settings.overrideTimeScale)
-            return settings.timeScale;
-            
-        auto result = TimeScale::timescale;
-        
-        float slowdown = 1.0f - result;
-
-        if (settings.panicMode) {
-            float shield = getPlayerShield();
-            if (shield < 0.0f) shield = 0.0f;
-            if (shield > 1.0f) shield = 1.0f;
-            slowdown *= shield;
-        }
-
-        result = 1.0f - slowdown;
-
-        return result;
-    }
-
-    bool shouldSkipTick() {
-        float timeScale = getGlobalTimeScale();
-        float u = rand() / (float) RAND_MAX;
-        return u > timeScale;
-    }
-
-    float timescaleForEntity( Halo1::EntityRecord* rec, Halo1::Entity* entity, float globalTimeScale ) {
-        if (
-            rec->typeId == Halo1::TypeID_Player ||
-            Halo1::isRidingTransport( entity ) || 
-            Halo1::isTransport( entity ) ||
-            // Keep the player from getting stuck talking to the captain on the bridge.
-            entity->fromResourcePath("characters\\captain\\captain") && Halo1::isOnMap("a10") 
-        ) {
-            return 1.0f;
-        }
-        return globalTimeScale;
-    }
 
     //////////////////////////////////////////////////////////////////
     // Animation state
@@ -124,7 +67,6 @@ namespace HaloCE::Mod {
 
         Mario::update(); // Update Mario state.
 
-        TimeScale::update();
         originalUpdateAllEntities();
         clearStaleAnimationStates();
         tickCount++;
@@ -143,49 +85,11 @@ namespace HaloCE::Mod {
         auto entity = rec->entity();
         if (!entity)  
             return originalUpdateEntity( entityHandle );
-            
-        if (!settings.enableTimeScale) 
-            return originalUpdateEntity( entityHandle );
-
-        // Snapshot the entity.
-        Halo1::Entity snap = *entity;
-
-        // Compute timescale.
-        float globalTimeScale = getGlobalTimeScale();
-        float timeScale = timescaleForEntity( rec, entity, globalTimeScale );
-        
-        if ( settings.timescaleDeadzoning && timeScale < timescaleUpdateDeadzone )
-            return 1;
-
-        // Animation interpolation pre-update:
-        AnimationState* animState = nullptr;
-        if (entity->entityCategory == Halo1::EntityCategory_Biped) {
-            animState = getAnimationState( entity );
-            if (animState) {
-                animState->animId = entity->animId;     // Snapshot the amimation state for comparison after the update.
-                animState->frame = entity->animFrame;
-                animState->frameProgress += timeScale;  // Advance our interpolated animation by the timescale.
-                animState->lastUpdateTick = tickCount;  // Track the last update for this entity so we can clear stale entities from the interpolation system.
-            }
-        }
 
         // Do update
         uint64_t result = originalUpdateEntity( entityHandle );
 
-        // Interpolate old and new entity states according to timescale.
-        Rewind::rewind( rec, timeScale, globalTimeScale, snap );
-
-        // Animation interpolation post-update:
-        if (animState) {
-            if (entity->animId != animState->animId) {
-                animState->frameProgress = 0;              // Reset if we change animations.
-            } else {
-                if (animState->frameProgress >= 1)
-                    animState->frameProgress = 0;          // Advance animation frame once we've progressed through a whole frame.
-                else
-                    entity->animFrame = animState->frame;  // Otherwise revert the frame on the entity.
-            }
-        }
+        // ...
 
         return result;
     }
@@ -290,27 +194,22 @@ namespace HaloCE::Mod {
         return result;
     }
 
-    typedef void (*updateContrail_t)(uint32_t unknownHandle, float unknownFloat);
-    updateContrail_t originalUpdateContrail = nullptr;
-    //
-    void hkUpdateContrail(uint32_t unknownHandle, float unknownFloat) {
-        UnloadLock lock; // No unloading while we're still executing hook code.
-        float timeScale = getGlobalTimeScale();
-        float u = rand() / (float) RAND_MAX;
-        if (u > timeScale)
-            return;
-        originalUpdateContrail(unknownHandle, unknownFloat);
-    }
-
     // updateActor updates AIs.
     typedef void (*updateActor)(uint64_t actorHandle);
     updateActor originalUpdateActor = nullptr;
     //
     void hkUpdateActor(uint64_t actorHandle) {
         UnloadLock lock; // No unloading while we're still executing hook code.
-        if (shouldSkipTick())
-            return;
+        // ...
         originalUpdateActor(actorHandle);
+    }
+
+    typedef void (*updateCamera)(float unknown);
+    updateCamera originalUpdateCamera = nullptr;
+    void hkUpdateCamera(float unknown) {
+        UnloadLock lock; // No unloading while we're still executing hook code.
+        // ...
+        // originalUpdateCamera(unknown);
     }
 
     void hookFunctions() {
@@ -328,8 +227,8 @@ namespace HaloCE::Mod {
         // HOOK_FUNC( UpdateAllEntities, 0xB35654U );
         // HOOK_FUNC( DamageEntity, 0xB9FBD0U );
         // HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
-        // HOOK_FUNC( UpdateContrail, 0xBD77D0U );
         // HOOK_FUNC( UpdateActor, 0xC04A14U );
+        HOOK_FUNC( UpdateCamera, 0xB14380U ); // halo1.dll+B14380 
 
         #undef HOOK_FUNC
     }
@@ -341,8 +240,8 @@ namespace HaloCE::Mod {
         // MH_RemoveHook( (void*) originalUpdateAllEntities );
         // MH_RemoveHook( (void*) originalDamageEntity );
         // MH_RemoveHook( (void*) originalGetShieldDamageResist );
-        // MH_RemoveHook( (void*) originalUpdateContrail );
         // MH_RemoveHook( (void*) originalUpdateActor );
+        MH_RemoveHook( (void*) originalUpdateCamera );
     }
 
     //////////////////////////////////////////////////////////////////
@@ -402,9 +301,7 @@ namespace HaloCE::Mod {
         halo1 = (uintptr_t) Utils::waitForModule(moduleName);
         std::cout << moduleName << ": " << (void*) halo1 << std::endl;
 
-
         hookFunctions();
-        TimeScale::init();
 
         Mario::init();
 

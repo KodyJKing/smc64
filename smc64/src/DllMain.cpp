@@ -5,7 +5,7 @@
 #include "utils/Console.hpp"
 #include "utils/UnloadLock.hpp"
 #include "utils/Utils.hpp"
-#include "haloce/Mod.hpp"
+#include "haloce/mod/Mod.hpp"
 #include "MinHook.h"
 #include "overlay/Overlay.hpp"
 
