@@ -8,7 +8,7 @@ std::atomic<uint64_t> lockCount;
 
 void waitForSafeUnload(uint32_t pollRate) {
     while (lockCount > 0) {
-        Beep(750, 100);
+        // Beep(750, 100);
         Sleep(pollRate);
     }
 }

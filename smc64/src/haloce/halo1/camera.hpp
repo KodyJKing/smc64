@@ -11,5 +11,5 @@ namespace Halo1 {
         Vec3 fwd;
         Vec3 up;
     };
-    #pragma pack(pop)
+    #pragma pack(pop)    
 }

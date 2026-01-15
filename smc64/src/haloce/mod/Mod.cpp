@@ -13,6 +13,7 @@
 #include "../halo1/halo1.hpp"
 #include "DllMain.hpp"
 #include "Mario.hpp"
+#include "modules/freecam.hpp"
 
 namespace HaloCE::Mod {
 
@@ -65,7 +66,8 @@ namespace HaloCE::Mod {
     void hkUpdateAllEntities() {
         UnloadLock lock; // No unloading while we're still executing hook code.
 
-        Mario::update(); // Update Mario state.
+        Freecam::update();
+        Mario::update();
 
         originalUpdateAllEntities();
         clearStaleAnimationStates();
@@ -204,14 +206,6 @@ namespace HaloCE::Mod {
         originalUpdateActor(actorHandle);
     }
 
-    typedef void (*updateCamera)(float unknown);
-    updateCamera originalUpdateCamera = nullptr;
-    void hkUpdateCamera(float unknown) {
-        UnloadLock lock; // No unloading while we're still executing hook code.
-        // ...
-        // originalUpdateCamera(unknown);
-    }
-
     void hookFunctions() {
         std::cout << "\nHooking functions:\n" << std::endl;
 
@@ -224,11 +218,10 @@ namespace HaloCE::Mod {
 
         // HOOK_FUNC( UpdateEntity, 0xB3A06CU );
         // HOOK_FUNC( AnimateBones, 0xC41984U );
-        // HOOK_FUNC( UpdateAllEntities, 0xB35654U );
+        HOOK_FUNC( UpdateAllEntities, 0xB35654U );
         // HOOK_FUNC( DamageEntity, 0xB9FBD0U );
         // HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
         // HOOK_FUNC( UpdateActor, 0xC04A14U );
-        HOOK_FUNC( UpdateCamera, 0xB14380U ); // halo1.dll+B14380 
 
         #undef HOOK_FUNC
     }
@@ -237,11 +230,10 @@ namespace HaloCE::Mod {
         std::cout << "\nUnhooking functions." << std::endl;
         // MH_RemoveHook( (void*) originalUpdateEntity );
         // MH_RemoveHook( (void*) originalAnimateBones );
-        // MH_RemoveHook( (void*) originalUpdateAllEntities );
+        MH_RemoveHook( (void*) originalUpdateAllEntities );
         // MH_RemoveHook( (void*) originalDamageEntity );
         // MH_RemoveHook( (void*) originalGetShieldDamageResist );
         // MH_RemoveHook( (void*) originalUpdateActor );
-        MH_RemoveHook( (void*) originalUpdateCamera );
     }
 
     //////////////////////////////////////////////////////////////////
@@ -303,6 +295,7 @@ namespace HaloCE::Mod {
 
         hookFunctions();
 
+        Freecam::init( halo1 );
         Mario::init();
 
         // #define PATCH_TAGS
@@ -319,6 +312,7 @@ namespace HaloCE::Mod {
         isInstalled = false;
 
         Mario::free();
+        Freecam::free();
 
         #ifdef PATCH_TAGS
         unpatchTags();

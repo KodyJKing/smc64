@@ -13,4 +13,8 @@ namespace Memory {
         // return ReadProcessMemory(GetCurrentProcess(), (LPCVOID)address, &dummy, sizeof(dummy), NULL);
     }
 
+    bool isAllocated( void* ptr ) {
+        return isAllocated( (uintptr_t) ptr );
+    }
+
 }

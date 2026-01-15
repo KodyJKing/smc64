@@ -404,6 +404,13 @@ halo1.dll+C505F1: 83 CB 04                 - or ebx,04
       <VariableType>4 Bytes</VariableType>
       <Address>1FBD820E2F8+34</Address>
     </CheatEntry>
+    <CheatEntry>
+      <ID>78</ID>
+      <Description>"No description"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Float</VariableType>
+      <Address>2B56C68D608</Address>
+    </CheatEntry>
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>
@@ -2827,6 +2834,56 @@ halo1.dll+C505F1: 83 CB 04                 - or ebx,04
         <Byte>00</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry>
+      <Description>Call Update Player Controller (look)</Description>
+      <AddressString>halo1.dll+A9988F</AddressString>
+      <Before>
+        <Byte>10</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>8B</Byte>
+        <Byte>CB</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>6C</Byte>
+        <Byte>12</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>07</Byte>
+        <Byte>40</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Call Update Player Controller (other)</Description>
+      <AddressString>halo1.dll+A99888</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>D7</Byte>
+        <Byte>48</Byte>
+        <Byte>03</Byte>
+        <Byte>C8</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>17</Byte>
+        <Byte>10</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>8B</Byte>
+        <Byte>CB</Byte>
+        <Byte>E8</Byte>
+        <Byte>6C</Byte>
+        <Byte>12</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -4946,6 +5003,16 @@ halo1.dll+C505F1: 83 CB 04                 - or ebx,04
 
 </LuaScript>
   <DisassemblerComments>
+    <DisassemblerComment>
+      <Address>"halo1.dll"+A99888</Address>
+      <Comment>call update player controller (other)
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"halo1.dll"+A9988F</Address>
+      <Comment>call update player controller (look)
+</Comment>
+    </DisassemblerComment>
     <DisassemblerComment>
       <Address>"halo1.dll"+A9B648</Address>
       <Header>void * __fastcall getTagDataPointer(short tagIndex)

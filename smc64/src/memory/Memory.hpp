@@ -7,6 +7,7 @@
 namespace Memory {
 
     bool isAllocated(uintptr_t address);
+    bool isAllocated( void* ptr );
 
     template<typename T>
     std::optional<T> safeRead(uintptr_t address) {
