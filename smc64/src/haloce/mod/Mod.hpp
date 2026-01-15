@@ -3,10 +3,7 @@
 namespace HaloCE::Mod {
 
     inline struct Settings {
-        // Scale slow motion by shields.
-        bool panicMode = false;
-        // Scale slow motion by "adrenaline" value, acquired by killing enemies.
-        bool adrenalineMode = false;
+        bool freezeTime = false;
 
         float timeScale = 0.1f;
         bool enableTimeScale = false;

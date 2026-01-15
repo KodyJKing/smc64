@@ -1,9 +1,9 @@
 #include "imgui.h"
-#include "haloce/Mod.hpp"
+#include "haloce/mod/Mod.hpp"
 #include "overlay/ESP.hpp"
 #include "UI.hpp"
 #include "haloce/halo1/halo1.hpp"
-#include "haloce/Mario.hpp"
+#include "haloce/mod/Mario.hpp"
 #include "halomcc/HaloMCC.hpp"
 #include "utils/ImGuiUtils.hpp"
 #include <iostream>
@@ -15,7 +15,6 @@
 #include "utils/Utils.hpp"
 #include "utils/Strings.hpp"
 #include "memory/Memory.hpp"
-#include "haloce/TimeScale.hpp"
 #include "TagBrowser.hpp"
 #include "Interpretations.hpp"
 #include "cheatengine/Messages.hpp"
@@ -54,9 +53,7 @@ namespace HaloCE::Mod::UI {
         if (ImGui::IsKeyPressed(ImGuiKey_F1, false))
             showEsp = !showEsp;
         if (ImGui::IsKeyPressed(ImGuiKey_F2, false))
-            HaloCE::Mod::settings.enableTimeScale = !HaloCE::Mod::settings.enableTimeScale;
-        if (ImGui::IsKeyPressed(ImGuiKey_F3, false))
-            HaloCE::Mod::settings.poseInterpolation = !HaloCE::Mod::settings.poseInterpolation;
+            HaloCE::Mod::settings.freezeTime = !HaloCE::Mod::settings.freezeTime;
     }
 
     void mainWindowTabs()
@@ -82,27 +79,9 @@ namespace HaloCE::Mod::UI {
 
     void devTab()
     {
-        if (ImGui::CollapsingHeader("Time Scale"))
-        {
-            ImGui::Checkbox("Enable Time Scale", &HaloCE::Mod::settings.enableTimeScale);
-            if (ImGui::IsItemHovered())
-                ImGui::SetTooltip("Enable time scaling (F2)");
-
-            ImGui::Checkbox("Override Time Scale", &HaloCE::Mod::settings.overrideTimeScale);
-            int timeScalePercent = (int)(HaloCE::Mod::settings.timeScale * 100.0f);
-            ImGui::PushItemWidth(200);
-            ImGui::SliderInt("Scale", &timeScalePercent, 0, 100, "%d%%");
-            ImGui::PopItemWidth();
-            HaloCE::Mod::settings.timeScale = timeScalePercent / 100.0f;
-
-            ImGui::Checkbox("Time Scale Deadzoning", &HaloCE::Mod::settings.timescaleDeadzoning);
-            if (ImGui::IsItemHovered())
-                ImGui::SetTooltip("Keep entities from updating at very low time scales.");
-
-            ImGui::Checkbox("Pose Interpolation", &HaloCE::Mod::settings.poseInterpolation);
-            if (ImGui::IsItemHovered())
-                ImGui::SetTooltip("Enable pose interpolation (F3)");
-        }
+        // Freeze time checkbox
+        ImGui::Checkbox("Freeze Time", &HaloCE::Mod::settings.freezeTime);
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle freezing of in-game time. (F2)");
 
         if (ImGui::CollapsingHeader("Tools")) {
             // Translate map address

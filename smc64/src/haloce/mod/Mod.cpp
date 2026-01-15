@@ -81,12 +81,17 @@ namespace HaloCE::Mod {
         UnloadLock lock; // No unloading while we're still executing hook code.
 
         auto rec = Halo1::getEntityRecord( entityHandle );
-        if (!rec) 
-            return originalUpdateEntity( entityHandle);
+        if (!rec)  return originalUpdateEntity( entityHandle);
             
         auto entity = rec->entity();
-        if (!entity)  
-            return originalUpdateEntity( entityHandle );
+        if (!entity) return originalUpdateEntity( entityHandle );
+
+        if (settings.freezeTime) {
+            auto playerRec = Halo1::getPlayerRecord();
+            if (playerRec && rec->id != playerRec->id) {
+                return 0;
+            }
+        }
 
         // Do update
         uint64_t result = originalUpdateEntity( entityHandle );
@@ -216,7 +221,7 @@ namespace HaloCE::Mod {
             MH_CreateHook( p##func, hk##func, (void**) &original##func ); \
             MH_EnableHook( p##func );
 
-        // HOOK_FUNC( UpdateEntity, 0xB3A06CU );
+        HOOK_FUNC( UpdateEntity, 0xB3A06CU );
         // HOOK_FUNC( AnimateBones, 0xC41984U );
         HOOK_FUNC( UpdateAllEntities, 0xB35654U );
         // HOOK_FUNC( DamageEntity, 0xB9FBD0U );
@@ -228,7 +233,7 @@ namespace HaloCE::Mod {
 
     void unhookFunctions() {
         std::cout << "\nUnhooking functions." << std::endl;
-        // MH_RemoveHook( (void*) originalUpdateEntity );
+        MH_RemoveHook( (void*) originalUpdateEntity );
         // MH_RemoveHook( (void*) originalAnimateBones );
         MH_RemoveHook( (void*) originalUpdateAllEntities );
         // MH_RemoveHook( (void*) originalDamageEntity );
