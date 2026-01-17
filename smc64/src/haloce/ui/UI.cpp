@@ -3,7 +3,7 @@
 #include "overlay/ESP.hpp"
 #include "UI.hpp"
 #include "haloce/halo1/halo1.hpp"
-#include "haloce/mod/Mario.hpp"
+#include "haloce/mod/modules/mario/Mario.hpp"
 #include "halomcc/HaloMCC.hpp"
 #include "utils/ImGuiUtils.hpp"
 #include <iostream>
@@ -208,8 +208,8 @@ namespace HaloCE::Mod::UI {
     {
         bool anchorHighlight = false;
         float fovScale = 0.627f;
-        float maxDistance = 100.0f;
-        float maxBSPVertexDistance = 20.0f;
+        float maxDistance = 20.0f;
+        float maxBSPVertexDistance = 10.0f;
         struct Filter
         {
             bool biped = true;
@@ -633,23 +633,23 @@ namespace HaloCE::Mod::UI {
 
         //// Draw BSP vertices
 
-        byte alpha = gamePaused ? 0x40 : 0xFF;
+        byte alpha = gamePaused ? 0x10 : 0x20;
         auto color = IM_COL32(255, 255, 0, alpha);
         float radius = 0.05f;
 
-        for (uint32_t i = 0; i < bspVertexCount; i++)
-        {
-            auto vertex = &bspVertices[i];
-            Vec3 pos = vertex->pos;
-            auto toVertex = pos - camera.pos;
-            if (toVertex.length() > espSettings.maxBSPVertexDistance)
-                continue;
-            ESP::drawPoint(pos, color);
-        }
+        // for (uint32_t i = 0; i < bspVertexCount; i++)
+        // {
+        //     auto vertex = &bspVertices[i];
+        //     Vec3 pos = vertex->pos;
+        //     auto toVertex = pos - camera.pos;
+        //     if (toVertex.length() > espSettings.maxBSPVertexDistance)
+        //         continue;
+        //     ESP::drawPoint(pos, color);
+        // }
 
         //// Draw BSP surfaces
 
-        alpha = gamePaused ? 0x20 : 0x40;
+        alpha = gamePaused ? 0x10 : 0x20;
         color = IM_COL32(0, 255, 0, alpha);
 
         for (uint32_t i = 0; i < bspEdgeCount; i++)
@@ -734,7 +734,7 @@ namespace HaloCE::Mod::UI {
             }
         }
 
-        // renderESP_BSP();
+        renderESP_BSP();
 
         // Mario debugRender
         HaloCE::Mod::Mario::debugRender();

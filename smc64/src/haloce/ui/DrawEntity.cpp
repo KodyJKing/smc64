@@ -5,9 +5,9 @@
 
 namespace HaloCE::Mod::UI  {
     void drawEntity(Halo1::Entity* entity) {
-        // Draw bones
-        drawBones(entity);
-        // Draw collision
-        drawEntityCollision(entity);
+        // // Draw bones
+        // drawBones(entity);
+        // // Draw collision
+        // drawEntityCollision(entity);
     }
 }

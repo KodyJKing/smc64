@@ -74,7 +74,7 @@ function startIPCListener(interval)
     timer.OnTimer = function()
         local success, err = pcall(processMessages)
         if not success then
-            print("Error processing IPC messages:", err)
+            -- print("Error processing IPC messages:", err)
         end
     end
 end

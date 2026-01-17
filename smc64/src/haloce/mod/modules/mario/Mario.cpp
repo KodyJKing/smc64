@@ -1,4 +1,4 @@
-#include "haloce/Mario.hpp"
+#include "Mario.hpp"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
@@ -13,11 +13,14 @@
 #include <Windows.h>
 
 #include <filesystem>
-#include "halo1/Halo1.hpp"
+#include "../../../halo1/Halo1.hpp"
 #include "Mario.hpp"
+#include "MarioInput.hpp"
 #include "StaticGeometry.hpp"
 #include "math/Vectors.hpp"
 #include "Coordinates.hpp"
+
+#include "../FreeCam.hpp"
 
 namespace HaloCE::Mod::Mario {
 
@@ -122,7 +125,7 @@ namespace HaloCE::Mod::Mario {
     // Public:
     
     void init() {
-        // #define ENABLE_MARIO 1
+        #define ENABLE_MARIO 1
         #ifdef ENABLE_MARIO
         // Get location of host exe file using Windows API
         char path[MAX_PATH];
@@ -169,12 +172,6 @@ namespace HaloCE::Mod::Mario {
     void update() {
         #ifdef ENABLE_MARIO
 
-        #define MAYBE_PRESS(btn, prob) if (rand() % 100 < prob) { marioInputs.button##btn = 1; } else { marioInputs.button##btn = 0; }
-        MAYBE_PRESS(A, 5);
-        MAYBE_PRESS(B, 2);
-        MAYBE_PRESS(Z, 1);
-        #undef MAYBE_PRESS
-
         // Get player entity
         if (GetAsyncKeyState(VK_NUMPAD6)) {
             auto playerPos = Halo1::getPlayerPosition();
@@ -186,27 +183,67 @@ namespace HaloCE::Mod::Mario {
                 sm64_mario_heal(marioId, 0xFF);
             }
         }
-
-        uint64_t currentTime = GetTickCount64();
         
-        static float xSign = 1.0f;
-        // Random chance to flip xSign
-        if (rand() % 100 < 10) {
-            xSign *= -1.0f;
-        }
+        // uint64_t currentTime = GetTickCount64();
+        // #define MAYBE_PRESS(btn, prob) if (rand() % 100 < prob) { marioInputs.button##btn = 1; } else { marioInputs.button##btn = 0; }
+        // MAYBE_PRESS(A, 5);
+        // MAYBE_PRESS(B, 2);
+        // MAYBE_PRESS(Z, 1);
+        // #undef MAYBE_PRESS
+        // static float xSign = 1.0f;
+        // // Random chance to flip xSign
+        // if (rand() % 100 < 10) {
+        //     xSign *= -1.0f;
+        // }
+        // // Update Mario inputs based on keyboard state
+        // marioInputs.stickX = sinf(currentTime / 3000.0f) * xSign; // Simulate left/right movement
+        // marioInputs.stickY = cosf(currentTime / 3000.0f); // Simulate forward/backward movement
 
-        // Update Mario inputs based on keyboard state
-        marioInputs.stickX = sinf(currentTime / 3000.0f) * xSign; // Simulate left/right movement
-        marioInputs.stickY = cosf(currentTime / 3000.0f); // Simulate forward/backward movement
-
+        Mario::updateXboxControls(marioInputs, marioState);
+        
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
+
+        auto playerRec = Halo1::getPlayerRecord();
+        if (playerRec) {
+            auto player = playerRec->entity();
+            if (player) {
+                // Update Halo player position to match Mario position
+                auto marioHaloPos = Coordinates::marioToHalo(Vec3{
+                    marioState.position[0],
+                    marioState.position[1],
+                    marioState.position[2]
+                });
+                player->pos = marioHaloPos;
+            }
+        }
 
         #endif
     }
 
+    // Vec3 
+
     void debugRender() {
         #ifdef ENABLE_MARIO
+
+        Vec3 marioFwd = Vec3{
+            sinf(marioState.faceAngle),
+            cosf(marioState.faceAngle),
+            0.0f,
+        };
+        Overlay::ESP::drawLine(
+            Coordinates::marioToHalo(Vec3{
+                marioState.position[0],
+                marioState.position[1],
+                marioState.position[2]
+            }),
+            Coordinates::marioToHalo(Vec3{
+                marioState.position[0],
+                marioState.position[1],
+                marioState.position[2]
+            }) + marioFwd * 0.5f,
+            IM_COL32(255, 0, 0, 255)
+        );
 
         // Draw list
         ImDrawList* drawList = ImGui::GetWindowDrawList();

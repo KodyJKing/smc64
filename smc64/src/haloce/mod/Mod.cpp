@@ -12,7 +12,7 @@
 #include "memory/Memory.hpp"
 #include "../halo1/halo1.hpp"
 #include "DllMain.hpp"
-#include "Mario.hpp"
+#include "modules/mario/Mario.hpp"
 #include "modules/freecam.hpp"
 
 namespace HaloCE::Mod {

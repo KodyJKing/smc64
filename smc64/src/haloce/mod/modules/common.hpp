@@ -7,7 +7,7 @@
 #include "asm/AsmHelper.hpp"
 #include "utils/UnloadLock.hpp"
 #include "memory/Memory.hpp"
-#include "../halo1/halo1.hpp"
+#include "../../halo1/halo1.hpp"
 
 #define HOOK_FUNC( func, offset) \
     void* p##func = (void*) (halo1 + offset); \
