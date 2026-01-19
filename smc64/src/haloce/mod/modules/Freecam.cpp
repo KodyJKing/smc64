@@ -14,7 +14,7 @@ namespace HaloCE::Freecam {
 
     bool isFreecamEnabled = false;
 
-    Override cameraOverride;
+    Override cameraOverride = {};
 
     bool isEnabled() {
         return isFreecamEnabled || cameraOverride.enableLook || cameraOverride.enablePosition;
@@ -38,7 +38,27 @@ namespace HaloCE::Freecam {
         UnloadLock lock; // No unloading while we're still executing hook code.
         if (!isEnabled()) {
             originalUpdatePlayerControls(param_1, param_2);
+            return;
         }
+
+        auto playerController = Halo1::getPlayerControllerPointer();
+        if (!playerController || !Memory::isAllocated(playerController)) {
+            return;
+        }
+
+        // Backup player controller state
+        Halo1::PlayerController pc = *playerController;
+
+        // playerController->actions = 0;
+        playerController->walkX = 0.0f;
+        playerController->walkY = 0.0f;
+        // playerController->gunTrigger = 0.0f;
+
+        originalUpdatePlayerControls(param_1, param_2);
+
+        // Restore player controller state
+        *playerController = pc;
+
         return;
     }
 
@@ -143,11 +163,11 @@ namespace HaloCE::Freecam {
         auto camera = Halo1::getPlayerCameraPointer();
         if (!camera || !Memory::isAllocated(camera)) return;
 
-        if (cameraOverride.enablePosition) {
-            camera->pos = cameraOverride.position;
-        } else {
+        if (isFreecamEnabled) {
             updateXboxControls(camera);
             updateKeyboardControls(camera);
+        } else {
+            camera->pos = cameraOverride.position;
         }
 
     }

@@ -216,7 +216,7 @@ namespace HaloCE::Mod::UI {
             bool vehicle = false;
             bool weapon = false;
             bool projectile = false;
-            bool scenery = false;
+            bool scenery = true;
             bool equipment = false;
             bool other = false;
         } filter = {};
@@ -258,6 +258,7 @@ namespace HaloCE::Mod::UI {
         bool vel;
         bool fwd;
         bool up;
+        bool angles;
         bool health;
         bool shield;
         bool tag;
@@ -266,6 +267,7 @@ namespace HaloCE::Mod::UI {
         bool tagPath = true;
         bool animation;
         bool bones;
+        bool worldBones;
         bool collision = true;
     } view = {};
 
@@ -327,6 +329,12 @@ namespace HaloCE::Mod::UI {
             VIEW_TOGGLE(up);
             if (paused || view.up)
                 ImGui::Text("Up: %.2f, %.2f, %.2f", entity->up.x, entity->up.y, entity->up.z);
+            // Orientation (euler angles)
+            VIEW_TOGGLE(angles);
+            if (paused || view.angles) {
+                Vec3 angles = orientationToEulerAngles(entity->fwd, entity->up) * (180.0f / 3.14159265f);
+                ImGui::Text("Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", angles.x, angles.y, angles.z);
+            }
 
             VIEW_TOGGLE(health);
             if (paused || view.health)
@@ -352,6 +360,35 @@ namespace HaloCE::Mod::UI {
                         auto pos = bone.translation;
                         auto rot = bone.rotation;
                         ImGui::Text("%02d {%.2f, %.2f, %.2f, %.2f} {%.2f, %.2f, %.2f}", i, rot.x, rot.y, rot.z, rot.w, pos.x, pos.y, pos.z);
+                    }
+                    ImGui::EndChild();
+                }
+            }
+
+            VIEW_TOGGLE(worldBones);
+            if (paused || view.worldBones) {
+                auto numberOfWorldBones = entity->worldBones.count();
+                auto worldBonePositions = entity->worldBones.get( entity, 0 );
+                ImGui::Text("World Bones: %d", numberOfWorldBones);
+                if (view.worldBones && worldBonePositions) {
+                    ImGui::BeginChild("World Bones", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
+                    for (int i = 0; i < numberOfWorldBones; i++) {
+                        auto bone = worldBonePositions[i];
+                        auto euler = orientationToEulerAngles(bone.x, bone.z) * (180.0f / 3.14159265f);
+                        // ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f} Fwd: {%.2f, %.2f, %.2f} Up: {%.2f, %.2f, %.2f} Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", i,
+                        //     bone.pos.x, bone.pos.y, bone.pos.z,
+                        //     bone.x.x, bone.x.y, bone.x.z,
+                        //     bone.z.x, bone.z.y, bone.z.z,
+                        //     euler.x, euler.y, euler.z
+                        // );
+                        ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f}", i,
+                            bone.pos.x, bone.pos.y, bone.pos.z
+                        );
+                        ImGui::Text("  Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", 
+                            euler.x, euler.y, euler.z
+                        );
+                        ImGui::Text("  Forward: {%.2f, %.2f, %.2f}", bone.x.x, bone.x.y, bone.x.z);
+                        ImGui::Text("  Up: {%.2f, %.2f, %.2f}", bone.z.x, bone.z.y, bone.z.z);
                     }
                     ImGui::EndChild();
                 }
@@ -609,8 +646,7 @@ namespace HaloCE::Mod::UI {
         }
     }
 
-    void renderESP_BSP()
-    {
+    void renderESP_BSP() {
         namespace ESP = Overlay::ESP;
         Camera &camera = ESP::camera;
 
@@ -652,8 +688,7 @@ namespace HaloCE::Mod::UI {
         alpha = gamePaused ? 0x10 : 0x20;
         color = IM_COL32(0, 255, 0, alpha);
 
-        for (uint32_t i = 0; i < bspEdgeCount; i++)
-        {
+        for (uint32_t i = 0; i < bspEdgeCount; i++) {
             auto edge = &bspEdges[i];
 
             auto p0 = &bspVertices[edge->startVertex];
@@ -710,8 +745,7 @@ namespace HaloCE::Mod::UI {
         }
     }
 
-    void renderESP()
-    {
+    void renderESP() {
         if (!Halo1::isGameLoaded())
             return;
 

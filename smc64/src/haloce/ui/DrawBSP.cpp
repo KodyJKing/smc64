@@ -67,8 +67,7 @@ namespace HaloCE::Mod::UI  {
             auto p1 = &bspVertices[edge->endVertex];
 
             uint32_t surfaces[2] = {edge->leftSurface, edge->rightSurface};
-            for (uint32_t j = 0; j < 2; j++)
-            {
+            for (uint32_t j = 0; j < 2; j++) {
                 if (surfaces[j] >= bspSurfaceCount)
                     continue; // Invalid surface, skip it.
                 auto surface = &bspSurfaces[surfaces[j]];
@@ -102,6 +101,16 @@ namespace HaloCE::Mod::UI  {
                 // char materialText[255] = {0};
                 // sprintf( materialText, "%X", material );
                 // ESP::drawText( textPos, materialText, color );
+
+                // // Render normal:
+                // Halo1::BSPPlane* plane = bsp->planes.get<Halo1::BSPPlane>( surface->planeIndex );
+                // if ( plane ) {
+                //     Vec3 triCenter = ( p0->pos + p1->pos + p2->pos ) / 3.0f;
+                //     Vec3 normalEnd = triCenter + plane->normal * 0.025f;
+                //     ESP::drawLine( toWorld( triCenter ), toWorld( normalEnd ), IM_COL32( 255, 0, 0, 255 ) );
+                //     ESP::drawPoint( toWorld( triCenter ), IM_COL32( 255, 0, 0, 255 ) );
+                // }
+
             }
         }
     }

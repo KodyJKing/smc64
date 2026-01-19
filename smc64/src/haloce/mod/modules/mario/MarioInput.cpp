@@ -8,8 +8,25 @@
 
 namespace HaloCE::Mod::Mario {
 
+    void updateFollowCamera(Halo1::Camera* camera, SM64MarioInputs& inputs, SM64MarioState& marioState) {        
+        inputs.camLookX = -camera->fwd.x;
+        inputs.camLookZ = -camera->fwd.y;
+
+        Vec3 cameraRight = camera->fwd.cross( camera->up );
+        
+        Freecam::cameraOverride.enablePosition = true;
+        // Position the camera behind Mario
+        Vec3 marioHaloPos = Coordinates::marioToHalo(Vec3{
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2]
+        });
+
+        Freecam::cameraOverride.position = marioHaloPos - camera->fwd * 3.0f + cameraRight * 0.25f + Vec3{0, 0, 0.5f};
+    }
+
     
-    void updateXboxControls(SM64MarioInputs& inputs, SM64MarioState& marioState) {
+    void updateXboxControls(SM64MarioInputs& inputs) {
 
         static uint64_t stickActiveUntil = 0;
         uint64_t now = GetTickCount64();
@@ -31,24 +48,45 @@ namespace HaloCE::Mod::Mario {
             inputs.stickY = 0;
         }
 
-        auto playerCam = Halo1::getPlayerCameraPointer();
-        if (playerCam) {
-            inputs.camLookX = -playerCam->fwd.x;
-            inputs.camLookZ = -playerCam->fwd.y;
+        // Buttons
+        inputs.buttonA |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) ? 1 : 0;
+        inputs.buttonB |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) ? 1 : 0;
+        inputs.buttonZ |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) ? 1 : 0;
+    }
 
-            Freecam::cameraOverride.enablePosition = true;
-            Vec3 marioHaloPos = Coordinates::marioToHalo(Vec3{
-                marioState.position[0],
-                marioState.position[1],
-                marioState.position[2]
-            });
-            Freecam::cameraOverride.position = marioHaloPos - playerCam->fwd * 3.0f + Vec3{0, 0, 0.5f};
+    void updateKeyboardControls(SM64MarioInputs& inputs) {
+        static uint64_t stickActiveUntil = 0;
+        uint64_t now = GetTickCount64();
+        
+        // WASD for movement
+        float x = 0.0f;
+        float y = 0.0f;
+        if (GetAsyncKeyState('A') & 0x8000) x -= 1.0f;
+        if (GetAsyncKeyState('D') & 0x8000) x += 1.0f;
+        if (GetAsyncKeyState('W') & 0x8000) y += 1.0f;
+        if (GetAsyncKeyState('S') & 0x8000) y -= 1.0f;
+        if (x != 0.0f || y != 0.0f) {
+            inputs.stickX = x;
+            inputs.stickY = y;
+            stickActiveUntil = now + 100;
+        } else if (now < stickActiveUntil) {
+            inputs.stickX = 0;
+            inputs.stickY = 0;
         }
 
         // Buttons
-        inputs.buttonA = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) ? 1 : 0;
-        inputs.buttonB = (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) ? 1 : 0;
-        inputs.buttonZ = (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) ? 1 : 0;
+        inputs.buttonA |= (GetAsyncKeyState(VK_SPACE) & 0x8000) ? 1 : 0;
+        inputs.buttonB |= (GetAsyncKeyState('F') & 0x8000) ? 1 : 0;
+        inputs.buttonZ |= (GetAsyncKeyState(VK_SHIFT) & 0x8000) ? 1 : 0;
+    }
+
+    void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Halo1::Camera* camera) {
+        inputs = {};
+        updateXboxControls(inputs);
+        updateKeyboardControls(inputs);
+        if (camera) {
+            updateFollowCamera(camera, inputs, marioState);
+        }
     }
 
 }

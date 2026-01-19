@@ -13,6 +13,7 @@
 // Todo: Remove reference to game specific code.
 #include "haloce/ui/UI.hpp"
 #include "haloce/halo1/halo1.hpp"
+#include "DllMain.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -104,6 +105,9 @@ namespace Overlay {
 
     void render() {
         UnloadLock lock; // Prevent unloading while rendering
+
+        if (ModHost::bExit)
+            return;
 
         bool paused = HaloMCC::isPauseMenuOpen();
 

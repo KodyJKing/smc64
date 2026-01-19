@@ -16,9 +16,10 @@
 #include "../../../halo1/Halo1.hpp"
 #include "Mario.hpp"
 #include "MarioInput.hpp"
-#include "StaticGeometry.hpp"
+#include "BSPConversion.hpp"
 #include "math/Vectors.hpp"
 #include "Coordinates.hpp"
+#include "DynamicGeometry.hpp"
 
 #include "../FreeCam.hpp"
 
@@ -65,14 +66,15 @@ namespace HaloCE::Mod::Mario {
     void initMario() {
         // Create a Mario instance at the origin.
         if (marioId < 0) {
-            marioId = sm64_mario_create(99999.0f, 99999.0f, 99999.0f);
+            auto id = sm64_mario_create(99999.0f, 99999.0f, 99999.0f);
             auto playerPos = Halo1::getPlayerPosition();
             if (playerPos.has_value()) {
                 auto pos = playerPos.value();
                 // Convert Halo CE coordinates to Super Mario 64 coordinates
                 auto marioPos = Coordinates::haloToMario(pos);
-                sm64_set_mario_position(marioId, marioPos.x, marioPos.y, marioPos.z);
+                sm64_set_mario_position(id, marioPos.x, marioPos.y, marioPos.z);
             }
+            marioId = id;
         }
         if (marioId < 0) {
             printf("Failed to create Mario instance.\n");
@@ -98,16 +100,8 @@ namespace HaloCE::Mod::Mario {
     }
 
     void initTestLevel() {
-        // // Just create a square that spans -1,1 in the x and z axes, with a height of 0.
-        // staticSurfacesCount = 2;
-        // staticSurfaces = (SM64Surface*)malloc(sizeof(SM64Surface) * staticSurfacesCount);
-        // staticSurfaces[0] = { 0, 0, 0, { -1, 0, -1, 1, 0, -1, 1, 0, 1 } };
-        // staticSurfaces[1] = { 0, 0, 0, { -1, 0, 1, 1, 0, 1, 1, 0, -1 } };
-        // sm64_static_surfaces_load(staticSurfaces, staticSurfacesCount);
-        // printf("Created test level with %zu static surfaces.\n", staticSurfacesCount);
-
         // Load Halo CE static geometry and convert it to Super Mario 64 format
-        auto surfaceVector = HaloCE::Mod::StaticGeometry::haloGeometryToMario();
+        auto surfaceVector = HaloCE::Mod::BSPConversion::haloGeometryToMario();
         staticSurfacesCount = surfaceVector.size();
         if (staticSurfacesCount == 0) {
             printf("No static surfaces found in Halo CE geometry.\n");
@@ -172,6 +166,8 @@ namespace HaloCE::Mod::Mario {
     void update() {
         #ifdef ENABLE_MARIO
 
+        if (marioId < 0) return;
+
         // Get player entity
         if (GetAsyncKeyState(VK_NUMPAD6)) {
             auto playerPos = Halo1::getPlayerPosition();
@@ -183,23 +179,10 @@ namespace HaloCE::Mod::Mario {
                 sm64_mario_heal(marioId, 0xFF);
             }
         }
-        
-        // uint64_t currentTime = GetTickCount64();
-        // #define MAYBE_PRESS(btn, prob) if (rand() % 100 < prob) { marioInputs.button##btn = 1; } else { marioInputs.button##btn = 0; }
-        // MAYBE_PRESS(A, 5);
-        // MAYBE_PRESS(B, 2);
-        // MAYBE_PRESS(Z, 1);
-        // #undef MAYBE_PRESS
-        // static float xSign = 1.0f;
-        // // Random chance to flip xSign
-        // if (rand() % 100 < 10) {
-        //     xSign *= -1.0f;
-        // }
-        // // Update Mario inputs based on keyboard state
-        // marioInputs.stickX = sinf(currentTime / 3000.0f) * xSign; // Simulate left/right movement
-        // marioInputs.stickY = cosf(currentTime / 3000.0f); // Simulate forward/backward movement
 
-        Mario::updateXboxControls(marioInputs, marioState);
+        DynamicGeometry::update(marioState);
+
+        Mario::updateInput(marioInputs, marioState, Halo1::getPlayerCameraPointer());
         
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
@@ -214,7 +197,7 @@ namespace HaloCE::Mod::Mario {
                     marioState.position[1],
                     marioState.position[2]
                 });
-                player->pos = marioHaloPos;
+                player->pos = marioHaloPos - Vec3{0, 0, 0.1f};
             }
         }
 
@@ -225,25 +208,6 @@ namespace HaloCE::Mod::Mario {
 
     void debugRender() {
         #ifdef ENABLE_MARIO
-
-        Vec3 marioFwd = Vec3{
-            sinf(marioState.faceAngle),
-            cosf(marioState.faceAngle),
-            0.0f,
-        };
-        Overlay::ESP::drawLine(
-            Coordinates::marioToHalo(Vec3{
-                marioState.position[0],
-                marioState.position[1],
-                marioState.position[2]
-            }),
-            Coordinates::marioToHalo(Vec3{
-                marioState.position[0],
-                marioState.position[1],
-                marioState.position[2]
-            }) + marioFwd * 0.5f,
-            IM_COL32(255, 0, 0, 255)
-        );
 
         // Draw list
         ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -274,55 +238,6 @@ namespace HaloCE::Mod::Mario {
                 Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
             }
         }
-
-        // #define ENABLE_DEBUG_MARIO_GEOMETRY 1
-        #ifdef ENABLE_DEBUG_MARIO_GEOMETRY
-        // Render static surfaces.
-        for (size_t i = 0; i < staticSurfacesCount; i++) {
-            SM64Surface& surface = staticSurfaces[i];
-            Vec3i* pos = reinterpret_cast<Vec3i*>(&surface.vertices[0][0]);
-
-            Vec3 center = (pos[0].toVec3() + pos[1].toVec3() + pos[2].toVec3()) / 3.0f;
-            Vec3 haloCenter = Coordinates::marioToHalo(center);
-
-            Camera& camera = Overlay::ESP::camera;
-            Vec3 toCenter = haloCenter - camera.pos;
-            if (toCenter.length() > 60.0f) {
-                continue; // Skip rendering if the surface is too far away
-            }
-
-            // Render triangle wireframe
-            for (int i = 0; i < 3; i++) {
-                Vec3 p1 = pos[i].toVec3();
-                Vec3 p2 = pos[(i + 1) % 3].toVec3() ;
-
-                Vec3 haloP1 = Coordinates::marioToHalo(p1);
-                Vec3 haloP2 = Coordinates::marioToHalo(p2);
-
-                ImU32 colorIm = IM_COL32(0, 255, 0, 40); // Green color for static surfaces
-
-                Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
-            }
-
-            Vec3 p0 = pos[0].toVec3();
-            Vec3 p1 = pos[1].toVec3();
-            Vec3 p2 = pos[2].toVec3();
-
-            Vec3 haloP0 = Coordinates::marioToHalo(p0);
-            Vec3 haloP1 = Coordinates::marioToHalo(p1);
-            Vec3 haloP2 = Coordinates::marioToHalo(p2);
-
-            Vec3 edge1 = haloP1 - haloP0;
-            Vec3 edge2 = haloP2 - haloP0;
-            Vec3 haloNormal = edge2.cross(edge1).normalize();
-
-            // Draw surface normal
-            ImU32 normalColor = IM_COL32(255, 0, 0, 160); // Red color for normal
-            Overlay::ESP::drawCircle(haloCenter, 0.05f, normalColor, true);
-            Overlay::ESP::drawLine(haloCenter, haloCenter + haloNormal * 0.5f, normalColor);
-
-        }
-        #endif // ENABLE_DEBUG_MARIO_GEOMETRY
 
         #endif // ENABLE_MARIO
     }

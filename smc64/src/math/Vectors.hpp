@@ -124,3 +124,5 @@ struct Camera {
     Vec3 left();
     Vec3 project(Vec3 p);
 };
+
+Vec3 orientationToEulerAngles(Vec3 fwd, Vec3 up);

@@ -319,3 +319,49 @@ Vec3 Camera::project(Vec3 p) {
     
     return Vec3{ x, y, z };
 }
+
+
+Vec3 orientationToEulerAngles(Vec3 xCol, Vec3 zCol) {
+    // Context:
+    // /**
+    //  * Build a matrix that rotates around the z axis, then the x axis, then the y
+    //  * axis, and then translates.
+    //  */
+    // void mtxf_rotate_zxy_and_translate(Mat4 dest, Vec3f translate, Vec3s rotate) {
+    //     register f32 sx = sins(rotate[0]);
+    //     register f32 cx = coss(rotate[0]);
+    
+    //     register f32 sy = sins(rotate[1]);
+    //     register f32 cy = coss(rotate[1]);
+    
+    //     register f32 sz = sins(rotate[2]);
+    //     register f32 cz = coss(rotate[2]);
+    
+    //     dest[0][0] = cy * cz + sx * sy * sz;
+    //     dest[1][0] = -cy * sz + sx * sy * cz;
+    //     dest[2][0] = cx * sy;
+    //     dest[3][0] = translate[0];
+    
+    //     dest[0][1] = cx * sz;
+    //     dest[1][1] = cx * cz;
+    //     dest[2][1] = -sx;
+    //     dest[3][1] = translate[1];
+    
+    //     dest[0][2] = -sy * cz + sx * cy * sz;
+    //     dest[1][2] = sy * sz + sx * cy * cz;
+    //     dest[2][2] = cx * cy;
+    //     dest[3][2] = translate[2];
+    
+    //     dest[0][3] = dest[1][3] = dest[2][3] = 0.0f;
+    //     dest[3][3] = 1.0f;
+    // }
+
+    Vec3 yCol = zCol.cross(xCol).normalize();
+
+    float a = atan2f(-yCol.x, yCol.y); // yaw
+    float b = asinf(yCol.z);           // pitch
+    float c = atan2f(-xCol.z, zCol.z); // roll
+
+    // Mario uses pitch, yaw, roll
+    return Vec3{a, b, c};
+}

@@ -1,28 +1,27 @@
 #include "libsm64.h"
-#include "halo1/halo1.hpp"
+#include "haloce/halo1/halo1.hpp"
 #include "Coordinates.hpp"
 
 #include <vector>
 
-namespace HaloCE::Mod::StaticGeometry {
+namespace HaloCE::Mod::BSPConversion {
 
-    // Convert Halo CE static geometry to Super Mario 64 format
-    std::vector<SM64Surface> haloGeometryToMario() {
+    std::vector<SM64Surface> convertBSP(Halo1::CollisionBSP* bsp) {
 
         std::vector<SM64Surface> result;
 
-        uint32_t bspVertexCount = Halo1::getBSPVertexCount();
-        Halo1::BSPVertex* bspVertices = Halo1::getBSPVertexArray();
+        uint32_t bspVertexCount = bsp->vertices.count;
+        Halo1::BSPVertex* bspVertices = bsp->vertices.get<Halo1::BSPVertex>(0);
         if (bspVertices == nullptr || bspVertexCount == 0)
             return result;
 
-        uint32_t bspEdgeCount = Halo1::getBSPEdgeCount();
-        Halo1::BSPEdge* bspEdges = Halo1::getBSPEdgeArray();
+        uint32_t bspEdgeCount = bsp->edges.count;
+        Halo1::BSPEdge* bspEdges = bsp->edges.get<Halo1::BSPEdge>(0);
         if (bspEdges == nullptr || bspEdgeCount == 0)
             return result;
 
-        uint32_t bspSurfaceCount = Halo1::getBSPSurfaceCount();
-        Halo1::BSPSurface* bspSurfaces = Halo1::getBSPSurfaceArray();
+        uint32_t bspSurfaceCount = bsp->surfaces.count;
+        Halo1::BSPSurface* bspSurfaces = bsp->surfaces.get<Halo1::BSPSurface>(0);
         if (bspSurfaces == nullptr || bspSurfaceCount == 0)
             return result;
 
@@ -94,6 +93,13 @@ namespace HaloCE::Mod::StaticGeometry {
         }
 
         return result;
+    }
+
+    // Convert Halo CE static geometry to Super Mario 64 format
+    std::vector<SM64Surface> haloGeometryToMario() {
+        auto bsp = (Halo1::CollisionBSP*) Halo1::getBSPPointer();
+        if (bsp == nullptr) return std::vector<SM64Surface>{};
+        return convertBSP(bsp);
     }
 
 }
