@@ -78,6 +78,7 @@ namespace HaloCE::Mod::Mario {
         inputs.buttonA |= (GetAsyncKeyState(VK_SPACE) & 0x8000) ? 1 : 0;
         inputs.buttonB |= (GetAsyncKeyState('F') & 0x8000) ? 1 : 0;
         inputs.buttonZ |= (GetAsyncKeyState(VK_SHIFT) & 0x8000) ? 1 : 0;
+
     }
 
     void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Halo1::Camera* camera) {

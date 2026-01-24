@@ -44,6 +44,7 @@ namespace HaloCE::Mod::UI  {
         Halo1::BSPSurface* bspSurfaces = (Halo1::BSPSurface*) Halo1::translateMapAddress( bsp->surfaces.offset );
         if ( !bspSurfaces ) return;
 
+        auto planes = bsp->planes.get<Halo1::BSPPlane>(0);
         
         uint8_t alpha = 0xFF;
         auto color = IM_COL32(255, 255, 0, alpha);
@@ -88,6 +89,13 @@ namespace HaloCE::Mod::UI  {
                     continue;
                 }
 
+                Halo1::BSPPlane* plane = &planes[surface->planeIndex];
+                Vec3 normal = plane->normal;
+                Vec3 worldNormal = x * normal.x + y * normal.y + z * normal.z;
+                Vec3 toCamera = ( camera.pos - toWorld( firstVertex->pos ) );
+                if ( worldNormal.dot( toCamera ) < 0.0f )
+                    continue;
+
                 auto p2 = firstVertex;
 
                 // Draw the triangle.
@@ -102,14 +110,13 @@ namespace HaloCE::Mod::UI  {
                 // sprintf( materialText, "%X", material );
                 // ESP::drawText( textPos, materialText, color );
 
-                // // Render normal:
-                // Halo1::BSPPlane* plane = bsp->planes.get<Halo1::BSPPlane>( surface->planeIndex );
-                // if ( plane ) {
-                //     Vec3 triCenter = ( p0->pos + p1->pos + p2->pos ) / 3.0f;
-                //     Vec3 normalEnd = triCenter + plane->normal * 0.025f;
-                //     ESP::drawLine( toWorld( triCenter ), toWorld( normalEnd ), IM_COL32( 255, 0, 0, 255 ) );
-                //     ESP::drawPoint( toWorld( triCenter ), IM_COL32( 255, 0, 0, 255 ) );
-                // }
+                // Render normal:
+                if ( plane ) {
+                    Vec3 triCenter = ( p0->pos + p1->pos + p2->pos ) / 3.0f;
+                    Vec3 normalEnd = triCenter + plane->normal * 0.025f;
+                    ESP::drawLine( toWorld( triCenter ), toWorld( normalEnd ), IM_COL32( 255, 0, 0, 255 ) );
+                    ESP::drawPoint( toWorld( triCenter ), IM_COL32( 255, 0, 0, 255 ) );
+                }
 
             }
         }

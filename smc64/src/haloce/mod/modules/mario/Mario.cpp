@@ -5,6 +5,8 @@
 #include "overlay/ESP.hpp"
 
 #include "libsm64.h"
+#include "decomp/sm64.h"
+#include "decomp/surface_terrains.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -23,9 +25,13 @@
 
 #include "../FreeCam.hpp"
 
+#define ENABLE_MARIO 1
 namespace HaloCE::Mod::Mario {
 
     // Internal:
+
+    bool enableMario = true;
+    bool possessMario = true;
 
     uint8_t *texture = nullptr;
     uint8_t *rom;
@@ -102,6 +108,7 @@ namespace HaloCE::Mod::Mario {
     void initTestLevel() {
         // Load Halo CE static geometry and convert it to Super Mario 64 format
         auto surfaceVector = HaloCE::Mod::BSPConversion::haloGeometryToMario();
+
         staticSurfacesCount = surfaceVector.size();
         if (staticSurfacesCount == 0) {
             printf("No static surfaces found in Halo CE geometry.\n");
@@ -119,7 +126,6 @@ namespace HaloCE::Mod::Mario {
     // Public:
     
     void init() {
-        #define ENABLE_MARIO 1
         #ifdef ENABLE_MARIO
         // Get location of host exe file using Windows API
         char path[MAX_PATH];
@@ -163,48 +169,121 @@ namespace HaloCE::Mod::Mario {
         #endif
     }
 
+    void marioToCheif() {
+        auto playerPos = Halo1::getPlayerPosition();
+        if (playerPos.has_value()) {
+            auto pos = playerPos.value();
+            // Convert Halo CE coordinates to Super Mario 64 coordinates
+            auto marioPos = Coordinates::haloToMario(pos);
+            sm64_set_mario_position(marioId, marioPos.x, marioPos.y, marioPos.z);
+            sm64_mario_heal(marioId, 0xFF);
+        }
+    }
+
     void update() {
         #ifdef ENABLE_MARIO
 
-        if (marioId < 0) return;
+        if (GetAsyncKeyState(VK_F3) & 1) enableMario = !enableMario;
+        if (GetAsyncKeyState(VK_F4) & 1) {
+            possessMario = !possessMario;
+            if (possessMario) marioToCheif();
+        }
 
-        // Get player entity
-        if (GetAsyncKeyState(VK_NUMPAD6)) {
-            auto playerPos = Halo1::getPlayerPosition();
-            if (playerPos.has_value()) {
-                auto pos = playerPos.value();
-                // Convert Halo CE coordinates to Super Mario 64 coordinates
-                auto marioPos = Coordinates::haloToMario(pos);
-                sm64_set_mario_position(marioId, marioPos.x, marioPos.y, marioPos.z);
-                sm64_mario_heal(marioId, 0xFF);
-            }
+        if (marioId < 0 || !enableMario) {
+            Freecam::cameraOverride.enablePosition = false;
+            return;
         }
 
         DynamicGeometry::update(marioState);
 
-        Mario::updateInput(marioInputs, marioState, Halo1::getPlayerCameraPointer());
+        if (possessMario) {
+            Mario::updateInput(marioInputs, marioState, Halo1::getPlayerCameraPointer());
+            auto playerRec = Halo1::getPlayerRecord();
+            if (playerRec) {
+                auto player = playerRec->entity();
+                if (player) {
+                    // Update Halo player position to match Mario position
+                    auto marioHaloPos = Coordinates::marioToHalo(Vec3{
+                        marioState.position[0],
+                        marioState.position[1],
+                        marioState.position[2]
+                    });
+                    player->pos = marioHaloPos - Vec3{0, 0, 0.1f};
+                }
+            }
+        } else {
+            Freecam::cameraOverride.enablePosition = false;
+        }
         
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
 
-        auto playerRec = Halo1::getPlayerRecord();
-        if (playerRec) {
-            auto player = playerRec->entity();
-            if (player) {
-                // Update Halo player position to match Mario position
-                auto marioHaloPos = Coordinates::marioToHalo(Vec3{
-                    marioState.position[0],
-                    marioState.position[1],
-                    marioState.position[2]
-                });
-                player->pos = marioHaloPos - Vec3{0, 0, 0.1f};
-            }
+        bool inForbiddenState = false
+            || (marioState.action == ACT_START_SLEEPING)
+            || (marioState.action == ACT_SLEEPING)
+            || (marioState.action == ACT_WAKING_UP);
+        if (inForbiddenState) sm64_set_mario_action(marioId, ACT_IDLE);
+
+        // Debug controls:
+        
+        // J to nudge Mario upwards slightly
+        if (GetAsyncKeyState('J') & 1) {
+            sm64_set_mario_position(
+                marioId, 
+                marioState.position[0], 
+                marioState.position[1] + 400.0f, 
+                marioState.position[2]
+            );
         }
 
         #endif
     }
 
     // Vec3 
+
+    void draw_SM64SurfaceCollisionData(SM64SurfaceCollisionData* surfaceData, ImU32 color) {
+        namespace ESP = Overlay::ESP;
+        Camera &camera = ESP::camera;
+        Vec3 v1 = Coordinates::marioToHalo(Vec3{
+            static_cast<float>(surfaceData->vertex1[0]),
+            static_cast<float>(surfaceData->vertex1[1]),
+            static_cast<float>(surfaceData->vertex1[2])
+        });
+        Vec3 v2 = Coordinates::marioToHalo(Vec3{
+            static_cast<float>(surfaceData->vertex2[0]),
+            static_cast<float>(surfaceData->vertex2[1]),
+            static_cast<float>(surfaceData->vertex2[2])
+        });
+        Vec3 v3 = Coordinates::marioToHalo(Vec3{
+            static_cast<float>(surfaceData->vertex3[0]),
+            static_cast<float>(surfaceData->vertex3[1]),
+            static_cast<float>(surfaceData->vertex3[2])
+        });
+        ESP::drawLine(v1, v2, color);
+        ESP::drawLine(v2, v3, color);
+        ESP::drawLine(v3, v1, color);
+
+        Vec3 center = (v1 + v2 + v3) / 3.0f;
+        Vec3 normalEnd = center + Vec3{
+            surfaceData->normal.x,
+            surfaceData->normal.z,
+            surfaceData->normal.y,
+        } * 0.1f;
+        ESP::drawLine(center, normalEnd, color);
+        ESP::drawPoint(center, color);
+    }
+
+    void marioDebugWindow(SM64WallCollisionData& wallData) {
+        ImGui::Begin("Mario Debug Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Text("Mario ID: %d", marioId);
+        ImGui::Text("Position: (%.2f, %.2f, %.2f)", marioState.position[0], marioState.position[1], marioState.position[2]);
+        ImGui::Text("Velocity: (%.2f, %.2f, %.2f)", marioState.velocity[0], marioState.velocity[1], marioState.velocity[2]);
+        ImGui::Text("Health: %d", marioState.health);
+        ImGui::Text("Action: 0x%X", marioState.action);
+        ImGui::Text("Flags: 0x%X", marioState.flags);
+        ImGui::Text("Num walls: %d", wallData.numWalls);
+        ImGui::End();
+    }
 
     void debugRender() {
         #ifdef ENABLE_MARIO
@@ -237,6 +316,41 @@ namespace HaloCE::Mod::Mario {
 
                 Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
             }
+            
+        }
+
+        SM64SurfaceCollisionData* floorData;
+        sm64_surface_find_floor(
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2],
+            &floorData
+        );
+        if (floorData) 
+            draw_SM64SurfaceCollisionData(floorData, IM_COL32(255, 200, 0, 255));
+
+        SM64SurfaceCollisionData* ceilData;
+        sm64_surface_find_ceil(
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2],
+            &ceilData
+        );
+        if (ceilData) 
+            draw_SM64SurfaceCollisionData(ceilData, IM_COL32(255, 0, 200, 255));
+        
+        SM64WallCollisionData wallData = {};
+        wallData.x = marioState.position[0];
+        wallData.y = marioState.position[1];
+        wallData.z = marioState.position[2];
+        wallData.radius = 100.0f; // Large radius to capture nearby walls
+        wallData.offsetY = 10.0f;
+        sm64_surface_find_wall_collisions(&wallData);
+
+        for (int i = 0; i < wallData.numWalls; i++) {
+            SM64SurfaceCollisionData* wallSurface = wallData.walls[i];
+            if (wallSurface)
+                draw_SM64SurfaceCollisionData(wallSurface, IM_COL32(0, 200, 255, 255));
         }
 
         #endif // ENABLE_MARIO

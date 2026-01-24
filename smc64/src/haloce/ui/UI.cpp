@@ -768,7 +768,7 @@ namespace HaloCE::Mod::UI {
             }
         }
 
-        renderESP_BSP();
+        // renderESP_BSP();
 
         // Mario debugRender
         HaloCE::Mod::Mario::debugRender();
