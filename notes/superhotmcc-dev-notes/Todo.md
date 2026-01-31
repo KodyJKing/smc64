@@ -1,1 +1,10 @@
-- Experiment with mesh simplification to avoid small triangle bugs.
+- Fix aim offset 3rd person camera.
+    - Reverse projectile spawning. Spawn player projectiles from the camera position.
+    - Display a false projectile exiting the player's barel.
+    - False projectile should converge with the actual projectile over distance.
+- Fix wall kicks for near-vertical walls.
+    - Place a vertical wall between Mario a wall when he is airborne and close.
+- Render Mario in engine.
+    - Use standard modding tools to import Mario model as a scenery object.
+    - Teleport Mario to the player position.
+    - Use a blend of Cheif and Mario's poses to animate prop-Mario.

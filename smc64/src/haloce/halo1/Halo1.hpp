@@ -11,6 +11,7 @@
 #include "map.hpp"
 #include "bsp/index.hpp"
 #include "tags/index.hpp"
+#include "types/index.hpp"
 
 namespace Halo1 {
     bool isCameraLoaded();

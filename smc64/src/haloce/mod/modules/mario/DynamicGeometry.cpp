@@ -53,8 +53,8 @@ namespace HaloCE::Mod::Mario::DynamicGeometry {
         auto bsp = node->collisionBsps.get<Halo1::CollisionBSP>(0);
         if (bsp == nullptr) return {};
 
-        // return HaloCE::Mod::BSPConversion::convertBSP(bsp, SURFACE_NOT_SLIPPERY);
-        return HaloCE::Mod::BSPConversion::convertBSP(bsp, SURFACE_WALL_MISC);
+        return HaloCE::Mod::BSPConversion::convertBSP(bsp, SURFACE_NOT_SLIPPERY);
+        // return HaloCE::Mod::BSPConversion::convertBSP(bsp, SURFACE_WALL_MISC);
     }
 
     void allocateDynamicGeometryForEntity(Halo1::Entity* entity) {

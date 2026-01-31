@@ -24,12 +24,13 @@
 #include "DynamicGeometry.hpp"
 
 #include "../FreeCam.hpp"
+#include "ThirdPersonFix.hpp"
 
 #define ENABLE_MARIO 1
+
 namespace HaloCE::Mod::Mario {
 
     // Internal:
-
     bool enableMario = true;
     bool possessMario = true;
 
@@ -67,6 +68,38 @@ namespace HaloCE::Mod::Mario {
 
     void debugPrint(const char *msg) {
         printf("%s\n", msg);
+    }
+
+    void dumpMarioGeometry() {
+        std::string folderPath = "C:\\code\\projects\\hacking\\smc64\\tmp\\";
+        // Write position CSV
+        {
+            std::string filePath = folderPath + "mario.csv";
+            FILE* f = fopen(filePath.c_str(), "w");
+            if (f) {
+                for (uint16_t i = 0; i < marioGeometry.numTrianglesUsed * 3; i++) {
+                    float x = marioGeometry.position[i * 3 + 0];
+                    float y = marioGeometry.position[i * 3 + 1];
+                    float z = marioGeometry.position[i * 3 + 2];
+
+                    float r = marioGeometry.color[i * 3 + 0];
+                    float g = marioGeometry.color[i * 3 + 1];
+                    float b = marioGeometry.color[i * 3 + 2];
+
+                    float nx = marioGeometry.normal[i * 3 + 0];
+                    float ny = marioGeometry.normal[i * 3 + 1];
+                    float nz = marioGeometry.normal[i * 3 + 2];
+
+                    float u = marioGeometry.uv[i * 2 + 0];
+                    float v = marioGeometry.uv[i * 2 + 1];
+
+                    fprintf(f, "%.6f,%.6f,%.6f, %.6f,%.6f,%.6f, %.6f,%.6f,%.6f, %.6f,%.6f\n",
+                        x, y, z, r, g, b, nx, ny, nz, u, v
+                    );
+                }
+                fclose(f);
+            }
+        }
     }
 
     void initMario() {
@@ -150,11 +183,15 @@ namespace HaloCE::Mod::Mario {
 
         initTestLevel();
         initMario();
+
+        ThirdPersonFix::init(Halo1::dllBase());
         #endif
     }
 
     void free() {
         #ifdef ENABLE_MARIO
+        ThirdPersonFix::free();
+
         sm64_global_terminate();
 
         if (texture) {
@@ -183,6 +220,11 @@ namespace HaloCE::Mod::Mario {
     void update() {
         #ifdef ENABLE_MARIO
 
+        // F6 to dump Mario geometry buffers
+        if (GetAsyncKeyState(VK_F6) & 1) {
+            dumpMarioGeometry();
+        }
+
         if (GetAsyncKeyState(VK_F3) & 1) enableMario = !enableMario;
         if (GetAsyncKeyState(VK_F4) & 1) {
             possessMario = !possessMario;
@@ -202,13 +244,31 @@ namespace HaloCE::Mod::Mario {
             if (playerRec) {
                 auto player = playerRec->entity();
                 if (player) {
-                    // Update Halo player position to match Mario position
-                    auto marioHaloPos = Coordinates::marioToHalo(Vec3{
+
+                    Vec3 marioWorldPos = Coordinates::marioToHalo(Vec3{
                         marioState.position[0],
                         marioState.position[1],
                         marioState.position[2]
                     });
-                    player->pos = marioHaloPos - Vec3{0, 0, 0.1f};
+                    // Vec3 difference = marioWorldPos - player->pos;
+                    Vec3 difference = player->pos - marioWorldPos;
+                    float distance = difference.length();
+                    
+                    // If Cheif teleported, move Mario to Cheif
+                    if (distance > 5.0f) {
+                        marioToCheif();
+                    } else {
+                        // Cheif to Mario
+
+                        // Allow some vertical difference, to keep Cheif grounded.
+                        float dz = difference.z;
+                        float limit = 0.2f;
+                        if (abs(dz) > limit) {
+                            dz = (dz > 0) ? limit : -limit;
+                        }
+
+                        player->pos = marioWorldPos + Vec3{0, 0, dz};
+                    }
                 }
             }
         } else {
@@ -224,18 +284,6 @@ namespace HaloCE::Mod::Mario {
             || (marioState.action == ACT_WAKING_UP);
         if (inForbiddenState) sm64_set_mario_action(marioId, ACT_IDLE);
 
-        // Debug controls:
-        
-        // J to nudge Mario upwards slightly
-        if (GetAsyncKeyState('J') & 1) {
-            sm64_set_mario_position(
-                marioId, 
-                marioState.position[0], 
-                marioState.position[1] + 400.0f, 
-                marioState.position[2]
-            );
-        }
-
         #endif
     }
 
@@ -244,31 +292,16 @@ namespace HaloCE::Mod::Mario {
     void draw_SM64SurfaceCollisionData(SM64SurfaceCollisionData* surfaceData, ImU32 color) {
         namespace ESP = Overlay::ESP;
         Camera &camera = ESP::camera;
-        Vec3 v1 = Coordinates::marioToHalo(Vec3{
-            static_cast<float>(surfaceData->vertex1[0]),
-            static_cast<float>(surfaceData->vertex1[1]),
-            static_cast<float>(surfaceData->vertex1[2])
-        });
-        Vec3 v2 = Coordinates::marioToHalo(Vec3{
-            static_cast<float>(surfaceData->vertex2[0]),
-            static_cast<float>(surfaceData->vertex2[1]),
-            static_cast<float>(surfaceData->vertex2[2])
-        });
-        Vec3 v3 = Coordinates::marioToHalo(Vec3{
-            static_cast<float>(surfaceData->vertex3[0]),
-            static_cast<float>(surfaceData->vertex3[1]),
-            static_cast<float>(surfaceData->vertex3[2])
-        });
+        Vec3 v1 = Coordinates::marioToHalo(surfaceData->vertex1);
+        Vec3 v2 = Coordinates::marioToHalo(surfaceData->vertex2);
+        Vec3 v3 = Coordinates::marioToHalo(surfaceData->vertex3);
         ESP::drawLine(v1, v2, color);
         ESP::drawLine(v2, v3, color);
         ESP::drawLine(v3, v1, color);
 
         Vec3 center = (v1 + v2 + v3) / 3.0f;
-        Vec3 normalEnd = center + Vec3{
-            surfaceData->normal.x,
-            surfaceData->normal.z,
-            surfaceData->normal.y,
-        } * 0.1f;
+        auto n = surfaceData->normal;
+        Vec3 normalEnd = center + Vec3{n.x, n.z, n.y} * 0.1f;
         ESP::drawLine(center, normalEnd, color);
         ESP::drawPoint(center, color);
     }

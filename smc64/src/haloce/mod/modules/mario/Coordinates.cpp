@@ -1,4 +1,4 @@
-#include "haloce/Coordinates.hpp"
+#include "Coordinates.hpp"
 
 namespace HaloCE::Mod::Coordinates {
 
@@ -15,4 +15,8 @@ namespace HaloCE::Mod::Coordinates {
         return Vec3{ marioCoords.x * invScaleFactor, marioCoords.z * invScaleFactor, marioCoords.y * invScaleFactor };
     }
 
+    Vec3 marioToHalo(const int32_t* marioCoords) {
+        // Convert Super Mario 64 coordinates to Halo CE coordinates
+        return Vec3{ marioCoords[0] * invScaleFactor, marioCoords[2] * invScaleFactor, marioCoords[1] * invScaleFactor };
+    }
 }
