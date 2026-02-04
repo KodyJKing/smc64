@@ -25,6 +25,7 @@
 
 #include "../FreeCam.hpp"
 #include "ThirdPersonFix.hpp"
+#include "MarioSkeleton.hpp"
 
 #define ENABLE_MARIO 1
 
@@ -306,15 +307,22 @@ namespace HaloCE::Mod::Mario {
         ESP::drawPoint(center, color);
     }
 
+    int32_t highlightTriangleIndex = -1;
+
     void marioDebugWindow(SM64WallCollisionData& wallData) {
         ImGui::Begin("Mario Debug Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("Mario ID: %d", marioId);
-        ImGui::Text("Position: (%.2f, %.2f, %.2f)", marioState.position[0], marioState.position[1], marioState.position[2]);
-        ImGui::Text("Velocity: (%.2f, %.2f, %.2f)", marioState.velocity[0], marioState.velocity[1], marioState.velocity[2]);
-        ImGui::Text("Health: %d", marioState.health);
-        ImGui::Text("Action: 0x%X", marioState.action);
-        ImGui::Text("Flags: 0x%X", marioState.flags);
-        ImGui::Text("Num walls: %d", wallData.numWalls);
+        
+        // ImGui::Text("Mario ID: %d", marioId);
+        // ImGui::Text("Position: (%.2f, %.2f, %.2f)", marioState.position[0], marioState.position[1], marioState.position[2]);
+        // ImGui::Text("Velocity: (%.2f, %.2f, %.2f)", marioState.velocity[0], marioState.velocity[1], marioState.velocity[2]);
+        // ImGui::Text("Health: %d", marioState.health);
+        // ImGui::Text("Action: 0x%X", marioState.action);
+        // ImGui::Text("Flags: 0x%X", marioState.flags);
+        // ImGui::Text("Num walls: %d", wallData.numWalls);
+
+        // Slider for highlightTriangleIndex
+        ImGui::SliderInt("##Highlight Triangle Index", &highlightTriangleIndex, -1, marioGeometry.numTrianglesUsed - 1);
+
         ImGui::End();
     }
 
@@ -326,10 +334,16 @@ namespace HaloCE::Mod::Mario {
         ImVec2 windowPos = ImGui::GetWindowPos();
         ImVec2 windowSize = ImGui::GetWindowSize();
 
+        bool highlightEnabled = highlightTriangleIndex >= 0 && highlightTriangleIndex < static_cast<int32_t>(marioGeometry.numTrianglesUsed);
+
         // Render Mario.
         for (int i = 0; i < marioGeometry.numTrianglesUsed; i++) {
             Vec3* pos = (Vec3*)&marioGeometry.position[i * 3 * 3];
             Vec3* color = (Vec3*)&marioGeometry.color[i * 3 * 3];
+
+            bool highlightThis = highlightEnabled && i == highlightTriangleIndex;
+            // uint8_t alpha = !highlightEnabled || highlightThis ? 255 : 20;
+            uint8_t alpha = 20;
 
             // Render triangle wireframe
             for (int i = 0; i < 3; i++) {
@@ -344,47 +358,61 @@ namespace HaloCE::Mod::Mario {
                     static_cast<uint8_t>(color[i].x * 255),
                     static_cast<uint8_t>(color[i].y * 255),
                     static_cast<uint8_t>(color[i].z * 255),
-                    255 // Full opacity
+                    alpha
                 );
 
                 Overlay::ESP::drawLine(haloP1, haloP2, colorIm);
+
+            }
+
+            if (highlightThis) {
+                Vec3 haloP1 = Coordinates::marioToHalo(pos[0]);
+                Vec3 haloP2 = Coordinates::marioToHalo(pos[1]);
+                Vec3 haloP3 = Coordinates::marioToHalo(pos[2]);
+                Overlay::ESP::drawPoint(haloP1, IM_COL32(255, 0, 0, 255));
+                Overlay::ESP::drawPoint(haloP2, IM_COL32(0, 255, 0, 255));
+                Overlay::ESP::drawPoint(haloP3, IM_COL32(0, 0, 255, 255));
             }
             
         }
 
-        SM64SurfaceCollisionData* floorData;
-        sm64_surface_find_floor(
-            marioState.position[0],
-            marioState.position[1],
-            marioState.position[2],
-            &floorData
-        );
-        if (floorData) 
-            draw_SM64SurfaceCollisionData(floorData, IM_COL32(255, 200, 0, 255));
+        // SM64SurfaceCollisionData* floorData;
+        // sm64_surface_find_floor(
+        //     marioState.position[0],
+        //     marioState.position[1],
+        //     marioState.position[2],
+        //     &floorData
+        // );
+        // if (floorData) 
+        //     draw_SM64SurfaceCollisionData(floorData, IM_COL32(255, 200, 0, 255));
 
-        SM64SurfaceCollisionData* ceilData;
-        sm64_surface_find_ceil(
-            marioState.position[0],
-            marioState.position[1],
-            marioState.position[2],
-            &ceilData
-        );
-        if (ceilData) 
-            draw_SM64SurfaceCollisionData(ceilData, IM_COL32(255, 0, 200, 255));
+        // SM64SurfaceCollisionData* ceilData;
+        // sm64_surface_find_ceil(
+        //     marioState.position[0],
+        //     marioState.position[1],
+        //     marioState.position[2],
+        //     &ceilData
+        // );
+        // if (ceilData) 
+        //     draw_SM64SurfaceCollisionData(ceilData, IM_COL32(255, 0, 200, 255));
         
-        SM64WallCollisionData wallData = {};
-        wallData.x = marioState.position[0];
-        wallData.y = marioState.position[1];
-        wallData.z = marioState.position[2];
-        wallData.radius = 100.0f; // Large radius to capture nearby walls
-        wallData.offsetY = 10.0f;
-        sm64_surface_find_wall_collisions(&wallData);
+        // SM64WallCollisionData wallData = {};
+        // wallData.x = marioState.position[0];
+        // wallData.y = marioState.position[1];
+        // wallData.z = marioState.position[2];
+        // wallData.radius = 100.0f; // Large radius to capture nearby walls
+        // wallData.offsetY = 10.0f;
+        // sm64_surface_find_wall_collisions(&wallData);
 
-        for (int i = 0; i < wallData.numWalls; i++) {
-            SM64SurfaceCollisionData* wallSurface = wallData.walls[i];
-            if (wallSurface)
-                draw_SM64SurfaceCollisionData(wallSurface, IM_COL32(0, 200, 255, 255));
-        }
+        // for (int i = 0; i < wallData.numWalls; i++) {
+        //     SM64SurfaceCollisionData* wallSurface = wallData.walls[i];
+        //     if (wallSurface)
+        //         draw_SM64SurfaceCollisionData(wallSurface, IM_COL32(0, 200, 255, 255));
+        // }
+
+        drawMarioBones(marioGeometry);
+
+        // marioDebugWindow(wallData);
 
         #endif // ENABLE_MARIO
     }

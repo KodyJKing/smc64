@@ -110,13 +110,13 @@ namespace HaloCE::Mod::UI  {
                 // sprintf( materialText, "%X", material );
                 // ESP::drawText( textPos, materialText, color );
 
-                // Render normal:
-                if ( plane ) {
-                    Vec3 triCenter = ( p0->pos + p1->pos + p2->pos ) / 3.0f;
-                    Vec3 normalEnd = triCenter + plane->normal * 0.025f;
-                    ESP::drawLine( toWorld( triCenter ), toWorld( normalEnd ), IM_COL32( 255, 0, 0, 255 ) );
-                    ESP::drawPoint( toWorld( triCenter ), IM_COL32( 255, 0, 0, 255 ) );
-                }
+                // // Render normal:
+                // if ( plane ) {
+                //     Vec3 triCenter = ( p0->pos + p1->pos + p2->pos ) / 3.0f;
+                //     Vec3 normalEnd = triCenter + plane->normal * 0.025f;
+                //     ESP::drawLine( toWorld( triCenter ), toWorld( normalEnd ), IM_COL32( 255, 0, 0, 255 ) );
+                //     ESP::drawPoint( toWorld( triCenter ), IM_COL32( 255, 0, 0, 255 ) );
+                // }
 
             }
         }

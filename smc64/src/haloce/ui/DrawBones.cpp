@@ -14,7 +14,7 @@ namespace HaloCE::Mod::UI  {
 
             Vec3 pos = bone.pos;
 
-            float r = 0.025f;
+            float r = 0.0125f;
 
             ESP::drawLine(pos, pos + bone.x * r, IM_COL32(255, 0, 0, 255)); // Forward - Red
             ESP::drawLine(pos, pos + bone.y * r, IM_COL32(0, 255, 0, 255)); // Left - Green

@@ -212,11 +212,11 @@ namespace HaloCE::Mod::UI {
         float maxBSPVertexDistance = 10.0f;
         struct Filter
         {
-            bool biped = true;
+            bool biped = false;
             bool vehicle = false;
             bool weapon = false;
             bool projectile = false;
-            bool scenery = true;
+            bool scenery = false;
             bool equipment = false;
             bool other = false;
         } filter = {};
