@@ -1,0 +1,414 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "CSV to Armature Converter"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        15
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Bone_000",
+      "translation": [
+        -34.365234,
+        63.691406,
+        5.296875
+      ],
+      "rotation": [
+        -0.32642038052096595,
+        0.23288915088988532,
+        -0.21192617864976823,
+        0.8912349148127234
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_001",
+      "translation": [
+        -26.696289,
+        67.367188,
+        -7.00293
+      ],
+      "rotation": [
+        -0.1209458088203175,
+        0.25887964801983604,
+        -0.18959672421772272,
+        0.9393649564124872
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_002",
+      "translation": [
+        -15.057617,
+        74.480469,
+        -2.939453
+      ],
+      "rotation": [
+        -0.22040297976343384,
+        0.7950945383452122,
+        -0.11755318054875048,
+        0.5526558163521725
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_003",
+      "translation": [
+        36.317383,
+        60.617188,
+        6.120117
+      ],
+      "rotation": [
+        -0.32105276266260546,
+        -0.22384151597870888,
+        0.19990943926523083,
+        0.8982518106876952
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_004",
+      "translation": [
+        27.867188,
+        69.695312,
+        -8.294922
+      ],
+      "rotation": [
+        -0.22589170372193706,
+        -0.2645007935445439,
+        0.10703853834972295,
+        0.9314263361704253
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_005",
+      "translation": [
+        15.675781,
+        76.460938,
+        -3.206055
+      ],
+      "rotation": [
+        -0.3007918044401817,
+        -0.7889106686399863,
+        0.0018971104634258737,
+        0.5358550627357355
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_006",
+      "translation": [
+        0.091797,
+        66.347656,
+        21.125
+      ],
+      "rotation": [
+        0.8829189284406168,
+        -0.0013220353592490487,
+        -0.0002347329118100609,
+        0.4695235488495141
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_007",
+      "translation": [
+        -0.050781,
+        86.367188,
+        -7.118164
+      ],
+      "rotation": [
+        0.4541401729632839,
+        -0.0033518875648241965,
+        -0.003767190941887283,
+        0.8909159760735234
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_008",
+      "translation": [
+        -0.014648,
+        34.007812,
+        9.550781
+      ],
+      "rotation": [
+        0.7881885431264218,
+        0.0004517141928034058,
+        0.0005837347440589225,
+        0.6154334047582118
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_009",
+      "translation": [
+        9.426758,
+        48.703125,
+        -4.603516
+      ],
+      "rotation": [
+        -0.6197407977750389,
+        -0.12127254552340155,
+        -0.21718482734228073,
+        0.7443420343146935
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_010",
+      "translation": [
+        22.251953,
+        31.136719,
+        1.334961
+      ],
+      "rotation": [
+        -0.7550139952148734,
+        0.1724845013921518,
+        0.06074436699193035,
+        0.6296928502753748
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_011",
+      "translation": [
+        4.208984,
+        12.941406,
+        -8.526367
+      ],
+      "rotation": [
+        0.5084505308855386,
+        -0.09764223604951587,
+        0.8431362933636963,
+        0.1451386998508386
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_012",
+      "translation": [
+        -10.101562,
+        48.449219,
+        -5.107422
+      ],
+      "rotation": [
+        -0.5478945326425839,
+        0.03638552049723522,
+        0.32000423904900466,
+        0.7720653871202732
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_013",
+      "translation": [
+        -20.658203,
+        32.023438,
+        5.068359
+      ],
+      "rotation": [
+        -0.7163877274471107,
+        -0.18920986867401687,
+        0.1226217514784686,
+        0.6602667306656291
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Bone_014",
+      "translation": [
+        -10.592773,
+        13.191406,
+        -6.158203
+      ],
+      "rotation": [
+        -0.34920741164479224,
+        -0.07815374078510559,
+        0.9213958974649394,
+        -0.15157762561940996
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "Armature_Root",
+      "children": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Armature_Visualization",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 1
+          },
+          "indices": 2,
+          "mode": 1
+        }
+      ]
+    }
+  ],
+  "skins": [
+    {
+      "name": "Armature_Skin",
+      "joints": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "inverseBindMatrices": 0
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 15,
+      "type": "MAT4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 60,
+      "type": "VEC3",
+      "min": [
+        -39.663144,
+        3.5533859999999997,
+        -15.209924
+      ],
+      "max": [
+        44.516003,
+        94.459458,
+        21.125
+      ]
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5123,
+      "count": 90,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 960
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 960,
+      "byteLength": 720,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1680,
+      "byteLength": 180,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 1860,
+      "uri": "data:application/octet-stream;base64,AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AHYJwgDEfkIAgKlAEIgUwjiLY0JKTEFBL8nSwaflg0I3Ti1BD6cewgVTjULCDCJBAJLVwQC8hkIBGODAgM/4wQE6gEIknK4/dwuWwSGbjELeH9e/eRP3wR22mEJ9y7bAAOxwwQD2lEL/HzzAJZ+6wZtZjEKSvtHA6tGPwcqMkEJwvstA5uSewRF3pkI42RfAAEURQgB4ckIA2MNAZTgcQmjRV0J+51BBYxAyQjnaaULJrlA/XmIlQkmDh0LT4i9BAPDeQQBki0IAuATBVD4BQpTXgUK/9Da/j/QQQunKiULNSlvB83L4QSnknEJg5pTAANB6QQDsmEIBME3AIPTAQS9qkkJU0u7AWKZTQYZfokLDwTrBXYmjQX1NqUKDwEq8EQC8PQCyhEIAAKlB7e/MPQJHlUJ4i3hB1nchQS2nhEIW3qhBgqyHPeYGc0L7V01Bvf9PvQC8rEIAyOPAIQXPvD7rvELyIp+/6S0fQcjOrEKOyebAU+kXvux7uELZW3PBKv5vvAAICEIA0BhB5lo0vGbWLkLKB+RA9sMfQfAHCEJ1DBlBmDWxufKp/EEwYxq+ANQWQQDQQkIBUJPAEMleQQIEIEIKEiXAioORQQbCVUL04W3AhEv2QApQSEKGxqRAAASyQQAY+UEB4Ko/tEyZQauzrkHrNSm/Qqr8QR8j3kHCwSVAlUyjQcZL7UFM2TBB/6+GQAAQT0EAbAjBgA9RQTlVTEGWzHjAAg9MvkkEGEF4mXG+WDu1QK1qY0B5YTrB/58hwQDMQUIAcKPANbhiwTTjIEI8n5G/F0ULwNpvLEKd1QDBLuOxwPCWSUJse2VAAESlwQAYAEL/L6JAClWfwVLLsEH00YJAh8w6weR1BELXGFA/u5+Cwfyq+0ERCGFBAHwpwQAQU0EAEMXAcB6KwRf1TEGJ7qM/BI6NwXo+hEH+s0XBbnFNwT56cUBKgwrBAAABAAAAAgAAAAMABAAFAAQABgAEAAcACAAJAAgACgAIAAsADAANAAwADgAMAA8AEAARABAAEgAQABMAFAAVABQAFgAUABcAGAAZABgAGgAYABsAHAAdABwAHgAcAB8AIAAhACAAIgAgACMAJAAlACQAJgAkACcAKAApACgAKgAoACsALAAtACwALgAsAC8AMAAxADAAMgAwADMANAA1ADQANgA0ADcAOAA5ADgAOgA4ADsA"
+    }
+  ]
+}

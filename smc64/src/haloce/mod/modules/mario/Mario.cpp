@@ -72,16 +72,22 @@ namespace HaloCE::Mod::Mario {
     }
 
     void dumpMarioGeometry() {
-        std::string folderPath = "C:\\code\\projects\\hacking\\smc64\\tmp\\";
+        Vec3 marioPos = Vec3{
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2]
+        };
+
+        std::string folderPath = "C:\\code\\projects\\hacking\\smc64\\data\\";
         // Write position CSV
         {
             std::string filePath = folderPath + "mario.csv";
             FILE* f = fopen(filePath.c_str(), "w");
             if (f) {
                 for (uint16_t i = 0; i < marioGeometry.numTrianglesUsed * 3; i++) {
-                    float x = marioGeometry.position[i * 3 + 0];
-                    float y = marioGeometry.position[i * 3 + 1];
-                    float z = marioGeometry.position[i * 3 + 2];
+                    float x = marioGeometry.position[i * 3 + 0] - marioPos.x;
+                    float y = marioGeometry.position[i * 3 + 1] - marioPos.y;
+                    float z = marioGeometry.position[i * 3 + 2] - marioPos.z;
 
                     float r = marioGeometry.color[i * 3 + 0];
                     float g = marioGeometry.color[i * 3 + 1];
@@ -98,6 +104,16 @@ namespace HaloCE::Mod::Mario {
                         x, y, z, r, g, b, nx, ny, nz, u, v
                     );
                 }
+                fclose(f);
+            }
+        }
+
+        // Write skeleton CSV
+        {
+            std::string filePath = folderPath + "mario_skeleton.csv";
+            FILE* f = fopen(filePath.c_str(), "w");
+            if (f) {
+                dumpSkeleton(marioGeometry, marioPos, f);
                 fclose(f);
             }
         }

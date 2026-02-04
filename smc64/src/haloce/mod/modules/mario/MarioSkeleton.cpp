@@ -123,4 +123,19 @@ namespace HaloCE::Mod::Mario {
         }
     }
 
+    // Dump bone bases as csv of the form "px,py,pz,fx,fy,fz,ux,uy,uz"
+    void dumpSkeleton(SM64MarioGeometryBuffers& marioGeometry, Vec3 marioPos, FILE* file) {
+        for (const MarioBone &bone : marioBones) {
+            Basis basis = getBoneBasis(bone, marioGeometry);
+            basis.pos = Coordinates::haloToMario(basis.pos) - marioPos;
+            basis.x = Coordinates::haloToMario(basis.x).normalize();
+            basis.y = Coordinates::haloToMario(basis.y).normalize();
+            basis.z = Coordinates::haloToMario(basis.z).normalize();
+            fprintf(file, "%.6f,%.6f,%.6f, %.6f,%.6f,%.6f, %.6f,%.6f,%.6f\n",
+                basis.pos.x, basis.pos.y, basis.pos.z,
+                basis.x.x, basis.x.y, basis.x.z,
+                basis.z.x, basis.z.y, basis.z.z
+            );
+        }
+    }
 }
