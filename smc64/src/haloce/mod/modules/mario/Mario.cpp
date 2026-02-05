@@ -71,54 +71,6 @@ namespace HaloCE::Mod::Mario {
         printf("%s\n", msg);
     }
 
-    void dumpMarioGeometry() {
-        Vec3 marioPos = Vec3{
-            marioState.position[0],
-            marioState.position[1],
-            marioState.position[2]
-        };
-
-        std::string folderPath = "C:\\code\\projects\\hacking\\smc64\\data\\";
-        // Write position CSV
-        {
-            std::string filePath = folderPath + "mario.csv";
-            FILE* f = fopen(filePath.c_str(), "w");
-            if (f) {
-                for (uint16_t i = 0; i < marioGeometry.numTrianglesUsed * 3; i++) {
-                    float x = marioGeometry.position[i * 3 + 0] - marioPos.x;
-                    float y = marioGeometry.position[i * 3 + 1] - marioPos.y;
-                    float z = marioGeometry.position[i * 3 + 2] - marioPos.z;
-
-                    float r = marioGeometry.color[i * 3 + 0];
-                    float g = marioGeometry.color[i * 3 + 1];
-                    float b = marioGeometry.color[i * 3 + 2];
-
-                    float nx = marioGeometry.normal[i * 3 + 0];
-                    float ny = marioGeometry.normal[i * 3 + 1];
-                    float nz = marioGeometry.normal[i * 3 + 2];
-
-                    float u = marioGeometry.uv[i * 2 + 0];
-                    float v = marioGeometry.uv[i * 2 + 1];
-
-                    fprintf(f, "%.6f,%.6f,%.6f, %.6f,%.6f,%.6f, %.6f,%.6f,%.6f, %.6f,%.6f\n",
-                        x, y, z, r, g, b, nx, ny, nz, u, v
-                    );
-                }
-                fclose(f);
-            }
-        }
-
-        // Write skeleton CSV
-        {
-            std::string filePath = folderPath + "mario_skeleton.csv";
-            FILE* f = fopen(filePath.c_str(), "w");
-            if (f) {
-                dumpSkeleton(marioGeometry, marioPos, f);
-                fclose(f);
-            }
-        }
-    }
-
     void initMario() {
         // Create a Mario instance at the origin.
         if (marioId < 0) {
@@ -233,6 +185,8 @@ namespace HaloCE::Mod::Mario {
             sm64_mario_heal(marioId, 0xFF);
         }
     }
+
+    void dumpMarioGeometry();
 
     void update() {
         #ifdef ENABLE_MARIO

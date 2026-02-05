@@ -26,13 +26,13 @@ with open(CSV_PATH, newline='') as csvfile:
 
     for i, row in enumerate(reader):
         print(row)
-        py, pz, px = map(float, row[0:3])
-        fy, fz, fx = map(float, row[3:6])
-        uy, uz, ux = map(float, row[6:9])
+        px, pz, py = map(float, row[0:3])
+        fx, fz, fy = map(float, row[3:6])
+        ux, uz, uy = map(float, row[6:9])
 
-        pos = Vector((px, py, pz))
-        fwd = Vector((fx, fy, fz)).normalized()
-        up = Vector((ux, uy, uz)).normalized()
+        pos = Vector((px, -py, pz))
+        fwd = Vector((fx, -fy, fz)).normalized()
+        up = Vector((ux, -uy, uz)).normalized()
 
         # Blender bones point down +Y
         head = pos
