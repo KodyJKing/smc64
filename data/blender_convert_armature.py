@@ -1,11 +1,10 @@
 import bpy
 import csv
-import mathutils
-from mathutils import Vector, Matrix
+from mathutils import Vector
 
 # -------- SETTINGS --------
 CSV_PATH = "C:\code\projects\hacking\smc64\data\mario_skeleton.csv"
-BONE_LENGTH = 10
+BONE_LENGTH = 10 / 3
 HAS_HEADER = False
 ARMATURE_NAME = "CSV_Armature"
 # --------------------------
@@ -33,26 +32,21 @@ with open(CSV_PATH, newline='') as csvfile:
         pos = Vector((px, -py, pz))
         fwd = Vector((fx, -fy, fz)).normalized()
         up = Vector((ux, -uy, uz)).normalized()
+        right = -fwd.cross(up).normalized()
+
 
         # Blender bones point down +Y
-        head = pos
-        tail = pos + (fwd * BONE_LENGTH)
+        head = pos / 3
+        tail = pos / 3 + (right * BONE_LENGTH)
 
         bone = arm_data.edit_bones.new(f"bone_{i}")
 
         # Build orientation matrix
-        right = fwd.cross(up).normalized()
         corrected_up = right.cross(fwd).normalized()
-
-        rot_matrix = Matrix((
-           right,
-           fwd,
-           corrected_up
-        )).transposed()
-        bone.transform(rot_matrix, roll=False)
 
         bone.head = head
         bone.tail = tail
+        bone.align_roll(up)
 
 bpy.ops.object.mode_set(mode='OBJECT')
 

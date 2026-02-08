@@ -96,7 +96,7 @@ namespace HaloCE::Mod {
         // Do update
         uint64_t result = originalUpdateEntity( entityHandle );
 
-        // ...
+        // Mario::MarioModel::processEntity( entity );
 
         return result;
     }
@@ -146,6 +146,23 @@ namespace HaloCE::Mod {
             bone.translation = snap.translation.lerp(bone.translation, progress);
             bone.scale = snap.scale + (bone.scale - snap.scale) * progress;
         }
+    }
+
+    typedef void (*updateWorldBones_t)(uint32_t entityHandle);
+    updateWorldBones_t originalUpdateWorldBones = nullptr;
+    //
+    void hkUpdateWorldBones(uint32_t entityHandle) {
+        UnloadLock lock; // No unloading while we're still executing hook code.
+
+        auto rec = Halo1::getEntityRecord( entityHandle );
+        if (!rec)  return originalUpdateWorldBones( entityHandle);
+            
+        auto entity = rec->entity();
+        if (!entity) return originalUpdateWorldBones( entityHandle );
+
+        originalUpdateWorldBones( entityHandle );
+
+        Mario::MarioModel::processEntity( entity );
     }
 
     typedef void (*damageEntity_t)(uint32_t entityHandle, uint16_t param_2, uint16_t param_3, uint64_t param_4, uint8_t* param_5, void* param_6, uint64_t param_7, uint64_t param_8, uint32_t* param_9, float* param_10, uint32_t* param_11, float damage, char param_13);
@@ -227,6 +244,7 @@ namespace HaloCE::Mod {
         // HOOK_FUNC( DamageEntity, 0xB9FBD0U );
         // HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
         // HOOK_FUNC( UpdateActor, 0xC04A14U );
+        HOOK_FUNC( UpdateWorldBones, 0xB3A614U );
 
         #undef HOOK_FUNC
     }
@@ -239,6 +257,7 @@ namespace HaloCE::Mod {
         // MH_RemoveHook( (void*) originalDamageEntity );
         // MH_RemoveHook( (void*) originalGetShieldDamageResist );
         // MH_RemoveHook( (void*) originalUpdateActor );
+        MH_RemoveHook( (void*) originalUpdateWorldBones );
     }
 
     //////////////////////////////////////////////////////////////////

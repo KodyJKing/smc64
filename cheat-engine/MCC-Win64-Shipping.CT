@@ -813,24 +813,6 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         </CheatEntry>
       </CheatEntries>
     </CheatEntry>
-    <CheatEntry>
-      <ID>92</ID>
-      <Description>"geometries"</Description>
-      <VariableType>4 Bytes</VariableType>
-      <Address>000002D4E6DDF96C+D4</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>93</ID>
-      <Description>"parts"</Description>
-      <VariableType>4 Bytes</VariableType>
-      <Address>000002D4E6DDFB94+28</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>94</ID>
-      <Description>"shaderIndex 0"</Description>
-      <VariableType>2 Bytes</VariableType>
-      <Address>2D4E6DDFBC8</Address>
-    </CheatEntry>
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>
@@ -3534,6 +3516,88 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Byte>18</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description/>
+    </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description>Bone Transforms</Description>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Write Bone Transform :movss [r8+2C],xmm3</Description>
+      <AddressString>halo1.dll+BA35A6</AddressString>
+      <Before>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>58</Byte>
+        <Byte>59</Byte>
+        <Byte>2C</Byte>
+      </Before>
+      <Actual>
+        <Byte>F3</Byte>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>58</Byte>
+        <Byte>2C</Byte>
+      </Actual>
+      <After>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>42</Byte>
+        <Byte>28</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call halo1.dll+BA3360</Description>
+      <AddressString>halo1.dll+B3AD49</AddressString>
+      <Before>
+        <Byte>C8</Byte>
+        <Byte>34</Byte>
+        <Byte>48</Byte>
+        <Byte>03</Byte>
+        <Byte>CE</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>12</Byte>
+        <Byte>86</Byte>
+        <Byte>06</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>33</Byte>
+        <Byte>D2</Byte>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>B7</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Call update world bones - call halo1.dll+B3A614</Description>
+      <AddressString>halo1.dll+B3A136</AddressString>
+      <Before>
+        <Byte>00</Byte>
+        <Byte>75</Byte>
+        <Byte>07</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>D9</Byte>
+        <Byte>04</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+        <Byte>E8</Byte>
+        <Byte>AE</Byte>
+        <Byte>18</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -6169,10 +6233,11 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Element Offset="4" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000004" Description="shaderIndex" DisplayMethod="hexadecimal"/>
         <Element Offset="6" Vartype="Byte" Bytesize="1" RLECount="2" OffsetHex="00000006" DisplayMethod="hexadecimal"/>
         <Element Offset="8" Vartype="Float" Bytesize="4" RLECount="4" OffsetHex="00000008" DisplayMethod="unsigned integer"/>
-        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
+        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
         <Element Offset="28" Vartype="Float" Bytesize="4" OffsetHex="0000001C" DisplayMethod="unsigned integer"/>
-        <Element Offset="28" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000001C" DisplayMethod="hexadecimal"/>
-        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" RLECount="11" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="hexadecimal"/>
+        <Element Offset="36" Vartype="4 Bytes" Bytesize="4" RLECount="10" OffsetHex="00000024" DisplayMethod="unsigned integer"/>
         <Element Offset="76" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000004C" DisplayMethod="hexadecimal"/>
         <Element Offset="84" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000054" DisplayMethod="unsigned integer"/>
         <Element Offset="92" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000005C" DisplayMethod="hexadecimal"/>

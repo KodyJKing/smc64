@@ -249,6 +249,8 @@ namespace HaloCE::Mod::Mario {
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
 
+        updateMarioPose(marioGeometry);
+
         bool inForbiddenState = false
             || (marioState.action == ACT_START_SLEEPING)
             || (marioState.action == ACT_SLEEPING)
