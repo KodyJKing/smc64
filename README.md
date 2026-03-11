@@ -1,10 +1,6 @@
 # SMC64
 
-Superhot-MCC brings the time dilation mechanics of SUPERHOT to Halo CE.
-
-[See it in action.](https://www.youtube.com/watch?v=TbxSwqwb824&list=PLj0rP8ScM0HGciDLnYp1a-lr1zsl_15vi)
-
-[![Sample](/preview.webp)](https://www.youtube.com/watch?v=TbxSwqwb824&list=PLj0rP8ScM0HGciDLnYp1a-lr1zsl_15vi)
+Super Master Cheif 64
 
 ## Installation
 
