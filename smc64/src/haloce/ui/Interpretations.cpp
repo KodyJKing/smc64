@@ -57,7 +57,7 @@ namespace HaloCE::Mod::UI {
         }
 
         // Scrollable region with all the entity's data interpreted as u32 values.
-        ImGui::BeginChild("Object Data", ImVec2(0, 0), true, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+        ImGui::BeginChild("Object Data", ImVec2(0, 0), true, ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
         if (!entity)
         {
             ImGui::Text("Object is null.");

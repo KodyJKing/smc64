@@ -8,3 +8,6 @@
     - Use standard modding tools to import Mario model as a scenery object.
     - Teleport Mario to the player position.
     - Use a blend of Cheif and Mario's poses to animate prop-Mario.
+
+    - Bug: The mario display object (currently a scenery object) is not visible when the player is not looking at its starting region.
+        - Experiment with other object types.

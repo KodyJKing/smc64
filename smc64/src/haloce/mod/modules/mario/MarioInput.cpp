@@ -65,6 +65,11 @@ namespace HaloCE::Mod::Mario {
         if (GetAsyncKeyState('D') & 0x8000) x += 1.0f;
         if (GetAsyncKeyState('W') & 0x8000) y += 1.0f;
         if (GetAsyncKeyState('S') & 0x8000) y -= 1.0f;
+        float r = sqrtf(x * x + y * y);
+        if (r > 0.0f) {
+            x /= r;
+            y /= r;
+        }
         if (x != 0.0f || y != 0.0f) {
             inputs.stickX = x;
             inputs.stickY = y;

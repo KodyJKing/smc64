@@ -20,6 +20,8 @@
 #include "cheatengine/Messages.hpp"
 #include "DrawBSP.hpp"
 #include "DrawEntity.hpp"
+#include "DrawBones.hpp"
+#include "DrawEntityCollision.hpp"
 
 #include <Windows.h>
 
@@ -85,7 +87,7 @@ namespace HaloCE::Mod::UI {
 
         if (ImGui::CollapsingHeader("Tools")) {
             // Translate map address
-            ImGui::BeginChild("##Translate Map Address", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+            ImGui::BeginChild("##Translate Map Address", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
             auto renderAddressInput = [](const char *label, char *buffer, size_t bufferSize, const char *outputFormat, auto translateFunc)
             {
@@ -133,7 +135,7 @@ namespace HaloCE::Mod::UI {
 
             ImGui::EndChild();
 
-            ImGui::BeginChild("##Interpret U32", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+            ImGui::BeginChild("##Interpret U32", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
             static char u32input[255] = {0};
             ImGui::InputText("U32 Input", u32input, sizeof(u32input));
             uint32_t value = 0;
@@ -153,7 +155,7 @@ namespace HaloCE::Mod::UI {
             }
             ImGui::EndChild();
 
-            ImGui::BeginChild("##Interpret Object Fields", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY);
+            ImGui::BeginChild("##Interpret Object Fields", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
             static char addressInput[255] = {0};
             ImGui::InputText("Address", addressInput, sizeof(addressInput));
             uintptr_t pointerValue = 0;
@@ -212,7 +214,7 @@ namespace HaloCE::Mod::UI {
         float maxBSPVertexDistance = 10.0f;
         struct Filter
         {
-            bool biped = false;
+            bool biped = true;
             bool vehicle = false;
             bool weapon = false;
             bool projectile = false;
@@ -254,6 +256,7 @@ namespace HaloCE::Mod::UI {
     // Halo1::Entity* highlightEntity = nullptr;
 
     struct View {
+        // Entities Tab
         bool pos = true;
         bool vel;
         bool fwd;
@@ -267,8 +270,11 @@ namespace HaloCE::Mod::UI {
         bool tagPath = true;
         bool animation;
         bool bones;
-        bool worldBones;
-        bool collision = true;
+        bool worldBones = true;
+        bool collision = false;
+
+        // BSP Tab
+        bool renderBsp = false;
     } view = {};
 
     void highlightedEntityDetails()
@@ -353,7 +359,7 @@ namespace HaloCE::Mod::UI {
                 ImGui::Text("Bones: %p", boneTransforms);
                 if (view.bones && boneTransforms)
                 {
-                    ImGui::BeginChild("Bones", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
+                    ImGui::BeginChild("Bones", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
                     for (int i = 0; i < entity->bones.count(); i++)
                     {
                         auto bone = boneTransforms[i];
@@ -370,28 +376,28 @@ namespace HaloCE::Mod::UI {
                 auto numberOfWorldBones = entity->worldBones.count();
                 auto worldBonePositions = entity->worldBones.get( entity, 0 );
                 ImGui::Text("World Bones: %d", numberOfWorldBones);
-                if (view.worldBones && worldBonePositions) {
-                    ImGui::BeginChild("World Bones", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
-                    for (int i = 0; i < numberOfWorldBones; i++) {
-                        auto bone = worldBonePositions[i];
-                        auto euler = orientationToEulerAngles(bone.x, bone.z) * (180.0f / 3.14159265f);
-                        // ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f} Fwd: {%.2f, %.2f, %.2f} Up: {%.2f, %.2f, %.2f} Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", i,
-                        //     bone.pos.x, bone.pos.y, bone.pos.z,
-                        //     bone.x.x, bone.x.y, bone.x.z,
-                        //     bone.z.x, bone.z.y, bone.z.z,
-                        //     euler.x, euler.y, euler.z
-                        // );
-                        ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f}", i,
-                            bone.pos.x, bone.pos.y, bone.pos.z
-                        );
-                        ImGui::Text("  Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", 
-                            euler.x, euler.y, euler.z
-                        );
-                        ImGui::Text("  Forward: {%.2f, %.2f, %.2f}", bone.x.x, bone.x.y, bone.x.z);
-                        ImGui::Text("  Up: {%.2f, %.2f, %.2f}", bone.z.x, bone.z.y, bone.z.z);
-                    }
-                    ImGui::EndChild();
-                }
+                // if (view.worldBones && worldBonePositions) {
+                //     ImGui::BeginChild("World Bones", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
+                //     for (int i = 0; i < numberOfWorldBones; i++) {
+                //         auto bone = worldBonePositions[i];
+                //         auto euler = orientationToEulerAngles(bone.x, bone.z) * (180.0f / 3.14159265f);
+                //         // ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f} Fwd: {%.2f, %.2f, %.2f} Up: {%.2f, %.2f, %.2f} Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", i,
+                //         //     bone.pos.x, bone.pos.y, bone.pos.z,
+                //         //     bone.x.x, bone.x.y, bone.x.z,
+                //         //     bone.z.x, bone.z.y, bone.z.z,
+                //         //     euler.x, euler.y, euler.z
+                //         // );
+                //         ImGui::Text("%02d Pos: {%.2f, %.2f, %.2f}", i,
+                //             bone.pos.x, bone.pos.y, bone.pos.z
+                //         );
+                //         ImGui::Text("  Angles: Yaw: %.2f, Pitch: %.2f, Roll: %.2f", 
+                //             euler.x, euler.y, euler.z
+                //         );
+                //         ImGui::Text("  Forward: {%.2f, %.2f, %.2f}", bone.x.x, bone.x.y, bone.x.z);
+                //         ImGui::Text("  Up: {%.2f, %.2f, %.2f}", bone.z.x, bone.z.y, bone.z.z);
+                //     }
+                //     ImGui::EndChild();
+                // }
             }
 
             VIEW_TOGGLE(collision);
@@ -516,6 +522,9 @@ namespace HaloCE::Mod::UI {
 #ifdef BSP_TAB
             if (ImGui::BeginTabItem("BSP"))
             {
+                // Render BSP toggle
+                ImGui::Checkbox("Render BSP", &view.renderBsp);
+
                 uintptr_t bspPointer = Halo1::getBSPPointer();
                 char bspPointerStr[255] = {0};
                 snprintf(bspPointerStr, 255, "%p", (void *)bspPointer);
@@ -762,13 +771,15 @@ namespace HaloCE::Mod::UI {
 
         renderESP_entities();
 
-        if (view.collision) {
-            if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
-                drawEntity(highlightEntity);
-            }
+        if (ImGui::IsKeyPressed(ImGuiKey_F5, false)) view.worldBones = !view.worldBones;
+        if (ImGui::IsKeyPressed(ImGuiKey_F6, false)) view.collision = !view.collision;
+        if (highlightEntity != nullptr && Memory::isAllocated((uintptr_t)highlightEntity)) {
+            if (view.collision) drawEntityCollision(highlightEntity);
+            if (view.worldBones) drawBones(highlightEntity);
         }
 
-        // renderESP_BSP();
+        if (ImGui::IsKeyPressed(ImGuiKey_F7, false)) view.renderBsp = !view.renderBsp;
+        if (view.renderBsp) renderESP_BSP();
 
         // Mario debugRender
         HaloCE::Mod::Mario::debugRender();

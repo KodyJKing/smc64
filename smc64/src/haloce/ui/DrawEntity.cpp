@@ -8,6 +8,6 @@ namespace HaloCE::Mod::UI  {
         // Draw bones
         drawBones(entity);
         // Draw collision
-        drawEntityCollision(entity);
+        // drawEntityCollision(entity);
     }
 }

@@ -348,39 +348,39 @@ namespace HaloCE::Mod::Mario {
             
         }
 
-        // SM64SurfaceCollisionData* floorData;
-        // sm64_surface_find_floor(
-        //     marioState.position[0],
-        //     marioState.position[1],
-        //     marioState.position[2],
-        //     &floorData
-        // );
-        // if (floorData) 
-        //     draw_SM64SurfaceCollisionData(floorData, IM_COL32(255, 200, 0, 255));
+        SM64SurfaceCollisionData* floorData;
+        sm64_surface_find_floor(
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2],
+            &floorData
+        );
+        if (floorData) 
+            draw_SM64SurfaceCollisionData(floorData, IM_COL32(255, 200, 0, 255));
 
-        // SM64SurfaceCollisionData* ceilData;
-        // sm64_surface_find_ceil(
-        //     marioState.position[0],
-        //     marioState.position[1],
-        //     marioState.position[2],
-        //     &ceilData
-        // );
-        // if (ceilData) 
-        //     draw_SM64SurfaceCollisionData(ceilData, IM_COL32(255, 0, 200, 255));
+        SM64SurfaceCollisionData* ceilData;
+        sm64_surface_find_ceil(
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2],
+            &ceilData
+        );
+        if (ceilData) 
+            draw_SM64SurfaceCollisionData(ceilData, IM_COL32(255, 0, 200, 255));
         
-        // SM64WallCollisionData wallData = {};
-        // wallData.x = marioState.position[0];
-        // wallData.y = marioState.position[1];
-        // wallData.z = marioState.position[2];
-        // wallData.radius = 100.0f; // Large radius to capture nearby walls
-        // wallData.offsetY = 10.0f;
-        // sm64_surface_find_wall_collisions(&wallData);
+        SM64WallCollisionData wallData = {};
+        wallData.x = marioState.position[0];
+        wallData.y = marioState.position[1];
+        wallData.z = marioState.position[2];
+        wallData.radius = 100.0f; // Large radius to capture nearby walls
+        wallData.offsetY = 10.0f;
+        sm64_surface_find_wall_collisions(&wallData);
 
-        // for (int i = 0; i < wallData.numWalls; i++) {
-        //     SM64SurfaceCollisionData* wallSurface = wallData.walls[i];
-        //     if (wallSurface)
-        //         draw_SM64SurfaceCollisionData(wallSurface, IM_COL32(0, 200, 255, 255));
-        // }
+        for (int i = 0; i < wallData.numWalls; i++) {
+            SM64SurfaceCollisionData* wallSurface = wallData.walls[i];
+            if (wallSurface)
+                draw_SM64SurfaceCollisionData(wallSurface, IM_COL32(0, 200, 255, 255));
+        }
 
         drawMarioBones(marioGeometry);
 
