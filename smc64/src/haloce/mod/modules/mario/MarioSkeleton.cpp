@@ -89,12 +89,14 @@ namespace HaloCE::Mod::Mario {
         Vec3 fwd = getBonePosition(bone.fwd, marioGeometry);
         Vec3 up = getBonePosition(bone.up, marioGeometry);
 
+        // Orthonormalize basis:
         Vec3 nFwd = (fwd - pos).normalize();
         Vec3 nUp = (up - pos).normalize();
         Vec3 nRight = nFwd.cross(nUp).normalize();
         nUp = nRight.cross(nFwd).normalize();
 
-        return Halo1::WorldTransform{ 1.0f, nFwd, nRight * -1.0f, nUp, pos };
+        float w = 3.0f / 4.0f;
+        return Halo1::WorldTransform{ w, nFwd, nRight * -1.0f, nUp, pos };
     }
 
     void updateMarioPose(SM64MarioGeometryBuffers& marioGeometry) {

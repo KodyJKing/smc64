@@ -20,6 +20,14 @@ namespace HaloCE::Freecam {
         return isFreecamEnabled || cameraOverride.enableLook || cameraOverride.enablePosition;
     }
 
+    Vec3 getCameraPosition(Halo1::Camera* camera) {
+        if (!cameraOverride.enablePosition)
+            return camera->pos;
+        if (cameraOverride.getPosition)
+            return cameraOverride.getPosition();
+        return cameraOverride.position;
+    }
+
     // void renderFPVModel(void)
     typedef void (*renderFPVModel)();
     renderFPVModel originalRenderFPVModel = nullptr;
@@ -62,6 +70,7 @@ namespace HaloCE::Freecam {
         return;
     }
 
+    // Slight misnomer: This function updates *all* cameras, not a single camera.
     typedef void (*updateCamera)(float unknown);
     updateCamera originalUpdateCamera = nullptr;
     void hkUpdateCamera(float unknown) {
@@ -75,10 +84,17 @@ namespace HaloCE::Freecam {
         auto camera = Halo1::getPlayerCameraPointer();
         bool camAllocated = camera && Memory::isAllocated(camera);
         Vec3 camPos = {0,0,0};
+        bool saveCamPos = camAllocated && isFreecamEnabled;
 
-        if (camAllocated) camPos = camera->pos;
+        if (saveCamPos) {
+            camPos = camera->pos;
+        }
         originalUpdateCamera(unknown);
-        if (camAllocated) camera->pos = camPos;
+        if (saveCamPos) {
+            camera->pos = camPos;
+        } else {
+            camera->pos = getCameraPosition(camera);
+        }
     }
 
     void init(uintptr_t halo1) {
@@ -167,7 +183,7 @@ namespace HaloCE::Freecam {
             updateXboxControls(camera);
             updateKeyboardControls(camera);
         } else {
-            camera->pos = cameraOverride.position;
+            // camera->pos = cameraOverride.position;
         }
 
     }

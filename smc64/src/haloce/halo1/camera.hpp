@@ -10,6 +10,7 @@ namespace Halo1 {
         float fov;
         Vec3 fwd;
         Vec3 up;
+        Vec3 velocity;
     };
     #pragma pack(pop)    
 }

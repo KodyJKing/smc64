@@ -1,0 +1,288 @@
+void updateCamera(float unknown)
+
+// ========================================================================
+//                        FUNCTION PROLOGUE
+// ========================================================================
+
+    // Function prologue - save registers and set up stack frame
+    halo1.dll+B14380 - 48 8B C4              - mov rax,rsp
+    halo1.dll+B14383 - 48 89 58 10           - mov [rax+10],rbx
+    halo1.dll+B14387 - 48 89 70 18           - mov [rax+18],rsi
+    halo1.dll+B1438B - 55                    - push rbp
+    halo1.dll+B1438C - 57                    - push rdi
+    halo1.dll+B1438D - 41 54                 - push r12
+    halo1.dll+B1438F - 41 56                 - push r14
+    halo1.dll+B14391 - 41 57                 - push r15
+    halo1.dll+B14393 - 48 8D 68 A1           - lea rbp,[rax-5F]
+
+    // Allocate 224 bytes of stack space for local variables
+    halo1.dll+B14397 - 48 81 EC E0000000     - sub rsp,000000E0 { 224 }
+
+    // Save XMM registers (floating point)
+    halo1.dll+B1439E - 0F29 70 C8            - movaps [rax-38],xmm6
+    halo1.dll+B143A2 - 0F29 78 B8            - movaps [rax-48],xmm7
+
+    // Set up stack canary for security (buffer overflow protection)
+    halo1.dll+B143A6 - 48 8B 05 630C0601     - mov rax,[halo1.dll+1B75010] { (-2028808724) }
+    halo1.dll+B143AD - 48 33 C4              - xor rax,rsp
+    halo1.dll+B143B0 - 48 89 45 0F           - mov [rbp+0F],rax
+
+// ========================================================================
+//                     CAMERA SYSTEM INITIALIZATION
+// ========================================================================
+
+    // Store input parameter (delta time) in xmm6 and global memory
+    halo1.dll+B143B4 - 0F28 F0               - movaps xmm6,xmm0
+    halo1.dll+B143B7 - F3 0F11 35 A1752802   - movss [halo1.dll+2D9B960],xmm6 { (0.02) }
+
+    // Call camera system initialization or state check
+    halo1.dll+B143BF - E8 9482FCFF           - call halo1.dll+ADC658
+
+    // Initialize loop counter/index
+    halo1.dll+B143C4 - 33 FF                 - xor edi,edi
+
+    // Test return value from camera system call
+    halo1.dll+B143C6 - 66 85 C0              - test ax,ax
+    // Set flag based on camera system state
+    halo1.dll+B143C9 - 0F94 05 18910601      - sete byte ptr [halo1.dll+1B7D4E8] { (1) }
+
+    // Get first/next active camera index (-1 means iterate all)
+    halo1.dll+B143D0 - 83 C9 FF              - or ecx,-01 { 255 }
+    halo1.dll+B143D3 - E8 B405FDFF           - call halo1.dll+AE498C
+    // Store camera index in ebx
+    halo1.dll+B143D8 - 8B D8                 - mov ebx,eax
+
+    // Check if no more cameras (-1 = end of list)
+    halo1.dll+B143DA - 83 F8 FF              - cmp eax,-01 { 255 }
+    // Jump to exit if no more cameras to process
+    halo1.dll+B143DD - 0F84 86010000         - je halo1.dll+B14569
+
+    // Load maximum delta time constant (0.2 seconds)
+    halo1.dll+B143E3 - F3 0F10 3D 05CBCE00   - movss xmm7,[halo1.dll+1800EF0] { (0.20) }
+    // Get base address of halo1.dll for camera data access
+    halo1.dll+B143EB - 4C 8D 25 0EBC4EFF     - lea r12,[halo1.dll] { (9460301) }
+
+// ========================================================================
+//                    MAIN CAMERA PROCESSING LOOP
+// ========================================================================
+
+// camera_loop_start:
+    // Convert camera index to 64-bit for array indexing
+    halo1.dll+B143F2 - 4C 63 FB              - movsxd  r15,ebx
+    // Set up pointer for camera data operations
+    halo1.dll+B143F5 - 48 8D 55 E7           - lea rdx,[rbp-19]
+    // Calculate camera data offset (each camera is 248 bytes)
+    halo1.dll+B143F9 - 49 69 F7 F8000000     - imul rsi,r15,000000F8 { 248 }
+    // Prepare camera index for function calls
+    halo1.dll+B14400 - 0FB7 CB               - movzx ecx,bx
+
+    // Clear camera flags/state bits
+    halo1.dll+B14403 - 66 42 83 A4 26 B8B9D902 00 - and word ptr [rsi+r12+02D9B9B8],00 { 0 }
+
+    // Call camera-specific processing function
+    halo1.dll+B1440D - E8 FA100000           - call halo1.dll+B1550C
+
+    // Load camera state flag
+    halo1.dll+B14412 - 8A 15 4E752802        - mov dl,[halo1.dll+2D9B966] { (0) }
+    // Pass return value from previous call
+    halo1.dll+B14418 - 44 8A C0              - mov r8b,al
+    // Camera index for next function call
+    halo1.dll+B1441B - 0FB7 CB               - movzx ecx,bx
+    // Call another camera processing function
+    halo1.dll+B1441E - E8 91010000           - call halo1.dll+B145B4
+
+    // Clear register for memset
+    halo1.dll+B14423 - 33 D2                 - xor edx,edx
+    // Reset camera state flag to 0
+    halo1.dll+B14425 - 40 88 3D 3A752802     - mov [halo1.dll+2D9B966],dil { (0) }
+
+    // Prepare to clear camera data buffer (104 bytes)
+    halo1.dll+B1442C - 48 8D 4C 24 20        - lea rcx,[rsp+20]
+    halo1.dll+B14431 - 44 8D 42 68           - lea r8d,[rdx+68]
+    // Clear 104 bytes of camera data buffer
+    halo1.dll+B14435 - E8 F5F18700           - call halo1.dll+139362F { ->->VCRUNTIME140.memset }
+
+// ------------------------------------------------------------------------
+//                        CAMERA FUNCTION HANDLING
+// ------------------------------------------------------------------------
+
+    // Load camera function pointer from camera array
+    halo1.dll+B1443A - 4A 8B BC 26 70B9D902  - mov rdi,[rsi+r12+02D9B970]
+    // Backup camera function pointer
+    halo1.dll+B14442 - 4C 8B F7              - mov r14,rdi
+
+    // Check if camera has a valid function pointer
+    halo1.dll+B14445 - 48 85 FF              - test rdi,rdi
+    // Skip camera processing if no function pointer
+    halo1.dll+B14448 - 74 39                 - je halo1.dll+B14483
+
+        // Load address of default/special camera function
+        halo1.dll+B1444A - 48 8D 05 D3FC0C00     - lea rax,[halo1.dll+BE4124] { (1220840264) }
+        // Check if this is the default camera function
+        halo1.dll+B14451 - 48 3B F8              - cmp rdi,rax
+        // Skip special handling if not default camera
+        halo1.dll+B14454 - 75 0C                 - jne halo1.dll+B14462
+
+            // Get current active camera for comparison
+            halo1.dll+B14456 - 83 C9 FF              - or ecx,-01 { 255 }
+            halo1.dll+B14459 - E8 2E05FDFF           - call halo1.dll+AE498C
+            // Check if this is the currently active camera
+            halo1.dll+B1445E - 3B D8                 - cmp ebx,eax
+            // Skip if this isn't the active camera
+            halo1.dll+B14460 - 75 21                 - jne halo1.dll+B14483
+
+        // Calculate address of camera-specific data structure
+        halo1.dll+B14462 - 49 8D 8C 24 78B9D902  - lea rcx,[r12+02D9B978]
+        halo1.dll+B1446A - 48 03 CE              - add rcx,rsi
+        // Pass cleared data buffer as parameter
+        halo1.dll+B1446D - 4C 8D 44 24 20        - lea r8,[rsp+20]
+        // Pass stack variable as parameter
+        halo1.dll+B14472 - 48 8D 55 E7           - lea rdx,[rbp-19]
+
+        // *** CALL CAMERA UPDATE FUNCTION POINTER ***
+        halo1.dll+B14476 - FF D7                 - call rdi
+
+        // Reload camera function pointer after call
+        halo1.dll+B14478 - 4A 8B BC 26 70B9D902  - mov rdi,[rsi+r12+02D9B970]
+        // Update backup of function pointer
+        halo1.dll+B14480 - 4C 8B F7              - mov r14,rdi
+
+    // Check if camera data buffer has valid/active flag set
+    halo1.dll+B14483 - F6 44 24 20 01        - test byte ptr [rsp+20],01 { 1 }
+    // Store camera function pointer in camera pointer array
+    halo1.dll+B14488 - 4F 89 B4 FC 8032EA02  - mov [r12+r15*8+02EA3280],r14
+    // Skip camera data copying if camera is inactive
+    halo1.dll+B14490 - 0F84 A6000000         - je halo1.dll+B1453C
+
+// ------------------------------------------------------------------------
+//                    CAMERA TIMING AND SMOOTHING LOGIC
+// ------------------------------------------------------------------------
+
+        // Load previous frame time for this camera
+        halo1.dll+B14496 - F3 42 0F10 8C 26 6CB9D902  - movss xmm1,[rsi+r12+02D9B96C]
+
+        // Compare with 0.0 to check if first frame
+        halo1.dll+B144A0 - 0F2E 0D F1F3D600      - ucomiss xmm1,[halo1.dll+1883898] { (0.00) }
+        // Handle NaN case
+        halo1.dll+B144A7 - 7A 02                 - jp halo1.dll+B144AB
+        // Skip processing if this is first frame (time = 0)
+        halo1.dll+B144A9 - 74 4A                 - je halo1.dll+B144F5
+
+        // Check if delta time exceeds maximum (0.2 seconds)
+        halo1.dll+B144AB - 0F2F F9               - comiss xmm7,xmm1
+        // Skip clamping if delta time is reasonable
+        halo1.dll+B144AE - 76 21                 - jna halo1.dll+B144D1
+
+            // Check if this is a specific camera type that needs special handling
+            halo1.dll+B144B0 - 48 8D 05 85E11300     - lea rax,[halo1.dll+C5263C] { (1239190348) }
+            halo1.dll+B144B7 - 48 3B F8              - cmp rdi,rax
+            halo1.dll+B144BA - 75 15                 - jne halo1.dll+B144D1
+
+                // Reset camera state variables for special camera type
+                halo1.dll+B144BC - 83 65 CB 00           - and dword ptr [rbp-35],00 { 0 }
+                halo1.dll+B144C0 - 0F57 C9               - xorps xmm1,xmm1
+                halo1.dll+B144C3 - 83 65 D3 00           - and dword ptr [rbp-2D],00 { 0 }
+                // Set camera mode flags to 3 (special state)
+                halo1.dll+B144C7 - C6 45 C3 03           - mov byte ptr [rbp-3D],03 { 3 }
+                halo1.dll+B144CB - C6 45 C5 03           - mov byte ptr [rbp-3B],03 { 3 }
+                halo1.dll+B144CF - EB 0F                 - jmp halo1.dll+B144E0
+
+        // Load some timing threshold value
+        halo1.dll+B144D1 - F3 0F10 45 BF         - movss xmm0,[rbp-41]
+        // Compare threshold with current time
+        halo1.dll+B144D6 - 0F2F C1               - comiss xmm0,xmm1
+        // Skip update if threshold not met
+        halo1.dll+B144D9 - 77 05                 - ja halo1.dll+B144E0
+        // Update threshold with current time
+        halo1.dll+B144DB - F3 0F11 4D BF         - movss [rbp-41],xmm1
+
+        // Calculate new delta time (previous_time - current_delta)
+        halo1.dll+B144E0 - F3 0F5C CE            - subss xmm1,xmm6
+        // Ensure delta time is not negative
+        halo1.dll+B144E4 - 0F57 C0               - xorps xmm0,xmm0
+        halo1.dll+B144E7 - F3 0F5F C1            - maxss xmm0,xmm1
+        // Store processed delta time back to camera data
+        halo1.dll+B144EB - F3 42 0F11 84 26 6CB9D902  - movss [rsi+r12+02D9B96C],xmm0
+
+// ------------------------------------------------------------------------
+//                  COPY CAMERA DATA TO MAIN CAMERA ARRAY
+// ------------------------------------------------------------------------
+
+        // Load processed camera data from local buffer
+        halo1.dll+B144F5 - 0F28 44 24 20         - movaps xmm0,[rsp+20]
+        // Calculate destination address in camera array
+        halo1.dll+B144FA - 49 8D 94 24 C0B9D902  - lea rdx,[r12+02D9B9C0]
+        halo1.dll+B14502 - 0F28 4D 87            - movaps xmm1,[rbp-79]
+        halo1.dll+B14506 - 48 03 D6              - add rdx,rsi
+
+        // Copy camera data in 16-byte chunks (104 bytes total)
+        halo1.dll+B14509 - 0F11 02               - movups [rdx],xmm0        ; bytes 0-15
+        halo1.dll+B1450C - 0F28 45 97            - movaps xmm0,[rbp-69]
+        halo1.dll+B14510 - 0F11 4A 10            - movups [rdx+10],xmm1     ; bytes 16-31
+        halo1.dll+B14514 - 0F28 4D A7            - movaps xmm1,[rbp-59]
+        halo1.dll+B14518 - 0F11 42 20            - movups [rdx+20],xmm0     ; bytes 32-47
+        halo1.dll+B1451C - 0F28 45 B7            - movaps xmm0,[rbp-49]
+        halo1.dll+B14520 - 0F11 4A 30            - movups [rdx+30],xmm1     ; bytes 48-63
+        halo1.dll+B14524 - 0F28 4D C7            - movaps xmm1,[rbp-39]
+        halo1.dll+B14528 - 0F11 42 40            - movups [rdx+40],xmm0     ; bytes 64-79
+        halo1.dll+B1452C - F2 0F10 45 D7         - movsd xmm0,[rbp-29]
+        halo1.dll+B14531 - 0F11 4A 50            - movups [rdx+50],xmm1     ; bytes 80-95
+        halo1.dll+B14535 - F2 0F11 42 60         - movsd [rdx+60],xmm0      ; bytes 96-103
+        halo1.dll+B1453A - EB 0E                 - jmp halo1.dll+B1454A
+
+// inactive_camera_handler:
+        // Calculate camera data address for inactive camera
+        halo1.dll+B1453C - 49 8D 94 24 C0B9D902  - lea rdx,[r12+02D9B9C0]
+        halo1.dll+B14544 - 48 03 D6              - add rdx,rsi
+        // Clear active flag (bit 0) for inactive camera
+        halo1.dll+B14547 - 83 22 FE              - and dword ptr [rdx],-02 { 254 }
+
+// ------------------------------------------------------------------------
+//                        CONTINUE TO NEXT CAMERA
+// ------------------------------------------------------------------------
+
+// camera_loop_continue:
+    // Call camera finalization/cleanup function
+    halo1.dll+B1454A - 0FB7 CB               - movzx ecx,bx
+    halo1.dll+B1454D - E8 7E190000           - call halo1.dll+B15ED0
+
+    // Get next camera index in iteration
+    halo1.dll+B14552 - 8B CB                 - mov ecx,ebx
+    halo1.dll+B14554 - E8 3304FDFF           - call halo1.dll+AE498C
+    // Store next camera index
+    halo1.dll+B14559 - 8B D8                 - mov ebx,eax
+    // Reset loop state
+    halo1.dll+B1455B - BF 00000000           - mov edi,00000000 { 0 }
+
+    // Check if more cameras to process
+    halo1.dll+B14560 - 83 F8 FF              - cmp eax,-01 { 255 }
+    // Loop back to process next camera
+    halo1.dll+B14563 - 0F85 89FEFFFF         - jne halo1.dll+B143F2
+
+// ========================================================================
+//                       FUNCTION EXIT AND CLEANUP
+// ========================================================================
+
+// function_exit:
+    // Verify stack canary (security check)
+    halo1.dll+B14569 - 48 8B 4D 0F           - mov rcx,[rbp+0F]
+    halo1.dll+B1456D - 48 33 CC              - xor rcx,rsp
+    halo1.dll+B14570 - E8 CBD08700           - call halo1.dll+1391640
+
+    // Restore stack pointer and registers
+    halo1.dll+B14575 - 4C 8D 9C 24 E0000000  - lea r11,[rsp+000000E0]
+    halo1.dll+B1457D - 49 8B 5B 38           - mov rbx,[r11+38]
+    halo1.dll+B14581 - 49 8B 73 40           - mov rsi,[r11+40]
+
+    // Restore XMM registers
+    halo1.dll+B14585 - 41 0F28 73 F0         - movaps xmm6,[r11-10]
+    halo1.dll+B1458A - 41 0F28 7B E0         - movaps xmm7,[r11-20]
+
+    // Restore stack and return
+    halo1.dll+B1458F - 49 8B E3              - mov rsp,r11
+    halo1.dll+B14592 - 41 5F                 - pop r15
+    halo1.dll+B14594 - 41 5E                 - pop r14
+    halo1.dll+B14596 - 41 5C                 - pop r12
+    halo1.dll+B14598 - 5F                    - pop rdi
+    halo1.dll+B14599 - 5D                    - pop rbp
+    halo1.dll+B1459A - C3                    - ret 

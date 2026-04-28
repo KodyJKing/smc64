@@ -7,24 +7,6 @@
 #include "Coordinates.hpp"
 
 namespace HaloCE::Mod::Mario {
-
-    void updateFollowCamera(Halo1::Camera* camera, SM64MarioInputs& inputs, SM64MarioState& marioState) {        
-        inputs.camLookX = -camera->fwd.x;
-        inputs.camLookZ = -camera->fwd.y;
-
-        Vec3 cameraRight = camera->fwd.cross( camera->up );
-        
-        Freecam::cameraOverride.enablePosition = true;
-        // Position the camera behind Mario
-        Vec3 marioHaloPos = Coordinates::marioToHalo(Vec3{
-            marioState.position[0],
-            marioState.position[1],
-            marioState.position[2]
-        });
-
-        Freecam::cameraOverride.position = marioHaloPos - camera->fwd * 3.0f + cameraRight * 0.25f + Vec3{0, 0, 0.5f};
-    }
-
     
     void updateXboxControls(SM64MarioInputs& inputs) {
 
@@ -91,7 +73,8 @@ namespace HaloCE::Mod::Mario {
         updateXboxControls(inputs);
         updateKeyboardControls(inputs);
         if (camera) {
-            updateFollowCamera(camera, inputs, marioState);
+            inputs.camLookX = -camera->fwd.x;
+            inputs.camLookZ = -camera->fwd.y;
         }
     }
 

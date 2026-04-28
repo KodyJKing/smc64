@@ -188,8 +188,37 @@ namespace HaloCE::Mod::Mario {
 
     void dumpMarioGeometry();
 
+    Vec3 marioWorldPosition() {
+        return Coordinates::marioToHalo(Vec3{
+            marioState.position[0],
+            marioState.position[1],
+            marioState.position[2]
+        });
+    }
+
+
+    Vec3 cameraPosition = {0, 0, 0};
+    Vec3 cameraVelocity = {0, 0, 0};
+    uint32_t framesSinceLastUpdate = 0;
+    Vec3 getCameraPosition() {
+        // Extrapolate camera on non-update frames. Without this, the camera jitters terribly.
+        float dt = (framesSinceLastUpdate % 2) * 0.5f;
+        auto camera = Halo1::getPlayerCameraPointer();
+        if (!camera) return Vec3{0,0,0};
+        Vec3 result = cameraPosition + cameraVelocity * dt + camera->fwd * -3.0f + camera->fwd.cross(camera->up) * 0.25f + Vec3{0, 0, 0.5f};
+        framesSinceLastUpdate++;
+        return result;
+    }
+
     void update() {
         #ifdef ENABLE_MARIO
+
+        Vec3 oldCameraPosition = cameraPosition;
+        cameraPosition = marioWorldPosition();
+        cameraVelocity = cameraPosition - oldCameraPosition;
+        framesSinceLastUpdate = 0;
+        Freecam::cameraOverride.enablePosition = true;
+        Freecam::cameraOverride.getPosition = getCameraPosition;
 
         // F6 to dump Mario geometry buffers
         if (GetAsyncKeyState(VK_F6) & 1) {
@@ -210,38 +239,30 @@ namespace HaloCE::Mod::Mario {
         DynamicGeometry::update(marioState);
 
         if (possessMario) {
-            Mario::updateInput(marioInputs, marioState, Halo1::getPlayerCameraPointer());
             auto playerRec = Halo1::getPlayerRecord();
             if (playerRec) {
                 auto player = playerRec->entity();
                 if (player) {
-
-                    Vec3 marioWorldPos = Coordinates::marioToHalo(Vec3{
-                        marioState.position[0],
-                        marioState.position[1],
-                        marioState.position[2]
-                    });
+                    Vec3 marioWorldPos = marioWorldPosition();
                     // Vec3 difference = marioWorldPos - player->pos;
                     Vec3 difference = player->pos - marioWorldPos;
                     float distance = difference.length();
-                    
                     // If Cheif teleported, move Mario to Cheif
                     if (distance > 5.0f) {
                         marioToCheif();
                     } else {
                         // Cheif to Mario
-
-                        // Allow some vertical difference, to keep Cheif grounded.
                         float dz = difference.z;
                         float limit = 0.2f;
+                        // Allow some vertical difference, to keep Cheif grounded.
                         if (abs(dz) > limit) {
                             dz = (dz > 0) ? limit : -limit;
                         }
-
                         player->pos = marioWorldPos + Vec3{0, 0, dz};
                     }
                 }
             }
+            Mario::updateInput(marioInputs, marioState, Halo1::getPlayerCameraPointer());
         } else {
             Freecam::cameraOverride.enablePosition = false;
         }

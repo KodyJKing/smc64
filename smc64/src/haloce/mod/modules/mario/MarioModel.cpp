@@ -23,7 +23,7 @@ namespace HaloCE::Mod::Mario::MarioModel {
         auto boneCount = marioEntity->worldBones.count();
         for (int i = 0; i < boneCount; i++) {
             auto& bone = worldBones[i];
-            bone.w = 3.0f / 4.0f;
+            bone.w = marioPose[i].w;
             bone.x = marioPose[i].x;
             bone.y = marioPose[i].y;
             bone.z = marioPose[i].z;

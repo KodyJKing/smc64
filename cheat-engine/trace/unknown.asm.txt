@@ -1,0 +1,40 @@
+halo1.dll+AD0304 - mov [rsp+08],rbx
+halo1.dll+AD0309 - mov [rsp+10],rsi
+halo1.dll+AD030E - push rdi
+halo1.dll+AD030F - sub rsp,30 { 48 }
+halo1.dll+AD0313 - mov rax,[halo1.dll+1C40480] { (21E7C141144) }
+halo1.dll+AD031A - mov rsi,r8
+halo1.dll+AD031D - movss xmm0,[rdx+04]
+halo1.dll+AD0322 - mov rbx,rdx
+halo1.dll+AD0325 - movzx ecx,cx
+halo1.dll+AD0328 - imul r9,rcx,00000C20 { 3104 }
+halo1.dll+AD032F - movaps [rsp+20],xmm6
+halo1.dll+AD0334 - movsxd  rdi,dword ptr [rax+34]
+halo1.dll+AD0338 - add rax,r9
+halo1.dll+AD033B - add rdi,rax
+halo1.dll+AD033E - call halo1.dll+1607023 { ->->ucrtbase.cosf }
+halo1.dll+AD0343 - movaps xmm6,xmm0
+halo1.dll+AD0346 - movss xmm0,[rbx]
+halo1.dll+AD034A - call halo1.dll+1607023 { ->->ucrtbase.cosf }
+halo1.dll+AD034F - mulss xmm0,xmm6
+halo1.dll+AD0353 - movss [rsi],xmm0
+halo1.dll+AD0357 - movss xmm0,[rbx]
+halo1.dll+AD035B - call halo1.dll+1607029 { ->->ucrtbase.sinf }
+halo1.dll+AD0360 - mulss xmm0,xmm6
+halo1.dll+AD0364 - movss [rsi+04],xmm0
+halo1.dll+AD0369 - movss xmm0,[rbx+04]
+halo1.dll+AD036E - call halo1.dll+1607029 { ->->ucrtbase.sinf }
+halo1.dll+AD0373 - movss [rsi+08],xmm0
+halo1.dll+AD0378 - test rdi,rdi
+halo1.dll+AD037B - je halo1.dll+AD038D
+halo1.dll+AD037D - mov ecx,[rdi+64]
+halo1.dll+AD0380 - cmp ecx,-01 { 255 }
+halo1.dll+AD0383 - je halo1.dll+AD038D
+halo1.dll+AD0385 - mov rdx,rsi
+halo1.dll+AD0388 - call halo1.dll+B05
+halo1.dll+AD038D - mov rbx,[rsp+40]
+halo1.dll+AD0392 - mov rsi,[rsp+48]
+halo1.dll+AD0397 - movaps xmm6,[rsp+20]
+halo1.dll+AD039C - add rsp,30 { 48 }
+halo1.dll+AD03A0 - pop rdi
+halo1.dll+AD03A1 - ret 
