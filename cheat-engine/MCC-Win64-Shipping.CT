@@ -3850,6 +3850,56 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Byte>00</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call halo1.dll+B368B0</Description>
+      <AddressString>halo1.dll+B35E95</AddressString>
+      <Before>
+        <Byte>42</Byte>
+        <Byte>08</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>D6</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>16</Byte>
+        <Byte>0A</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>BA</Byte>
+        <Byte>02</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>fn: updateEntityRegion :mov [rsp+08],rbx</Description>
+      <AddressString>halo1.dll+B368B0</AddressString>
+      <Before>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>5C</Byte>
+        <Byte>24</Byte>
+        <Byte>08</Byte>
+      </Actual>
+      <After>
+        <Byte>55</Byte>
+        <Byte>56</Byte>
+        <Byte>57</Byte>
+        <Byte>41</Byte>
+        <Byte>54</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -6677,6 +6727,11 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
     <DisassemblerComment>
       <Address>"halo1.dll"+B35FD4</Address>
       <Header>spawn projectile function
+</Header>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"halo1.dll"+B368B0</Address>
+      <Header>void updateEntityRegion(uint32_t entityHandle, void* unknown)
 </Header>
     </DisassemblerComment>
     <DisassemblerComment>
