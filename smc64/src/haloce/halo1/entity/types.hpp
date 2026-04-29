@@ -29,7 +29,8 @@ namespace Halo1 {
         Vec3 fwd; 
         Vec3 up; 
         Vec3 angularVelocity; 
-        char pad_0054[8]; 
+        char pad_0054[4]; 
+        uint32_t regionId;
         Vec3 rootBonePos; 
         char pad_0068[8]; 
         uint16_t entityCategory; 

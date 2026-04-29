@@ -217,8 +217,8 @@ namespace HaloCE::Mod::Mario {
         cameraPosition = marioWorldPosition();
         cameraVelocity = cameraPosition - oldCameraPosition;
         framesSinceLastUpdate = 0;
-        Freecam::cameraOverride.enablePosition = true;
         Freecam::cameraOverride.getPosition = getCameraPosition;
+        Freecam::cameraOverride.enablePosition = true;
 
         // F6 to dump Mario geometry buffers
         if (GetAsyncKeyState(VK_F6) & 1) {

@@ -162,7 +162,7 @@ namespace HaloCE::Mod {
 
         originalUpdateWorldBones( entityHandle );
 
-        Mario::MarioModel::processEntity( entity );
+        Mario::MarioModel::processEntity( entityHandle, entity );
     }
 
     typedef void (*damageEntity_t)(uint32_t entityHandle, uint16_t param_2, uint16_t param_3, uint64_t param_4, uint8_t* param_5, void* param_6, uint64_t param_7, uint64_t param_8, uint32_t* param_9, float* param_10, uint32_t* param_11, float damage, char param_13);

@@ -813,6 +813,14 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         </CheatEntry>
       </CheatEntries>
     </CheatEntry>
+    <CheatEntry>
+      <ID>92</ID>
+      <Description>"regionNum"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>23315242DFC</Address>
+    </CheatEntry>
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>
@@ -3816,6 +3824,32 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Byte>48</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description/>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Write entity.regionNumber :mov [r11],rax</Description>
+      <AddressString>halo1.dll+B36A25</AddressString>
+      <Before>
+        <Byte>44</Byte>
+        <Byte>D8</Byte>
+        <Byte>49</Byte>
+        <Byte>8B</Byte>
+        <Byte>07</Byte>
+      </Before>
+      <Actual>
+        <Byte>49</Byte>
+        <Byte>89</Byte>
+        <Byte>03</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>87</Byte>
+        <Byte>8C</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -3841,7 +3875,8 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Element Offset="72" Vartype="Float" Bytesize="4" OffsetHex="00000048" Description="angularVel.x" DisplayMethod="unsigned integer"/>
         <Element Offset="76" Vartype="Float" Bytesize="4" OffsetHex="0000004C" Description="angularVel.y" DisplayMethod="unsigned integer"/>
         <Element Offset="80" Vartype="Float" Bytesize="4" OffsetHex="00000050" Description="angularVel.z" DisplayMethod="unsigned integer"/>
-        <Element Offset="84" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000054" DisplayMethod="unsigned integer"/>
+        <Element Offset="84" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000054" DisplayMethod="unsigned integer"/>
+        <Element Offset="88" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000058" Description="regionNumber" DisplayMethod="unsigned integer"/>
         <Element Offset="92" Vartype="Float" Bytesize="4" OffsetHex="0000005C" Description="rootBone.x" DisplayMethod="unsigned integer"/>
         <Element Offset="96" Vartype="Float" Bytesize="4" OffsetHex="00000060" Description="rootBone.y" DisplayMethod="unsigned integer"/>
         <Element Offset="100" Vartype="Float" Bytesize="4" OffsetHex="00000064" Description="rootBone.z" DisplayMethod="unsigned integer"/>
