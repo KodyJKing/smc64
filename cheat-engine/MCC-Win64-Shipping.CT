@@ -4347,6 +4347,31 @@ halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
         <Byte>3F</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call halo1.dll+C9478C</Description>
+      <AddressString>halo1.dll+C1226E</AddressString>
+      <Before>
+        <Byte>53</Byte>
+        <Byte>14</Byte>
+        <Byte>4C</Byte>
+        <Byte>8B</Byte>
+        <Byte>03</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>19</Byte>
+        <Byte>25</Byte>
+        <Byte>08</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>44</Byte>
+        <Byte>0F</Byte>
+        <Byte>B6</Byte>
+        <Byte>73</Byte>
+        <Byte>26</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -6986,10 +7011,11 @@ halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
         <Element Offset="4" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000004" Description="shaderIndex" DisplayMethod="hexadecimal"/>
         <Element Offset="6" Vartype="Byte" Bytesize="1" RLECount="2" OffsetHex="00000006" DisplayMethod="hexadecimal"/>
         <Element Offset="8" Vartype="Float" Bytesize="4" RLECount="4" OffsetHex="00000008" DisplayMethod="unsigned integer"/>
-        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
+        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
         <Element Offset="28" Vartype="Float" Bytesize="4" OffsetHex="0000001C" DisplayMethod="unsigned integer"/>
-        <Element Offset="28" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000001C" DisplayMethod="hexadecimal"/>
-        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" RLECount="11" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="hexadecimal"/>
+        <Element Offset="36" Vartype="4 Bytes" Bytesize="4" RLECount="10" OffsetHex="00000024" DisplayMethod="unsigned integer"/>
         <Element Offset="76" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000004C" DisplayMethod="hexadecimal"/>
         <Element Offset="84" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000054" DisplayMethod="unsigned integer"/>
         <Element Offset="92" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000005C" DisplayMethod="hexadecimal"/>

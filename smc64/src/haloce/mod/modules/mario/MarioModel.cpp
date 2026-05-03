@@ -74,13 +74,16 @@ namespace HaloCE::Mod::Mario::MarioModel {
             worldBones[i].x = leftHandBone.x;
             worldBones[i].y = leftHandBone.y;
             worldBones[i].z = leftHandBone.z;
-            worldBones[i].w = 0.75f;
+            // worldBones[i].w = 0.75f;
         }
     }
+
+    uint32_t marioHandle  = 0xFFFFFFFF;
 
     void processEntity(uint32_t entityHandle, Halo1::Entity* entity) {
         if (!entity) return;
         if (isMario(entity)) {
+            marioHandle = entityHandle;
             updatePose(entityHandle, entity);
         }
         if (entityHandle == playerWeaponHandle()) {
@@ -89,13 +92,23 @@ namespace HaloCE::Mod::Mario::MarioModel {
     }
 
     void renderEntity(Halo1::RenderEntityRequest *request, Halo1::renderEntity_t renderEntityOriginal) {
-        if (!isMario(request->entityHandle)) return;
+        // if (!isMario(request->entityHandle)) return;
+
+        auto renderedHandle = request->entityHandle;
+        auto playerHandle = Halo1::getPlayerHandle();
+        if (renderedHandle != playerHandle) return;
         
         uint32_t weaponHandle = playerWeaponHandle();
         if (weaponHandle != 0xFFFFFFFF) {
             Halo1::RenderEntityRequest childRequest = *request;
             childRequest.entityHandle = weaponHandle;
             renderEntityOriginal(&childRequest);
+        }
+
+        if (marioHandle != 0xFFFFFFFF) {
+            Halo1::RenderEntityRequest marioRequest = *request;
+            marioRequest.entityHandle = marioHandle;
+            renderEntityOriginal(&marioRequest);
         }
     }
 }
