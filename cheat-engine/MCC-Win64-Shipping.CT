@@ -65,6 +65,14 @@
           <Address>halo1.dll+2D8FE70</Address>
         </CheatEntry>
         <CheatEntry>
+          <ID>96</ID>
+          <Description>"playerCameraController"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>halo1.dll+2D9B970</Address>
+        </CheatEntry>
+        <CheatEntry>
           <ID>73</ID>
           <Description>"playerCamera"</Description>
           <ShowAsSigned>0</ShowAsSigned>
@@ -638,6 +646,78 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>97</ID>
+          <Description>"Don't Render Player (3rd person)"</Description>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Halo: The Master Chief Collection  
+  Version: 
+  Date   : 2026-05-02
+  Author : Kody
+
+  This script does blah blah blah
+}
+
+define(address,"halo1.dll"+B48CB4)
+define(bytes,E8 17 00 00 00)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"halo1.dll"+B48CB4)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  cmp eax,[halo1.dll+1C563F0]
+  je return
+  call halo1.dll+B48CD0
+  jmp return
+
+address:
+  jmp newmem
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // call halo1.dll+B48CD0
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: halo1.dll+B48CB4
+
+halo1.dll+B48C95: 57                    - push rdi
+halo1.dll+B48C96: 48 83 EC 20           - sub rsp,20
+halo1.dll+B48C9A: 48 8B F9              - mov rdi,rcx
+halo1.dll+B48C9D: 33 DB                 - xor ebx,ebx
+halo1.dll+B48C9F: EB 1B                 - jmp halo1.dll+B48CBC
+halo1.dll+B48CA1: 48 0F BF C3           - movsx rax,bx
+halo1.dll+B48CA5: 48 8D 0D 88 73 25 02  - lea rcx,[halo1.dll+2DA0034]
+halo1.dll+B48CAC: 8B 04 81              - mov eax,[rcx+rax*4]
+halo1.dll+B48CAF: 48 8B CF              - mov rcx,rdi
+halo1.dll+B48CB2: 89 07                 - mov [rdi],eax
+// ---------- INJECTING HERE ----------
+halo1.dll+B48CB4: E8 17 00 00 00        - call halo1.dll+B48CD0
+// ---------- DONE INJECTING  ----------
+halo1.dll+B48CB9: 66 FF C3              - inc bx
+halo1.dll+B48CBC: 66 3B 1D 6D 73 25 02  - cmp bx,[halo1.dll+2DA0030]
+halo1.dll+B48CC3: 7C DC                 - jl halo1.dll+B48CA1
+halo1.dll+B48CC5: 48 8B 5C 24 30        - mov rbx,[rsp+30]
+halo1.dll+B48CCA: 48 83 C4 20           - add rsp,20
+halo1.dll+B48CCE: 5F                    - pop rdi
+halo1.dll+B48CCF: C3                    - ret 
+halo1.dll+B48CD0: 48 89 5C 24 08        - mov [rsp+08],rbx
+halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
+halo1.dll+B48CDA: 48 89 74 24 18        - mov [rsp+18],rsi
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
     <CheatEntry>
@@ -814,12 +894,85 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
       </CheatEntries>
     </CheatEntry>
     <CheatEntry>
-      <ID>92</ID>
-      <Description>"regionNum"</Description>
-      <ShowAsHex>1</ShowAsHex>
+      <ID>95</ID>
+      <Description>"No description"</Description>
       <ShowAsSigned>0</ShowAsSigned>
       <VariableType>4 Bytes</VariableType>
-      <Address>23315242DFC</Address>
+      <Address>1EA16F4CA78</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>98</ID>
+      <Description>"Auto Assemble script"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : Halo: The Master Chief Collection  
+  Version: 
+  Date   : 2026-05-02
+  Author : Kody
+
+  This script does blah blah blah
+}
+
+define(address,"halo1.dll"+B48CB2)
+define(bytes,89 07 E8 17 00 00 00)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"halo1.dll"+B48CB2)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  mov eax,E64703D8
+  mov [rdi],eax
+  call halo1.dll+B48CD0
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov [rdi],eax
+  // call halo1.dll+B48CD0
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: halo1.dll+B48CB2
+
+halo1.dll+B48C90: 48 89 5C 24 08        - mov [rsp+08],rbx
+halo1.dll+B48C95: 57                    - push rdi
+halo1.dll+B48C96: 48 83 EC 20           - sub rsp,20
+halo1.dll+B48C9A: 48 8B F9              - mov rdi,rcx
+halo1.dll+B48C9D: 33 DB                 - xor ebx,ebx
+halo1.dll+B48C9F: EB 1B                 - jmp halo1.dll+B48CBC
+halo1.dll+B48CA1: 48 0F BF C3           - movsx rax,bx
+halo1.dll+B48CA5: 48 8D 0D 88 73 25 02  - lea rcx,[halo1.dll+2DA0034]
+halo1.dll+B48CAC: 8B 04 81              - mov eax,[rcx+rax*4]
+halo1.dll+B48CAF: 48 8B CF              - mov rcx,rdi
+// ---------- INJECTING HERE ----------
+halo1.dll+B48CB2: 89 07                 - mov [rdi],eax
+// ---------- DONE INJECTING  ----------
+halo1.dll+B48CB4: E8 17 00 00 00        - call halo1.dll+B48CD0
+halo1.dll+B48CB9: 66 FF C3              - inc bx
+halo1.dll+B48CBC: 66 3B 1D 6D 73 25 02  - cmp bx,[halo1.dll+2DA0030]
+halo1.dll+B48CC3: 7C DC                 - jl halo1.dll+B48CA1
+halo1.dll+B48CC5: 48 8B 5C 24 30        - mov rbx,[rsp+30]
+halo1.dll+B48CCA: 48 83 C4 20           - add rsp,20
+halo1.dll+B48CCE: 5F                    - pop rdi
+halo1.dll+B48CCF: C3                    - ret 
+halo1.dll+B48CD0: 48 89 5C 24 08        - mov [rsp+08],rbx
+halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
+}
+</AssemblerScript>
     </CheatEntry>
   </CheatEntries>
   <CheatCodes>
@@ -3900,6 +4053,300 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
         <Byte>54</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description/>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rbx+000001C0],r8d</Description>
+      <AddressString>halo1.dll+BDD117</AddressString>
+      <Before>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>48</Byte>
+        <Byte>03</Byte>
+        <Byte>CA</Byte>
+      </Before>
+      <Actual>
+        <Byte>44</Byte>
+        <Byte>89</Byte>
+        <Byte>83</Byte>
+        <Byte>C0</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>3B</Byte>
+        <Byte>D5</Byte>
+        <Byte>48</Byte>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rbx+000001C0],r8d</Description>
+      <AddressString>halo1.dll+BDD136</AddressString>
+      <Before>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+        <Byte>C0</Byte>
+        <Byte>33</Byte>
+        <Byte>D2</Byte>
+      </Before>
+      <Actual>
+        <Byte>44</Byte>
+        <Byte>89</Byte>
+        <Byte>83</Byte>
+        <Byte>C0</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>8B</Byte>
+        <Byte>01</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+        <Byte>89</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :and dword ptr [rbx+000001C0],-29</Description>
+      <AddressString>halo1.dll+BDD149</AddressString>
+      <Before>
+        <Byte>E8</Byte>
+        <Byte>A7</Byte>
+        <Byte>C0</Byte>
+        <Byte>F5</Byte>
+        <Byte>FF</Byte>
+      </Before>
+      <Actual>
+        <Byte>83</Byte>
+        <Byte>A3</Byte>
+        <Byte>C0</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>D7</Byte>
+      </Actual>
+      <After>
+        <Byte>B8</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov ecx,[rdx]</Description>
+      <AddressString>halo1.dll+B38BF2</AddressString>
+      <Before>
+        <Byte>FF</Byte>
+        <Byte>48</Byte>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+        <Byte>D0</Byte>
+      </Before>
+      <Actual>
+        <Byte>8B</Byte>
+        <Byte>0A</Byte>
+      </Actual>
+      <After>
+        <Byte>83</Byte>
+        <Byte>F9</Byte>
+        <Byte>FF</Byte>
+        <Byte>75</Byte>
+        <Byte>CF</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rax],r13b</Description>
+      <AddressString>halo1.dll+B3776C</AddressString>
+      <Before>
+        <Byte>FF</Byte>
+        <Byte>48</Byte>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+        <Byte>C1</Byte>
+      </Before>
+      <Actual>
+        <Byte>44</Byte>
+        <Byte>88</Byte>
+        <Byte>28</Byte>
+      </Actual>
+      <After>
+        <Byte>40</Byte>
+        <Byte>84</Byte>
+        <Byte>ED</Byte>
+        <Byte>74</Byte>
+        <Byte>09</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rbx+5A],ax</Description>
+      <AddressString>halo1.dll+BDD155</AddressString>
+      <Before>
+        <Byte>B8</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>66</Byte>
+        <Byte>89</Byte>
+        <Byte>43</Byte>
+        <Byte>5A</Byte>
+      </Actual>
+      <After>
+        <Byte>89</Byte>
+        <Byte>6B</Byte>
+        <Byte>54</Byte>
+        <Byte>66</Byte>
+        <Byte>89</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rbx+58],bp</Description>
+      <AddressString>halo1.dll+BDD15C</AddressString>
+      <Before>
+        <Byte>43</Byte>
+        <Byte>5A</Byte>
+        <Byte>89</Byte>
+        <Byte>6B</Byte>
+        <Byte>54</Byte>
+      </Before>
+      <Actual>
+        <Byte>66</Byte>
+        <Byte>89</Byte>
+        <Byte>6B</Byte>
+        <Byte>58</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>63</Byte>
+        <Byte>46</Byte>
+        <Byte>34</Byte>
+        <Byte>49</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rax],r9w</Description>
+      <AddressString>halo1.dll+B3697A</AddressString>
+      <Before>
+        <Byte>D9</Byte>
+        <Byte>48</Byte>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+        <Byte>C1</Byte>
+      </Before>
+      <Actual>
+        <Byte>66</Byte>
+        <Byte>44</Byte>
+        <Byte>89</Byte>
+        <Byte>08</Byte>
+      </Actual>
+      <After>
+        <Byte>E9</Byte>
+        <Byte>BE</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rax],dx</Description>
+      <AddressString>halo1.dll+B7690A</AddressString>
+      <Before>
+        <Byte>B9</Byte>
+        <Byte>04</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>66</Byte>
+        <Byte>89</Byte>
+        <Byte>10</Byte>
+      </Actual>
+      <After>
+        <Byte>E8</Byte>
+        <Byte>16</Byte>
+        <Byte>BC</Byte>
+        <Byte>0F</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov [rax],bx</Description>
+      <AddressString>halo1.dll+B76864</AddressString>
+      <Before>
+        <Byte>0F</Byte>
+        <Byte>44</Byte>
+        <Byte>C1</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+      </Before>
+      <Actual>
+        <Byte>66</Byte>
+        <Byte>89</Byte>
+        <Byte>18</Byte>
+      </Actual>
+      <After>
+        <Byte>E8</Byte>
+        <Byte>D4</Byte>
+        <Byte>36</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Code :mov ecx,[rbx]</Description>
+      <AddressString>halo1.dll+B49099</AddressString>
+      <Before>
+        <Byte>85</Byte>
+        <Byte>22</Byte>
+        <Byte>02</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>8B</Byte>
+        <Byte>0B</Byte>
+      </Actual>
+      <After>
+        <Byte>E8</Byte>
+        <Byte>A8</Byte>
+        <Byte>25</Byte>
+        <Byte>F5</Byte>
+        <Byte>FF</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Write cameraController.flags :mov [rcx+rax+10],rdx</Description>
+      <AddressString>halo1.dll+B154E6</AddressString>
+      <Before>
+        <Byte>05</Byte>
+        <Byte>7A</Byte>
+        <Byte>64</Byte>
+        <Byte>28</Byte>
+        <Byte>02</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>54</Byte>
+        <Byte>01</Byte>
+        <Byte>10</Byte>
+      </Actual>
+      <After>
+        <Byte>BA</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>80</Byte>
+        <Byte>3F</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -6743,6 +7190,11 @@ halo1.dll+B9FC27: 44 0F B7 D1                    - movzx r10d,cx
       <Address>"halo1.dll"+B48A7E</Address>
       <Comment>Call Render Entity(s)
 </Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"halo1.dll"+B48C90</Address>
+      <Header>void renderEntityModels(???)
+</Header>
     </DisassemblerComment>
     <DisassemblerComment>
       <Address>"halo1.dll"+B89D2A</Address>

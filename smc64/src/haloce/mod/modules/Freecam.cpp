@@ -86,6 +86,8 @@ namespace HaloCE::Freecam {
         Vec3 camPos = {0,0,0};
         bool saveCamPos = camAllocated && isFreecamEnabled;
 
+        // Halo1::enterThirdPerson();
+
         if (saveCamPos) {
             camPos = camera->pos;
         }
@@ -95,6 +97,8 @@ namespace HaloCE::Freecam {
         } else {
             camera->pos = getCameraPosition(camera);
         }
+
+        // Halo1::enterThirdPerson();
     }
 
     void init(uintptr_t halo1) {
@@ -163,9 +167,9 @@ namespace HaloCE::Freecam {
             camera->pos += right * speed;
         
         // QE for vertical movement.
-        if (GetAsyncKeyState('Q') & 0x8000)
+        if (GetAsyncKeyState('R') & 0x8000)
             camera->pos += up * speed;
-        if (GetAsyncKeyState('E') & 0x8000)
+        if (GetAsyncKeyState('F') & 0x8000)
             camera->pos -= up * speed;
     }
 

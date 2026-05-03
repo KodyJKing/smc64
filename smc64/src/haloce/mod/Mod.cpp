@@ -228,6 +228,18 @@ namespace HaloCE::Mod {
         originalUpdateActor(actorHandle);
     }
 
+    // renderEntity
+    Halo1::renderEntity_t originalRenderEntity = nullptr;
+    void hkRenderEntity(Halo1::RenderEntityRequest* request) {
+        UnloadLock lock; // No unloading while we're still executing hook code.
+
+        // std::cout << "Render entity " << request->entityHandle << std::endl;
+
+        originalRenderEntity(request);
+
+        Mario::MarioModel::renderEntity(request, originalRenderEntity);
+    }
+
     void hookFunctions() {
         std::cout << "\nHooking functions:\n" << std::endl;
 
@@ -245,6 +257,7 @@ namespace HaloCE::Mod {
         // HOOK_FUNC( GetShieldDamageResist, 0xB9D114U );
         // HOOK_FUNC( UpdateActor, 0xC04A14U );
         HOOK_FUNC( UpdateWorldBones, 0xB3A614U );
+        HOOK_FUNC( RenderEntity, RENDER_ENTITY_FUNC_OFFSET );
 
         #undef HOOK_FUNC
     }

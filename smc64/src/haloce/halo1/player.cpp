@@ -1,8 +1,19 @@
 #include "player.hpp"
+#include "camera.hpp"
+#include "camera_controller.hpp"
 
 namespace Halo1 {
 
     Camera* getPlayerCameraPointer() { return (Camera*) ( dllBase() + 0x2D9B9C0 ); }
+
+    CameraController* getPlayerCameraControllerPointer() { return (CameraController*) ( dllBase() + 0x2D9B970U ); }
+
+    void enterThirdPerson() {
+        auto camController = getPlayerCameraControllerPointer();
+        if (camController) {
+            camController->flags = 0xD3282CA4;
+        }
+    }
 
     bool isCameraLoaded() { return Memory::isAllocated( (uintptr_t) getPlayerCameraPointer() ); }
 
@@ -14,6 +25,13 @@ namespace Halo1 {
         if ( !rec || !rec->entity() )
             return nullptr;
         return rec;
+    }
+
+    Entity* getPlayerEntity() {
+        auto rec = getPlayerRecord();
+        if (!rec)
+            return nullptr;
+        return rec->entity();
     }
 
     std::optional<Vec3> getPlayerPosition() {

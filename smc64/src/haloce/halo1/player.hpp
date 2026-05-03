@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <optional>
 #include "camera.hpp"
+#include "camera_controller.hpp"
 #include "entity/index.hpp"
 
 namespace Halo1 {
@@ -33,10 +34,13 @@ namespace Halo1 {
     };
 
     Camera* getPlayerCameraPointer();
+    CameraController *getPlayerCameraControllerPointer();
+    void enterThirdPerson();
     uint32_t getPlayerHandle();
     PlayerController * getPlayerControllerPointer();
     
     EntityRecord* getPlayerRecord();
+    Entity *getPlayerEntity();
     std::optional<Vec3> getPlayerPosition();
     bool isPlayerHandle( uint32_t entityHandle );
     bool isPlayerControlled( EntityRecord* rec );
