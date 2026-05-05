@@ -1,6 +1,9 @@
+#include "Mario.hpp"
 #include "MarioModel.hpp"
 #include "MarioSkeleton.hpp" 
+#include "MarioInverseKinematics.hpp"
 #include <string>
+#include "decomp/sm64.h"
 
 namespace {
     void updateEntityRegion(uint32_t entityHandle, void* unknown) {
@@ -33,6 +36,45 @@ namespace HaloCE::Mod::Mario::MarioModel {
         return playerEntity->childHandle;
     }
 
+    bool marioArmsBusy() {
+        return marioState.action != ACT_IDLE;
+    }
+
+    void IKToWeapon() {
+        // If Mario is not idle, skip this.
+        if (marioArmsBusy()) return;
+
+        auto weaponHandle = playerWeaponHandle();
+        if (weaponHandle == 0xFFFFFFFF) return;
+        auto rec = Halo1::getEntityRecord( weaponHandle );
+        if (!rec) return;
+        auto weapon = rec->entity();
+        if (!weapon) return;
+        auto weaponRootBone = weapon->worldBones.get(weapon, 0);
+        if (!weaponRootBone) return;
+        
+        auto camera = Halo1::getPlayerCameraPointer();
+        if (!camera) return;
+
+        auto chest = getMarioBoneByName("chest");
+        auto rightArm = getMarioBoneByName("right_arm");
+
+        auto fwd = camera->fwd;
+        auto right = weaponRootBone->y;
+
+        auto base = rightArm.pos;
+        auto target = base + fwd - right * 0.5f;
+
+        InverseKinematics::MarioIKRequest ikRequest;
+        ikRequest.limb = InverseKinematics::MarioIKRequest::Limb::LeftArm;
+        ikRequest.targetPosition = target;
+        InverseKinematics::applyMarioIK(ikRequest);
+
+        ikRequest.limb = InverseKinematics::MarioIKRequest::Limb::RightArm;
+        ikRequest.targetPosition = target + right * 0.05f;
+        InverseKinematics::applyMarioIK(ikRequest);
+    }
+
     void updatePose( uint32_t entityHandle, Halo1::Entity* marioEntity) {
         if (!marioEntity) return;
 
@@ -40,9 +82,10 @@ namespace HaloCE::Mod::Mario::MarioModel {
         auto worldBones = marioEntity->worldBones.get(marioEntity, 0);
         if (!worldBones) return;
 
-        // Move entity to bone0's position and update region to prevent culling issues.
         marioEntity->pos = marioPose[0].pos;
         updateEntityRegion(entityHandle, nullptr);
+
+        IKToWeapon();
 
         auto boneCount = marioEntity->worldBones.count();
         for (int i = 0; i < boneCount; i++) {
@@ -67,15 +110,38 @@ namespace HaloCE::Mod::Mario::MarioModel {
 
         auto leftHandBone = getMarioBoneByName("left_hand");
 
-
-        auto boneCount = entity->worldBones.count();
-        for (int i = 0; i < boneCount; i++) {
-            worldBones[i].pos = leftHandBone.pos + leftHandBone.x * 0.05f;
-            worldBones[i].x = leftHandBone.x;
-            worldBones[i].y = leftHandBone.y;
-            worldBones[i].z = leftHandBone.z;
-            // worldBones[i].w = 0.75f;
+        auto rootBone = &worldBones[0];
+        auto rootBoneInitial = rootBone[0];
+        if (marioArmsBusy()) {
+            rootBone->x = leftHandBone.x;
+            rootBone->y = leftHandBone.y;
+            rootBone->z = leftHandBone.z;
+            rootBone->pos = leftHandBone.pos;
         }
+        rootBone->pos = leftHandBone.pos + leftHandBone.x * 0.05f + rootBone->z * 0.025f;
+
+        auto initialInverse = Halo1::inverseWorldTransform(rootBoneInitial);
+        auto relativeTransform = Halo1::multiplyWorldTransforms(
+            *rootBone,
+            initialInverse
+        );
+        auto boneCount = entity->worldBones.count();
+        for (int i = 1; i < boneCount; i++) {
+            auto& bone = worldBones[i];
+            bone = Halo1::multiplyWorldTransforms(relativeTransform, bone);
+        }
+
+        // auto boneCount = entity->worldBones.count();
+        // for (int i = 0; i < boneCount; i++) {
+        //     // worldBones[i].w = 0.75f;
+        //     if (marioArmsBusy()) {
+        //         worldBones[i].x = leftHandBone.x;
+        //         worldBones[i].y = leftHandBone.y;
+        //         worldBones[i].z = leftHandBone.z;
+        //     }
+        //     worldBones[i].pos = leftHandBone.pos + leftHandBone.x * 0.05f + worldBones[i].z * 0.025f;
+        // }
+
     }
 
     uint32_t marioHandle  = 0xFFFFFFFF;
@@ -88,6 +154,19 @@ namespace HaloCE::Mod::Mario::MarioModel {
         }
         if (entityHandle == playerWeaponHandle()) {
             updateWeaponPose(entityHandle);
+        }
+
+        // When the Mario entity is far from home, it may not recieve a pose update tick. 
+        // In lieu of a cleaner solution, I'm having the playedr update tick also update Mario.
+        auto playerHandle = Halo1::getPlayerHandle();
+        if (entityHandle == playerHandle) {
+            if (marioHandle != 0xFFFFFFFF) {
+                auto marioRec = Halo1::getEntityRecord( marioHandle );
+                if (!marioRec) return;
+                auto marioEntity = marioRec->entity();
+                if (!marioEntity) return;
+                updatePose(marioHandle, marioEntity);
+            }
         }
     }
 

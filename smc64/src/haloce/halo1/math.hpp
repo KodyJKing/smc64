@@ -15,4 +15,7 @@ namespace Halo1 {
         float w; // (scale)
         Vec3 x, y, z, pos; // (forward, left, up, translation)
     };
+
+    Halo1::WorldTransform inverseWorldTransform(Halo1::WorldTransform &wt);
+    Halo1::WorldTransform multiplyWorldTransforms(Halo1::WorldTransform & a, Halo1::WorldTransform & b);
 }

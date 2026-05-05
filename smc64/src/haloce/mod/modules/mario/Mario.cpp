@@ -205,9 +205,28 @@ namespace HaloCE::Mod::Mario {
         float dt = (framesSinceLastUpdate % 2) * 0.5f;
         auto camera = Halo1::getPlayerCameraPointer();
         if (!camera) return Vec3{0,0,0};
-        Vec3 result = cameraPosition + cameraVelocity * dt + camera->fwd * -3.0f + camera->fwd.cross(camera->up) * 0.25f + Vec3{0, 0, 0.5f};
+        Vec3 result = cameraPosition + cameraVelocity * dt + camera->fwd * -1.0f + camera->fwd.cross(camera->up) * 0.25f + Vec3{0, 0, 0.5f};
         framesSinceLastUpdate++;
         return result;
+    }
+
+    void faceLookDirection(Vec3 lookDirection) {
+        // Skip if Mario is not IDLE to avoid interfering with other actions.
+        if (marioState.action != ACT_IDLE) return;
+
+        float desiredYaw = atan2f(lookDirection.x, lookDirection.y);
+
+        float yaw = marioState.faceAngle;
+
+        float dot = sinf(yaw) * sinf(desiredYaw) + cosf(yaw) * cosf(desiredYaw);
+        float diff = acosf(dot);
+        
+        const float PI = 3.14159265f;
+        if (diff < PI / 3.0) return; // Already facing the right direction
+
+        sm64_set_mario_faceangle(marioId, desiredYaw);
+        sm64_set_mario_action(marioId, ACT_WALKING);
+        sm64_set_mario_forward_velocity(marioId, 10.0f);
     }
 
     void update() {
@@ -267,6 +286,8 @@ namespace HaloCE::Mod::Mario {
             Freecam::cameraOverride.enablePosition = false;
         }
         
+        faceLookDirection(Halo1::getPlayerCameraPointer()->fwd);
+
         sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry);
         sm64_set_mario_water_level(marioId, -999999.99f);
 

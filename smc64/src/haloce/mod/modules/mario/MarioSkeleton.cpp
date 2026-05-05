@@ -160,12 +160,16 @@ namespace HaloCE::Mod::Mario {
         }
     }
 
-    Halo1::WorldTransform getMarioBoneByName(const char* name) {
+    Halo1::WorldTransform* getMarioBonePointerByName(const char* name) {
         for (size_t i = 0; i < marioBones.size(); i++) {
             if (strcmp(marioBones[i].name, name) == 0) {
-                return marioPose[i];
+                return &marioPose[i];
             }
         }
-        return Halo1::WorldTransform{0};
+        return nullptr;
+    }
+
+    Halo1::WorldTransform getMarioBoneByName(const char* name) {
+        return *getMarioBonePointerByName(name);
     }
 }

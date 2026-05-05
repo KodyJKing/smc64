@@ -76,6 +76,12 @@ namespace HaloCE::Mod::Mario {
             inputs.camLookX = -camera->fwd.x;
             inputs.camLookZ = -camera->fwd.y;
         }
+
+        auto playerController = Halo1::getPlayerControllerPointer();
+        if (playerController) {
+            bool cheifMelee = (playerController->actions & Halo1::PlayerActionFlags::melee) != 0;
+            if (cheifMelee) inputs.buttonB = 1;
+        }
     }
 
 }
