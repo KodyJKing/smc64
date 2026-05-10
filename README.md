@@ -1,6 +1,6 @@
 # SMC64
 
-Super Master Cheif 64
+Super Master Chief 64
 
 ## Installation
 
