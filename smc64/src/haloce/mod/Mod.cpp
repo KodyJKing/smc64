@@ -233,7 +233,11 @@ namespace HaloCE::Mod {
     void hkRenderEntity(Halo1::RenderEntityRequest* request) {
         UnloadLock lock; // No unloading while we're still executing hook code.
 
-        // std::cout << "Render entity " << request->entityHandle << std::endl;
+        if (GetAsyncKeyState(VK_F10)) {
+            return originalRenderEntity(request);
+        }
+
+         auto rec = Halo1::getEntityRecord( request->entityHandle );
 
         originalRenderEntity(request);
 
@@ -271,6 +275,7 @@ namespace HaloCE::Mod {
         // MH_RemoveHook( (void*) originalGetShieldDamageResist );
         // MH_RemoveHook( (void*) originalUpdateActor );
         MH_RemoveHook( (void*) originalUpdateWorldBones );
+        MH_RemoveHook( (void*) originalRenderEntity );
     }
 
     //////////////////////////////////////////////////////////////////

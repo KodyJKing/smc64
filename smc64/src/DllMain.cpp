@@ -48,10 +48,10 @@ DWORD WINAPI MainThread(LPVOID _hModule) {
                 ModHost::exit();
                 break;
             }
-            if (GetAsyncKeyState(VK_F10) & 1) {
-                ModHost::reinitialize();
-                break;
-            }
+            // if (GetAsyncKeyState(VK_F10) & 1) {
+            //     ModHost::reinitialize();
+            //     break;
+            // }
             HaloCE::Mod::modThreadUpdate();
             Sleep(1000 / 60);
         }

@@ -76,6 +76,11 @@ namespace HaloCE::Freecam {
     void hkUpdateCamera(float unknown) {
         UnloadLock lock; // No unloading while we're still executing hook code.
 
+        if (GetAsyncKeyState(VK_F10)) {
+            originalUpdateCamera(unknown);
+            return;
+        }
+
         if (!isEnabled()) {
             originalUpdateCamera(unknown);
             return;

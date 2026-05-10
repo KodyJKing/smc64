@@ -5,6 +5,22 @@
   </Forms>
   <CheatEntries>
     <CheatEntry>
+      <ID>198</ID>
+      <Description>"Symbol Script"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+define(__ENTITY_ARRAY__,halo1.dll+2D9CDF8)
+registerSymbol(__ENTITY_ARRAY__)
+
+define(__ENTITY_LIST__,halo1.dll+1C42248)
+registerSymbol(__ENTITY_LIST__)
+
+[DISABLE]
+unregisterSymbol(__ENTITY_ARRAY__)
+unregisterSymbol(__ENTITY_LIST__)
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
       <ID>36</ID>
       <Description>"MCC"</Description>
       <Options moAlwaysHideChildren="1" moManualExpandCollapse="1"/>
@@ -891,88 +907,603 @@ halo1.dll+B48CDA: 48 89 74 24 18        - mov [rsp+18],rsi
             </CheatEntry>
           </CheatEntries>
         </CheatEntry>
+        <CheatEntry>
+          <ID>99</ID>
+          <Description>"model lighting"</Description>
+          <Options moManualExpandCollapse="1"/>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>100</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B04</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>101</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B08</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>102</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B0C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>103</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B14</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>104</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B18</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>105</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B1C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>106</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B28</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>107</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B2C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>108</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B30</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>109</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B34</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>110</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B50</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>111</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B54</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>112</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B58</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>113</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C7BF35B68</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>114</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>115</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>116</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>117</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>118</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>119</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9B18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>120</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9D18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>121</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83B9F18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>122</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BA118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>123</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BA318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>124</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BA518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>125</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BA718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>126</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BA918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>127</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BAB18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>128</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BAD18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>129</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C83BAF18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>130</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD117C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>131</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>132</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD317C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>133</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>134</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD517C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>135</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>136</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD717C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>137</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>138</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD917C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>139</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BD918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>140</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDB17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>141</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDB18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>142</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDD17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>143</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDD18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>144</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDF17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>145</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BDF18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>146</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE117C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>147</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>148</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE317C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>149</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>150</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE517C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>151</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>152</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE717C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>153</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>154</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE917C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>155</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BE918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>156</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BEB17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>157</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BEB18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>158</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BED17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>159</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BED18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>160</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BEF17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>161</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C87BEF18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>162</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C9AFFD480</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>163</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C9AFFD488</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>164</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21C9AFFD490</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>165</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB117C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>166</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>167</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB317C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>168</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>169</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB517C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>170</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>171</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB717C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>172</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>173</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB917C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>174</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EB918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>175</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBB17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>176</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBB18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>177</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBD17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>178</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBD18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>179</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBF17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>180</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EBF18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>181</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC117C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>182</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC118C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>183</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC317C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>184</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC318C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>185</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC517C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>186</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC518C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>187</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC717C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>188</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC718C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>189</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC917C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>190</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2EC918C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>191</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECB17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>192</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECB18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>193</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECD17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>194</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECD18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>195</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECF17C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>196</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC2ECF18C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>197</ID>
+              <Description>"No description"</Description>
+              <VariableType>Float</VariableType>
+              <Address>21CC6ED118C</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
       </CheatEntries>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>95</ID>
-      <Description>"No description"</Description>
-      <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>1EA16F4CA78</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>98</ID>
-      <Description>"Auto Assemble script"</Description>
-      <VariableType>Auto Assembler Script</VariableType>
-      <AssemblerScript>{ Game   : Halo: The Master Chief Collection  
-  Version: 
-  Date   : 2026-05-02
-  Author : Kody
-
-  This script does blah blah blah
-}
-
-define(address,"halo1.dll"+B48CB2)
-define(bytes,89 07 E8 17 00 00 00)
-
-[ENABLE]
-
-assert(address,bytes)
-alloc(newmem,$1000,"halo1.dll"+B48CB2)
-
-label(code)
-label(return)
-
-newmem:
-
-code:
-  mov eax,E64703D8
-  mov [rdi],eax
-  call halo1.dll+B48CD0
-  jmp return
-
-address:
-  jmp newmem
-  nop 2
-return:
-
-[DISABLE]
-
-address:
-  db bytes
-  // mov [rdi],eax
-  // call halo1.dll+B48CD0
-
-dealloc(newmem)
-
-{
-// ORIGINAL CODE - INJECTION POINT: halo1.dll+B48CB2
-
-halo1.dll+B48C90: 48 89 5C 24 08        - mov [rsp+08],rbx
-halo1.dll+B48C95: 57                    - push rdi
-halo1.dll+B48C96: 48 83 EC 20           - sub rsp,20
-halo1.dll+B48C9A: 48 8B F9              - mov rdi,rcx
-halo1.dll+B48C9D: 33 DB                 - xor ebx,ebx
-halo1.dll+B48C9F: EB 1B                 - jmp halo1.dll+B48CBC
-halo1.dll+B48CA1: 48 0F BF C3           - movsx rax,bx
-halo1.dll+B48CA5: 48 8D 0D 88 73 25 02  - lea rcx,[halo1.dll+2DA0034]
-halo1.dll+B48CAC: 8B 04 81              - mov eax,[rcx+rax*4]
-halo1.dll+B48CAF: 48 8B CF              - mov rcx,rdi
-// ---------- INJECTING HERE ----------
-halo1.dll+B48CB2: 89 07                 - mov [rdi],eax
-// ---------- DONE INJECTING  ----------
-halo1.dll+B48CB4: E8 17 00 00 00        - call halo1.dll+B48CD0
-halo1.dll+B48CB9: 66 FF C3              - inc bx
-halo1.dll+B48CBC: 66 3B 1D 6D 73 25 02  - cmp bx,[halo1.dll+2DA0030]
-halo1.dll+B48CC3: 7C DC                 - jl halo1.dll+B48CA1
-halo1.dll+B48CC5: 48 8B 5C 24 30        - mov rbx,[rsp+30]
-halo1.dll+B48CCA: 48 83 C4 20           - add rsp,20
-halo1.dll+B48CCE: 5F                    - pop rdi
-halo1.dll+B48CCF: C3                    - ret 
-halo1.dll+B48CD0: 48 89 5C 24 08        - mov [rsp+08],rbx
-halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
-}
-</AssemblerScript>
     </CheatEntry>
   </CheatEntries>
   <CheatCodes>
@@ -4372,6 +4903,84 @@ halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
         <Byte>26</Byte>
       </After>
     </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description/>
+    </CodeEntry>
+    <CodeEntry GroupHeader="1">
+      <Description>Lighting</Description>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Write model light :movups [rbx+14],xmm0</Description>
+      <AddressString>halo1.dll+B49721</AddressString>
+      <Before>
+        <Byte>70</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>4F</Byte>
+        <Byte>10</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>43</Byte>
+        <Byte>14</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>47</Byte>
+        <Byte>20</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Write model light 2 :movups [rbx+24],xmm1</Description>
+      <AddressString>halo1.dll+B49729</AddressString>
+      <Before>
+        <Byte>90</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>47</Byte>
+        <Byte>20</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>4B</Byte>
+        <Byte>24</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>4F</Byte>
+        <Byte>30</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Model light aux 1 :movups [rbx+74],xmm0</Description>
+      <AddressString>halo1.dll+B4974D</AddressString>
+      <Before>
+        <Byte>60</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>4B</Byte>
+        <Byte>64</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>43</Byte>
+        <Byte>74</Byte>
+      </Actual>
+      <After>
+        <Byte>89</Byte>
+        <Byte>83</Byte>
+        <Byte>84</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
   </CheatCodes>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -7011,11 +7620,10 @@ halo1.dll+B48CD5: 48 89 6C 24 10        - mov [rsp+10],rbp
         <Element Offset="4" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000004" Description="shaderIndex" DisplayMethod="hexadecimal"/>
         <Element Offset="6" Vartype="Byte" Bytesize="1" RLECount="2" OffsetHex="00000006" DisplayMethod="hexadecimal"/>
         <Element Offset="8" Vartype="Float" Bytesize="4" RLECount="4" OffsetHex="00000008" DisplayMethod="unsigned integer"/>
-        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
+        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000018" DisplayMethod="hexadecimal"/>
         <Element Offset="28" Vartype="Float" Bytesize="4" OffsetHex="0000001C" DisplayMethod="unsigned integer"/>
-        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
-        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" DisplayMethod="hexadecimal"/>
-        <Element Offset="36" Vartype="4 Bytes" Bytesize="4" RLECount="10" OffsetHex="00000024" DisplayMethod="unsigned integer"/>
+        <Element Offset="28" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000001C" DisplayMethod="hexadecimal"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" RLECount="11" OffsetHex="00000020" DisplayMethod="unsigned integer"/>
         <Element Offset="76" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="0000004C" DisplayMethod="hexadecimal"/>
         <Element Offset="84" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000054" DisplayMethod="unsigned integer"/>
         <Element Offset="92" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000005C" DisplayMethod="hexadecimal"/>
