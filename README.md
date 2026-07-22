@@ -4,15 +4,22 @@ Super Master Chief 64
 
 ## Installation
 
-Download the latest [release](https://github.com/KodyJKing/smc64/releases) and follow the instructions in `SMC64_REAMDE.md`.
+Download the latest [release](https://github.com/KodyJKing/smc64/releases) and follow the installation instructions in the included `README.md`.
 
 ## Developer Setup
 
-Clone the repository recursively to get submodules:
+Clone the repository recursively to get submodules (including the `spark` mod-loader engine,
+which lives at `vendor/spark`):
 
 ```powershell
 git clone --recursive
-``` 
+```
+
+If you already have a clone without submodules initialized, run:
+
+```powershell
+git submodule update --init --recursive
+```
 
 Install [Visual Studio 2022](https://visualstudio.microsoft.com/) and add MSBuild to your PATH. Location may vary. For me, it's located under `C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin`.
 

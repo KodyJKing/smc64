@@ -14,9 +14,10 @@ project "smc64"
         "src/**.cpp",
         -- Private copy of core ImGui (no backends — spark.dll owns the real
         -- Win32/DX11 backend and render loop). Must sync context/allocator via
-        -- Spark::Mod::syncImGuiContext() before any ImGui:: call.
-        "../vendor/imgui/*.h",
-        "../vendor/imgui/*.cpp",
+        -- Spark::Mod::syncImGuiContext() before any ImGui:: call. Sourced from the
+        -- spark submodule's own vendor/imgui checkout - smc64 doesn't keep a separate copy.
+        "../vendor/spark/vendor/imgui/*.h",
+        "../vendor/spark/vendor/imgui/*.cpp",
         "../vendor/libsm64/dist/include/*.h",
         "../vendor/libsm64/dist/include/decomp/*.h",
         "../vendor/libsm64/dist/include/decomp/PR/*.h",
@@ -25,9 +26,10 @@ project "smc64"
     includedirs {
         ".",
         "src",
-        "../spark/src",
-        "../vendor/minhook/include",
-        "../vendor/imgui",
+        "../vendor/spark/spark/src",
+        -- Needed because spark's own headers (e.g. Hook.hpp) include MinHook.h.
+        "../vendor/spark/vendor/minhook/include",
+        "../vendor/spark/vendor/imgui",
         "../vendor/libsm64/dist/include",
         "../vendor/libsm64/dist/include/decomp",
     }

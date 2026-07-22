@@ -1,15 +1,6 @@
-[submodule "vendor/asmjit/asmjit"]
-	path = vendor/asmjit/asmjit
-	url = https://github.com/asmjit/asmjit.git
-[submodule "vendor/imgui"]
-	path = vendor/imgui
-	url = https://github.com/ocornut/imgui.git
-[submodule "vendor/Detours"]
-	path = vendor/Detours
-	url = https://github.com/microsoft/Detours.git
 [submodule "vendor/libsm64"]
 	path = vendor/libsm64
 	url = https://github.com/KodyJKing/libsm64.git
-[submodule "vendor/unicorn"]
-	path = vendor/unicorn
-	url = https://github.com/unicorn-engine/unicorn.git
+[submodule "vendor/spark"]
+	path = vendor/spark
+	url = https://github.com/KodyJKing/spark.git

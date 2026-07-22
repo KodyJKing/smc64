@@ -4,7 +4,7 @@ param(
 )
 
 # Stages mod DLLs (currently just smc64.dll) into <MCC>/MCC/Binaries/Win64/mods/ so
-# Spark's ModLoader (spark/src/spark/mod/ModLoader.cpp) picks them up next launch.
+# Spark's ModLoader (vendor/spark/spark/src/spark/mod/ModLoader.cpp) picks them up next launch.
 # Mirrors the staging pattern used by build_libsm64.ps1 for sm64.dll.
 
 $dest = if ($MCCPath) {
