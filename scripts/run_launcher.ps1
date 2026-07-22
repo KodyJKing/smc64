@@ -5,4 +5,4 @@ param(
 
 $ArgumentList = $Arguments -split " "
 
-& "./bin/$Config-Win64/spark-launcher/spark-launcher.exe" $ArgumentList | Out-Default
+& "./vendor/spark/bin/$Config-Win64/spark-launcher/spark-launcher.exe" $ArgumentList | Out-Default
