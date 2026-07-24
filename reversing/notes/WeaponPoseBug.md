@@ -1,5 +1,0 @@
-- When a projectile is attached to the player, our weapon posing breaks. 
-    - It appears to be overwritten by the standard weapon pose.
-- If after a projectile is attached, we freeze that projectile, the weapon's pose will also be frozen.
-    - It's been observed to unfreeze after 1) the projectile is unfrozen, or 2) the player cycles weapons.
-        - This seems to suggest there is a flag on the player or weapon we can override to prevent the weapon pose from being updated.
