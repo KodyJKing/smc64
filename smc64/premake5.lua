@@ -10,6 +10,7 @@ project "smc64"
 
     files {
         "pch.h",
+        "pch.cpp",
         "src/**.hpp",
         "src/**.cpp",
         -- Private copy of core ImGui (no backends — spark.dll owns the real
@@ -40,6 +41,8 @@ project "smc64"
     }
 
     forceincludes { "pch.h" }
+    pchheader "pch.h"
+    pchsource "pch.cpp"
 
     links {
         "spark",

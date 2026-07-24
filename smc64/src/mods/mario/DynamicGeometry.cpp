@@ -16,9 +16,11 @@
 
 #include "decomp/surface_terrains.h"
 
-// #define DEBUG_DYNAMIC_GEOMETRY 1
+#define DEBUG_DYNAMIC_GEOMETRY 1
 
 #ifdef DEBUG_DYNAMIC_GEOMETRY
+    #define IMGUI_DEFINE_MATH_OPERATORS
+    #include "imgui.h"
     #include "spark/overlay/ESP.hpp"
     #include <iostream>
     #define ISO_TIME_STRING std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
@@ -49,10 +51,15 @@ namespace Mod::Mario::DynamicGeometry {
 
         #ifdef DEBUG_DYNAMIC_GEOMETRY
         char* tagPath = nullptr;
+        // Raw local-space surfaces used to build each bone's surface object, kept around for debug rendering.
+        std::vector<std::vector<SM64Surface>> boneSurfaces;
         #endif
 
         void initSurfaceObjects(size_t boneCount) {
             surfaceObjectIds.resize(boneCount, -1);
+            #ifdef DEBUG_DYNAMIC_GEOMETRY
+            boneSurfaces.resize(boneCount);
+            #endif
         }
 
         bool hasSurfaceObjectForBone(size_t boneIndex) const {
@@ -77,6 +84,11 @@ namespace Mod::Mario::DynamicGeometry {
                     objectId = -1;
                 }
             }
+            #ifdef DEBUG_DYNAMIC_GEOMETRY
+            for (auto& surfaces : boneSurfaces) {
+                surfaces.clear();
+            }
+            #endif
         }
 
     };
@@ -140,15 +152,14 @@ namespace Mod::Mario::DynamicGeometry {
 
         std::vector<SM64Surface> surfaces;
         
+        auto bspIndex = entity->getBspPermutation(node->permutationIndex);
         auto bspCount = node->collisionBsps.count;
-        for (size_t bspIndex = 0; bspIndex < bspCount; ++bspIndex) {
-            auto bsp = node->collisionBsps.get<Engine::CollisionBSP>(bspIndex);
-            if (bsp == nullptr) continue;
-
-            // auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_NOT_SLIPPERY);
-            auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_HANGABLE);
-            surfaces.insert(surfaces.end(), bspSurfaces.begin(), bspSurfaces.end());
-        }
+        if (bspIndex >= bspCount) return surfaces;
+        auto bsp = node->collisionBsps.get<Engine::CollisionBSP>(bspIndex);
+        if (bsp == nullptr) return surfaces;
+        // auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_NOT_SLIPPERY);
+        auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_HANGABLE);
+        surfaces.insert(surfaces.end(), bspSurfaces.begin(), bspSurfaces.end());
         
         return surfaces;
     }
@@ -185,6 +196,12 @@ namespace Mod::Mario::DynamicGeometry {
 
         uint32_t surfaceObjectId = sm64_surface_object_create(&surfaceObject);
         entityEntry.setSurfaceObjectForBone(boneIndex, surfaceObjectId);
+
+        #ifdef DEBUG_DYNAMIC_GEOMETRY
+        if (boneIndex < entityEntry.boneSurfaces.size()) {
+            entityEntry.boneSurfaces[boneIndex] = std::move(surfaces);
+        }
+        #endif
     }
 
     void allocateDynamicGeometryForEntity(Engine::EntityHandle entityHandle) {
@@ -246,6 +263,11 @@ namespace Mod::Mario::DynamicGeometry {
         if (category == Engine::EntityCategory_Scenery) return true;
         if (category == Engine::EntityCategory_Vehicle) return true;
         if (category == Engine::EntityCategory_Machine) return true;
+        // if (category == Engine::EntityCategory_Biped) {
+        //     auto playerEntity = Engine::getPlayerEntity();
+        //     if (entity == playerEntity) return false;
+        //     return true;
+        // }
         return false;
     }
 
@@ -319,56 +341,76 @@ namespace Mod::Mario::DynamicGeometry {
     }
 
     void debugRender() {
-        // #ifdef DEBUG_DYNAMIC_GEOMETRY
-        // namespace ESP = Spark::Overlay::ESP;
+        #ifdef DEBUG_DYNAMIC_GEOMETRY
+        namespace ESP = Spark::Overlay::ESP;
 
-        // std::lock_guard<std::mutex> updateLock(s_updateMutex);
+        std::lock_guard<std::mutex> updateLock(s_updateMutex);
 
-        // // for (auto& [key, entry] : objectMap) {
-        // //     for (auto& surface : entry.surfaces) {
-        // //         Vec3 v0 = { (float) surface.vertices[0][0], (float) surface.vertices[0][1], (float) surface.vertices[0][2] };
-        // //         Vec3 v1 = { (float) surface.vertices[1][0], (float) surface.vertices[1][1], (float) surface.vertices[1][2] };
-        // //         Vec3 v2 = { (float) surface.vertices[2][0], (float) surface.vertices[2][1], (float) surface.vertices[2][2] };
+        constexpr ImU32 kEdgeColor = IM_COL32(0, 200, 255, 20);
+        constexpr ImU32 kTextColor = IM_COL32(255, 255, 255, 255);
 
-        // //         Vec3 haloV0 = Coordinates::marioLocalToHaloWorld(v0, marioChunk);
-        // //         Vec3 haloV1 = Coordinates::marioLocalToHaloWorld(v1, marioChunk);
-        // //         Vec3 haloV2 = Coordinates::marioLocalToHaloWorld(v2, marioChunk);
+        for (auto& [handle, entry] : objectMap) {
+            auto entity = entry.entity();
+            if (!entity) continue;
 
-        // //         ESP::drawLine(haloV0, haloV1, 0x1F00FFFF);
-        // //         ESP::drawLine(haloV1, haloV2, 0x1F00FFFF);
-        // //         ESP::drawLine(haloV2, haloV0, 0x1F00FFFF);
-        // //     }
-        // // }
+            auto boneCount = entry.surfaceObjectIds.size();
+            for (size_t boneIndex = 0; boneIndex < boneCount; ++boneIndex) {
+                if (!entry.hasSurfaceObjectForBone(boneIndex)) continue;
+                if (entity->worldBones.count() <= boneIndex) continue;
 
-        // // Render a window with stats about the dynamic geometry system
-        // ImGui::Begin("Dynamic Geometry Debug");
-        // ImGui::Text("Active Surface Objects: %d", objectMap.size());
+                Engine::Transform* bone = entity->worldBones.get(entity, boneIndex);
 
-        // if (ImGui::CollapsingHeader("Entities")) {
-        //     if (ImGui::BeginTable("EntitiesTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-        //         ImGui::TableSetupColumn("Entity");
-        //         ImGui::TableSetupColumn("Bone");
-        //         ImGui::TableSetupColumn("Surface Object ID");
-        //         ImGui::TableSetupColumn("Surface Count");
-        //         ImGui::TableHeadersRow();
-                
-        //         for (const auto& [key, entry] : objectMap) {
-        //             auto entityTag = key.entity->tag();
-        //             const char* entityName = entityTag ? entityTag->getResourcePath() : "null";
-                    
-        //             ImGui::TableNextRow();
-        //             ImGui::TableSetColumnIndex(0);
-        //             ImGui::Text("%s", entityName);
-        //             ImGui::TableSetColumnIndex(1);
-        //             ImGui::Text("%d", (int)key.boneIndex);
-        //             ImGui::TableSetColumnIndex(2);
-        //             ImGui::Text("%d", entry.surfaceObjectId);
-        //         }
-        //         ImGui::EndTable();
-        //     }
-        // }
-        // ImGui::End();
-        // #endif
+                if (boneIndex < entry.boneSurfaces.size()) {
+                    for (const auto& surface : entry.boneSurfaces[boneIndex]) {
+                        Vec3 worldVerts[3];
+                        for (int k = 0; k < 3; ++k) {
+                            Vec3 boneLocal = Coordinates::marioToHalo(surface.vertices[k]);
+                            worldVerts[k] = bone->transformPoint(boneLocal);
+                        }
+                        ESP::drawLine(worldVerts[0], worldVerts[1], kEdgeColor);
+                        ESP::drawLine(worldVerts[1], worldVerts[2], kEdgeColor);
+                        ESP::drawLine(worldVerts[2], worldVerts[0], kEdgeColor);
+                    }
+                }
+
+                // if (entry.tagPath) {
+                //     ESP::drawText(bone->pos, entry.tagPath, kTextColor);
+                // }
+            }
+        }
+
+        // Render a window with stats about the dynamic geometry system
+        ImGui::Begin("Dynamic Geometry Debug");
+        ImGui::Text("Active Entities: %d", (int) objectMap.size());
+
+        if (ImGui::CollapsingHeader("Entities")) {
+            if (ImGui::BeginTable("EntitiesTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                ImGui::TableSetupColumn("Entity");
+                ImGui::TableSetupColumn("Bone");
+                ImGui::TableSetupColumn("Surface Object ID");
+                ImGui::TableHeadersRow();
+
+                for (const auto& [handle, entry] : objectMap) {
+                    const char* entityName = entry.tagPath ? entry.tagPath : "<unknown>";
+
+                    for (size_t boneIndex = 0; boneIndex < entry.surfaceObjectIds.size(); ++boneIndex) {
+                        auto objectId = entry.surfaceObjectIds[boneIndex];
+                        if (objectId == -1) continue;
+
+                        ImGui::TableNextRow();
+                        ImGui::TableSetColumnIndex(0);
+                        ImGui::Text("%s", entityName);
+                        ImGui::TableSetColumnIndex(1);
+                        ImGui::Text("%d", (int) boneIndex);
+                        ImGui::TableSetColumnIndex(2);
+                        ImGui::Text("%lld", (long long) objectId);
+                    }
+                }
+                ImGui::EndTable();
+            }
+        }
+        ImGui::End();
+        #endif
     }
 
 }
