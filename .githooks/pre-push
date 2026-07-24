@@ -1,2 +1,2 @@
 #!/bin/sh
-restic backup reversing/ghidra
+restic backup vendor/spark/reversing/ghidra
