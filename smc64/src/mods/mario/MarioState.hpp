@@ -30,4 +30,6 @@ namespace Mod::Mario {
     bool marioExists();
     bool marioInControl();
     bool marioAirborne();
+    bool marioRidingShell();
+    bool marioCanCollideWithBipeds();
 }

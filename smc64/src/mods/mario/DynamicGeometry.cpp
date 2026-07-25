@@ -131,6 +131,12 @@ namespace Mod::Mario::DynamicGeometry {
         return nullptr;
     }
 
+    uint16_t surfaceTypeForEntity(Engine::Entity* entity) {
+        auto category = entity->entityCategory;
+        if (category == Engine::EntityCategory_Scenery) return SURFACE_HANGABLE;
+        return SURFACE_NOT_SLIPPERY;
+    }
+
     std::vector<SM64Surface> convertCollisionBSPToSM64Surfaces(Engine::Entity* entity, size_t boneIndex) {
         if (ModelSwap::hasModelSwapFor(entity, boneIndex)) {
             std::vector<SM64Surface> surfaces;
@@ -157,8 +163,8 @@ namespace Mod::Mario::DynamicGeometry {
         if (bspIndex >= bspCount) return surfaces;
         auto bsp = node->collisionBsps.get<Engine::CollisionBSP>(bspIndex);
         if (bsp == nullptr) return surfaces;
-        // auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_NOT_SLIPPERY);
-        auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, SURFACE_HANGABLE);
+        uint16_t surfaceType = surfaceTypeForEntity(entity);
+        auto bspSurfaces = Mod::Mario::BSPConversion::convertBSP(bsp, surfaceType);
         surfaces.insert(surfaces.end(), bspSurfaces.begin(), bspSurfaces.end());
         
         return surfaces;
@@ -223,13 +229,23 @@ namespace Mod::Mario::DynamicGeometry {
         }
     }
 
-
     void deallocateDynamicGeometryForEntity(Engine::EntityHandle entityHandle) {
         auto entry = getEntityEntry(entityHandle);
         if (!entry) return;
         LOG("Deallocating dynamic geometry for entity: " << entry->entity() << " [" << entry->tagPath << "]");
         entry->clearSurfaceObjects();
         objectMap.erase(entityHandle);
+    }
+
+    /// Should this entity be tangible this frame?
+    bool entityTangible(Engine::Entity* entity) {
+        if (!entity) return true;
+        auto category = entity->entityCategory;
+        if (category == Engine::EntityCategory_Biped) {
+            if (!marioCanCollideWithBipeds()) return false;
+            if (entity->health <= 0.0f) return false;
+        }
+        return true;
     }
 
     void updateObjectTransform(Engine::EntityHandle entityHandle, SM64MarioState& marioState) {
@@ -249,6 +265,11 @@ namespace Mod::Mario::DynamicGeometry {
             SM64ObjectTransform transform;
             getTransform(entity, boneIndex, transform);
 
+            if (!entityTangible(entity)) {
+                // Ugly hack: Just teleport it really far away.
+                transform.position[2] = -10000.0f;
+            } 
+
             if (isElevator) {
                 moveElevatorSurfaceObject(surfaceObjectId, transform, marioState);
             } else {
@@ -257,17 +278,18 @@ namespace Mod::Mario::DynamicGeometry {
         }
     }
 
+    /// Should this entity ever be tangible?
     bool shouldCreateGeometryFor(Engine::Entity* entity) {
         if (!entity) return false;
         auto category = entity->entityCategory;
         if (category == Engine::EntityCategory_Scenery) return true;
         if (category == Engine::EntityCategory_Vehicle) return true;
         if (category == Engine::EntityCategory_Machine) return true;
-        // if (category == Engine::EntityCategory_Biped) {
-        //     auto playerEntity = Engine::getPlayerEntity();
-        //     if (entity == playerEntity) return false;
-        //     return true;
-        // }
+        if (category == Engine::EntityCategory_Biped) {
+            auto playerEntity = Engine::getPlayerEntity();
+            if (entity == playerEntity) return false;
+            return true;
+        }
         return false;
     }
 

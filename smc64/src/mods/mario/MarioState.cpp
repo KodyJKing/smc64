@@ -58,4 +58,16 @@ namespace Mod::Mario {
     bool marioAirborne() {
         return (marioState.action & ACT_FLAG_AIR) != 0;
     }
+
+    bool marioRidingShell() {
+        return (marioState.action & ACT_FLAG_RIDING_SHELL) != 0;
+    }
+
+    bool marioAttacking() {
+        return (marioState.action & ACT_FLAG_ATTACKING) != 0;
+    }
+
+    bool marioCanCollideWithBipeds() {
+        return !marioRidingShell() && !marioAttacking();
+    }
 }

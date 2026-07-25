@@ -19,18 +19,12 @@
 
 - Bugs and Stability:
     - Audit all raw memory accesses. Replace with safe wrappers in non-performance critical code.
-    - [Blocker] Fix ghost entity colliders getting left behind.
-    - [Blocker] Fix Mario getting stuck in c_field_generator's.
     - [Blocker] Fix Mario being able to glancing-wall-kick out of shell riding.
-    - [Major] Fix Mario pushing enemies OOB. Should either not push or should be bi-directional.
+    - [Blocker] Fix crash when loading last checkpoint on Silent Cartographer (before warthog checkpoint).
     - [Major] Create a user facing recovery system for when Mario gets stuck.
     - [Minor] Fix Mario visually sinking into fast elevators (seems to be caused by a 1-frame delay in the object transforms).
-    - [Blocker] Fix Mario clipping through one sided surfaces (eg: grill on right side of hallway at start of Keyes).
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.
     - [Minor] Fix Mario's lighting not updating when he is in a vehicle. (caused by model's velocity not updating, I think)
-
-    - [Blocker] Fix player model pushing enemies through walls and out of the map.
-        - Probably need to disable entity-vs-entity collision altogether for player model.
 
 - Performance:
     - [Major] Optimize BSP loading transitions.
