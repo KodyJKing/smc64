@@ -11,6 +11,14 @@
 #include "spark/events/TeleportPlayer.hpp"
 #include "functions/TeleportMario.hpp"
 
+#define DEBUG_MARIO_MOD 1
+
+#ifdef DEBUG_MARIO_MOD
+    #define LOG(x) std::cout << "[MarioMod] " << x << std::endl;
+#else
+    #define LOG(x) ;
+#endif
+
 void MarioMod::init() {
     using Bus = Spark::EventBus<void>;
 
@@ -23,6 +31,7 @@ void MarioMod::init() {
     Mod::Mario::MarioWeaponPose::addHandlers(modId_);
 
     Spark::LoadCheckpoint::addHandler(modId_, +[](void*, auto next) {
+        LOG("LoadCheckpoint handler called, deinitializing Mario state.");
         Mod::Mario::deinitMario();
         next();
     }, nullptr);

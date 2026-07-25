@@ -20,7 +20,6 @@
 - Bugs and Stability:
     - Audit all raw memory accesses. Replace with safe wrappers in non-performance critical code.
     - [Blocker] Fix Mario being able to glancing-wall-kick out of shell riding.
-    - [Blocker] Fix crash when loading last checkpoint on Silent Cartographer (before warthog checkpoint).
     - [Major] Create a user facing recovery system for when Mario gets stuck.
     - [Minor] Fix Mario visually sinking into fast elevators (seems to be caused by a 1-frame delay in the object transforms).
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.

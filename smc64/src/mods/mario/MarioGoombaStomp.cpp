@@ -236,6 +236,7 @@ namespace Mod::Mario::GoombaStomp {
 
             if (!stompType.noAction) {
                 sm64_set_mario_action(marioId, stompType.action);
+                sm64_set_mario_anim_frame(marioId, 0);
             }
             if (!stompType.noBounce) {
                 sm64_set_mario_velocity(marioId,

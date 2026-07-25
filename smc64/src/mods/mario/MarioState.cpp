@@ -68,6 +68,6 @@ namespace Mod::Mario {
     }
 
     bool marioCanCollideWithBipeds() {
-        return !marioRidingShell() && !marioAttacking();
+        return !marioRidingShell() && !marioAttacking() && !marioAirborne();
     }
 }

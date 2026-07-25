@@ -50,8 +50,9 @@
 #include "functions/MarioToCheif.hpp"
 #include "functions/CheifToMario.hpp"
 #include "functions/KillPlayer.hpp"
+#include "functions/SanitizeAction.hpp"
 
-// #define DEBUG_MARIO 1
+#define DEBUG_MARIO 1
 
 #ifdef DEBUG_MARIO
     #define LOG(x) std::cout << "[Mario] " << x << std::endl;
@@ -174,7 +175,8 @@ namespace Mod::Mario {
 
             // Initialize the last_mario_action global to Mario's initial action.
             uint32_t savedAction = Engine::Scripting::readGlobal("last_mario_action");
-            sm64_set_mario_action(marioId, savedAction);
+            uint32_t sanitizedAction = Mod::Mario::sanitizePersistedAction(savedAction);
+            sm64_set_mario_action(marioId, sanitizedAction);
         }
         if (marioId < 0) {
             printf("Failed to create Mario instance.\n");
@@ -206,6 +208,7 @@ namespace Mod::Mario {
     }
 
     void deinitMario() {
+        LOG("deinitMario() called, deleting Mario instance.");
         if (marioId >= 0) {
             std::lock_guard<std::mutex> sm64Lock(MarioAudio::sm64Mutex());
             sm64_mario_delete(marioId);
@@ -262,6 +265,8 @@ namespace Mod::Mario {
 
     void free() {
         #ifdef ENABLE_MARIO
+        LOG("free() called, freeing Mario state and resources.");
+
         // Join the audio thread first — it holds s_sm64Mutex during sm64_audio_tick.
         // sm64_mario_delete and sm64_global_terminate don't acquire that mutex, so
         // calling them while the audio thread is running causes a race/crash on reinit.
