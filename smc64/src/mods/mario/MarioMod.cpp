@@ -44,24 +44,31 @@ void MarioMod::init() {
     Spark::RenderEntity::addHandler(modId_, +[](void*, auto next, Engine::RenderEntityRequest* request) {
         Spark::Mod::syncImGuiContext();
         bool skip = false;
-        // if (request && Engine::entityValid(request->entityHandle)) {
-        //     auto entity = Engine::getEntityPointer(request->entityHandle);
-        //     std::string tagPath = entity ? entity->getTagResourcePath() : "";
-        //     // If it contains "cyborg", skip rendering this entity.
-        //     if (tagPath.find("cyborg") != std::string::npos) {
-        //         if (tagPath.find("_unarmed") == std::string::npos) {
-        //             skip = true;
-        //         }
-        //     }
-        // }
 
-        if (request && Engine::entityValid(request->entityHandle)) {
-            auto entity = Engine::getEntityPointer(request->entityHandle);
-            std::string tagPath = entity ? entity->getTagResourcePath() : "";
-            if (tagPath.find("cyborg") != std::string::npos) {
-                Spark::ObjectSetScale::original(request->entityHandle, 0.5f, 0);
-                if (entity->health < 0.0f) skip = true;
+        auto entity = request && Engine::entityValid(request->entityHandle) ? Engine::getEntityPointer(request->entityHandle) : nullptr;
+
+        auto tagContains = [&](const std::string& substring) {
+            if (request && Engine::entityValid(request->entityHandle)) {
+                std::string tagPath = entity ? entity->getTagResourcePath() : "";
+                if (tagPath.find(substring) != std::string::npos) {
+                    return true;
+                }
             }
+            return false;
+        };
+
+        bool isCyborg = tagContains("cyborg");
+        bool isMario  = tagContains("mario");
+
+        if (isCyborg) {
+            Spark::ObjectSetScale::original(request->entityHandle, 0.4f, 0);
+            if (entity->health < 0.0f) skip = true;
+        }
+
+        if (Mod::Mario::marioInControl()) {
+            if (isCyborg) skip = true;
+        } else {
+            if (isMario) skip = true;
         }
 
         if (!skip) {
@@ -90,12 +97,6 @@ void MarioMod::init() {
         Mod::Mario::teleportMario(position);
     });
 
-    // Spark::RenderPassenger::addHandler(modId_, +[](void*, auto next, uint64_t param_1, uint16_t* param_2, uint32_t entityHandle) {
-    //     if (entityHandle != Engine::getPlayerHandle()) {
-    //         next(param_1, param_2, entityHandle);
-    //     }
-    // }, nullptr);
-
     // We do our own entity collision for Mario. Skip the engine's.
     Spark::EntityVsEntityCollision::addHandler(modId_, +[](void*, auto next, uint32_t flags, uint32_t otherEntityHandle, Vec3* pos, float radius, float param_5, float param_6, uint32_t entityHandle, void* p8) {
         uint32_t playerHandle = Engine::getPlayerHandle();
@@ -103,6 +104,30 @@ void MarioMod::init() {
             return;
         }
         next(flags, otherEntityHandle, pos, radius, param_5, param_6, entityHandle, p8);
+    }, nullptr);
+
+    // Patch engine bug: IK does not preserve bone scales. Always overwrites them to 1.0f.
+    Spark::ApplyInverseKinematics::addHandler(modId_, +[](void*, auto next, uint32_t entityHandle, char* markerName, uint32_t targetEntityHandle, char* targetMarkerName, Engine::Transform* boneTransforms) {
+
+        // Save bone scales before calling original IK function.
+        static float savedBoneScales[1024] = {0};
+        int boneCount = 0;
+        Engine::Transform* bones = nullptr;
+        auto entity = Engine::getEntityPointer(entityHandle);
+        if (entity) {
+            boneCount = entity->worldBones.count();
+            bones = entity->worldBones.get(entity, 0);
+            for (int i = 0; i < boneCount; ++i) 
+                savedBoneScales[i] = bones[i].w;
+        }
+        
+        next(entityHandle, markerName, targetEntityHandle, targetMarkerName, boneTransforms);
+
+        // Restore bone scales.
+        if (entity) {
+            for (int i = 0; i < boneCount; ++i)
+                bones[i].w = savedBoneScales[i];
+        }
     }, nullptr);
 
 }
