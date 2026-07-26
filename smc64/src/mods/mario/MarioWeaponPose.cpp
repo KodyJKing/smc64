@@ -81,8 +81,8 @@ namespace Mod::Mario::MarioWeaponPose {
             }
         }, nullptr);
 
-        Spark::SpawnObject::addHandler(modId, +[](void*, auto next, Engine::SpawnObjectArgs* spawnArgs, uint32_t entityHandle) {
-            auto result = next(spawnArgs, entityHandle);
+        Spark::SpawnObject::addHandler(modId, +[](void*, auto next, Engine::SpawnObjectArgs* spawnArgs, uint32_t flags, uint64_t param_3, uint64_t param_4) -> uint32_t {
+            auto result = next(spawnArgs, flags, param_3, param_4);
 
             // If the object spawned was a projectile owned by the player, jump to an arms unbusy state without delay.
             bool isPlayers = spawnArgs->ownerEntityHandle == Engine::getPlayerHandle();

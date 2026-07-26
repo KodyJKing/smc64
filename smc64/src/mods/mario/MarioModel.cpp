@@ -77,7 +77,7 @@ namespace Mod::Mario::MarioModel {
         args.spawnPosition      = position;
 
         if (!Spark::SpawnObject::original) return NULL_HANDLE;
-        return Spark::SpawnObject::original(&args, 3);
+        return Spark::SpawnObject::original(&args, 3, 0, 0);
     }
 
     void renderEntity(Engine::RenderEntityRequest *request, Engine::renderEntity_t renderEntityOriginal) {

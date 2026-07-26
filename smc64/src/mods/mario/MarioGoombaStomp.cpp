@@ -15,6 +15,19 @@
 #include <cmath>
 #include <string>
 
+#define DEBUG_MARIO_GOOMBA_STOMP 1
+
+#ifdef DEBUG_MARIO_GOOMBA_STOMP
+    #include <iostream>
+    #include <fstream>
+    #include <ctime>
+    #include <sstream>
+    #include <iomanip>
+    #define LOG(x) std::cout << "[MarioGoombaStomp] " << x << std::endl;
+#else
+    #define LOG(x) ;
+#endif
+
 namespace Mod::Mario::GoombaStomp {
 
     // ── Tunable constants ──────────────────────────────────────────────────────
@@ -131,13 +144,15 @@ namespace Mod::Mario::GoombaStomp {
     static void spawnEquipment(const std::string& resourcePath, Vec3 position, uint32_t victimHandle) {
         if (resourcePath.empty()) return;
 
-        auto tag = Engine::findTag(resourcePath.c_str(), "eqip");
+        auto resourcePathCstr = resourcePath.c_str();
+        auto tag = Engine::findTag(resourcePathCstr, "eqip");
         if (!tag) return;
 
-        Engine::SpawnObjectArgs args{};
+        Engine::SpawnObjectArgs args{0};
         args.objectTagId = tag->tagID;
         args.spawnPosition = position;
-        args.ownerEntityHandle = victimHandle;
+        // args.ownerEntityHandle = victimHandle;
+        args.ownerEntityHandle = NULL_HANDLE;
         
         args.unknown1 = 0;
         args.unknown2 = 0;
@@ -147,8 +162,7 @@ namespace Mod::Mario::GoombaStomp {
 
         uint32_t flags = 3;
 
-        // Beep(440, 100); // Play a beep sound at 440 Hz for 100 ms
-        auto handle = Spark::SpawnObject::dispatch(&args, flags);
+        auto handle = Spark::SpawnObject::dispatch(&args, flags, 0, 0);
 
         auto entity = Engine::getEntityPointer(handle);
         if (!entity) {

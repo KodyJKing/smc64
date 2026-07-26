@@ -52,7 +52,7 @@
 #include "functions/KillPlayer.hpp"
 #include "functions/SanitizeAction.hpp"
 
-#define DEBUG_MARIO 1
+// #define DEBUG_MARIO 1
 
 #ifdef DEBUG_MARIO
     #define LOG(x) std::cout << "[Mario] " << x << std::endl;

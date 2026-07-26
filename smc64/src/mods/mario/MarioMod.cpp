@@ -11,7 +11,7 @@
 #include "spark/events/TeleportPlayer.hpp"
 #include "functions/TeleportMario.hpp"
 
-#define DEBUG_MARIO_MOD 1
+// #define DEBUG_MARIO_MOD 1
 
 #ifdef DEBUG_MARIO_MOD
     #define LOG(x) std::cout << "[MarioMod] " << x << std::endl;

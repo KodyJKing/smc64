@@ -63,9 +63,9 @@ namespace Mod::Mario::MarioWeaponKick {
 
     void registerHandlers(Spark::ModId modId) {
         Spark::SpawnObject::addHandler(modId, +[](void* /*ctx*/, auto next,
-            Engine::SpawnObjectArgs* options, uint32_t flags) -> uint32_t
+            Engine::SpawnObjectArgs* options, uint32_t flags, uint64_t param_3, uint64_t param_4) -> uint32_t
         {
-            uint32_t projectileHandle = next(options, flags);
+            uint32_t projectileHandle = next(options, flags, param_3, param_4);
 
             // Only care about projectiles fired by the local player.
             if (options->ownerEntityHandle != Engine::getPlayerHandle())

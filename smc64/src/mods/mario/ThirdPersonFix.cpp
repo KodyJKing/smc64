@@ -23,11 +23,11 @@ namespace Mod::Mario::ThirdPersonFix {
             next(flareHandle);
         }, nullptr);
 
-        Spark::SpawnObject::addHandler(modId, +[](void* /*ctx*/, auto next, Engine::SpawnObjectArgs* options, uint32_t flags) -> uint32_t {
+        Spark::SpawnObject::addHandler(modId, +[](void* /*ctx*/, auto next, Engine::SpawnObjectArgs* options, uint32_t flags, uint64_t param_3, uint64_t param_4) -> uint32_t {
             auto playerHandle = Engine::getPlayerHandle();
-            if (playerHandle == NULL_HANDLE) return next(options, flags);
-            if (options->ownerEntityHandle != playerHandle) return next(options, flags);
-            if (!Mario::marioInControl()) return next(options, flags);
+            if (playerHandle == NULL_HANDLE) return next(options, flags, param_3, param_4);
+            if (options->ownerEntityHandle != playerHandle) return next(options, flags, param_3, param_4);
+            if (!Mario::marioInControl()) return next(options, flags, param_3, param_4);
 
             // Correct spawn position.
             Vec3 spawnPosition = options->spawnPosition;
@@ -47,7 +47,7 @@ namespace Mod::Mario::ThirdPersonFix {
             }
 
             options->spawnPosition = spawnPosition;
-            uint32_t projectileHandle = next(options, flags);
+            uint32_t projectileHandle = next(options, flags, param_3, param_4);
 
             // Correct direction.
             auto projectile = Engine::getEntityPointer(projectileHandle);
