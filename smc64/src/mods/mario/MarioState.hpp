@@ -28,6 +28,7 @@ namespace Mod::Mario {
     void setMarioPosition(const Vec3& position);
 
     bool marioExists();
+    bool marioDead();
     bool marioInControl();
     bool marioAirborne();
     bool marioRidingShell();

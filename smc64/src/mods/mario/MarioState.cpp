@@ -39,6 +39,12 @@ namespace Mod::Mario {
         return marioId >= 0;
     }
 
+    bool marioDead() {
+        auto playerEntity = Engine::getPlayerEntity();
+        if (!playerEntity) return true;
+        return playerEntity->health <= 0;
+    }
+
     bool marioInControl() {
         auto playerEntity = Engine::getPlayerEntity();
         if (!playerEntity) return false;

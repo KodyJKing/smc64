@@ -65,9 +65,11 @@ void MarioMod::init() {
             if (entity->health < 0.0f) skip = true;
         }
 
-        if (Mod::Mario::marioInControl()) {
+        if (Mod::Mario::marioInControl() || Mod::Mario::marioDead()) {
+            // mario.weap rendition of Mario should render
             if (isCyborg) skip = true;
         } else {
+            // cyborg.bipd rendition of Mario should render
             if (isMario) skip = true;
         }
 

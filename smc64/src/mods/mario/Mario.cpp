@@ -352,13 +352,12 @@ namespace Mod::Mario {
 
         if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
             // sm64_set_mario_action_arg(marioId, ACT_RIDING_SHELL_GROUND, 0);
-            sm64_set_mario_action_arg(marioId, ACT_CRAZY_BOX_BOUNCE, 0);
+            // sm64_set_mario_action_arg(marioId, ACT_CRAZY_BOX_BOUNCE, 0);
             // sm64_set_mario_state(marioId, marioState.flags | MARIO_WING_CAP);
             // sm64_set_mario_action(marioId, ACT_FLYING_TRIPLE_JUMP);
             // sm64_set_mario_action(marioId, ACT_VERTICAL_WIND);
             // sm64_set_mario_velocity(marioId, 0, 150, 0);
-            // Mod::Mario::killPlayer();
-
+            Mod::Mario::killPlayer();
             // sm64_set_mario_action(marioId, ACT_GROUND_BONK);
         }
 

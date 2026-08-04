@@ -82,7 +82,11 @@ namespace Mod::Mario::DynamicGeometry::ModelSwap {
         { { "vehicles\\warthog\\warthog", 13 }, { ModelSwapType::Empty, {} } },
 
         // Have not found the state that controls when this is tangible. For now, just make it completely intangible to Mario.
-        { { "levels\\a50\\devices\\prison door\\prison door", 0 }, { ModelSwapType::Empty, {} } }
+        { { "levels\\a50\\devices\\prison door\\prison door", 0 }, { ModelSwapType::Empty, {} } },
+
+        // Make door of cryotube intangible so Mario doesn't get stuck in it.
+        { { "levels\\a10\\devices\\cryotube\\cryotube", 0 }, { ModelSwapType::Empty, {} } },
+        { { "levels\\a10\\devices\\cryotube\\cryotube", 1 }, { ModelSwapType::Empty, {} } },
     };
 
     // Build a closed box (12 triangles) centered at `center` with the given half extents.
