@@ -2,8 +2,6 @@
     - Move all global state into a struct for cleaner reinitilization on halo1.dll reload.
     - [Blocker] Fix file naming inconsistencies (mostly casing).
     - Break up Entity type by type. Eg: Vehicle, Biped, Weapon, etc.
-    - Create a fork of LibSM64 that exposes bone transforms.
-    - [Major] Fix namespace naming inconsistencies in Mario mod. (should match DevTools mod)
     - [Major] Rename Entity to Object to agree with Halo's naming conventions.
         - Source
         - Ghidra
@@ -23,7 +21,7 @@
     - [Major] Create a user facing recovery system for when Mario gets stuck.
     - [Minor] Fix Mario visually sinking into fast elevators (seems to be caused by a 1-frame delay in the object transforms).
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.
-    - [Minor] Fix Mario's lighting not updating when he is in a vehicle. (caused by model's velocity not updating, I think)
+    - [Major] Fix player not being able to drive until reentering a vehicle if they load a checkpoint in one.
 
 - Performance:
     - [Major] Optimize BSP loading transitions.
@@ -75,9 +73,6 @@
 - Presentation:
     - Animation:
         - Inverse kinematics:
-            - Arm IK:
-                - [Major] Smooth out arm IK transition from busy to not busy.
-                - Implement pole targets so Mario's elbows bend naturally.
             - Torso IK:
                 - Try out making Mario lean slightly as he aims up and down.
         - Head:
@@ -88,16 +83,12 @@
             x and vehicles.
             - When throwing grenade (left arm only).
             - When reloading (arms only).
-            - Fix Mario's hands and feet being enlarged when in vehicles (due to IK setting end effector transform.w, I believe).
     
     - Third person camera:
         - Render a false projectile exiting the player's barrel.
             - False projectile should converge with the actual projectile over distance.
         - [Critical] Move or disable all FPV weapon lights/effects.
     
-    - Sound:
-        - [Blocker] Scale Mario sound by game's volume setting.
-
 - Usability:
     - Keybinds:
         - [Critical] Implement remappable keybinds.
