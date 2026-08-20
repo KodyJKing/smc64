@@ -108,6 +108,8 @@ namespace Mod::Mario::MarioCamera {
             playerController->walkX = 0.0f;
             playerController->walkY = 0.0f;
             playerController->actions &= ~Engine::PlayerActionFlags::crouch;
+            playerController->actions &= ~Engine::PlayerActionFlags::jump;
+            playerController->actions &= ~Engine::PlayerActionFlags::melee;
             next(param_1, param_2);
             *playerController = pc;
         }, nullptr, 10);

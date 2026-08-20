@@ -8,78 +8,38 @@
 namespace Mod::Mario {
     
     void updateXboxControls(SM64MarioInputs& inputs) {
-
-        static uint64_t stickActiveUntil = 0;
-        uint64_t now = GetTickCount64();
-
         XINPUT_STATE state = {0};
         XInputGetState(0, &state);
 
-        // Left stick for movement.
-        float x = state.Gamepad.sThumbLX / 32768.0f;
-        float y = state.Gamepad.sThumbLY / 32768.0f;
-        float r = sqrtf(x * x + y * y);
-        float deadzone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE / 32768.0f;
-        if (r > deadzone) {
-            inputs.stickX = state.Gamepad.sThumbLX / 32768.0f;
-            inputs.stickY = state.Gamepad.sThumbLY / 32768.0f;
-            stickActiveUntil = now + 100;
-        } else if (now < stickActiveUntil) {
-            inputs.stickX = 0;
-            inputs.stickY = 0;
-        }
-
-        // Buttons
-        inputs.buttonA |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) ? 1 : 0;
-        inputs.buttonB |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) ? 1 : 0;
         inputs.buttonZ |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) ? 1 : 0;
     }
 
     void updateKeyboardControls(SM64MarioInputs& inputs) {
-        static uint64_t stickActiveUntil = 0;
-        uint64_t now = GetTickCount64();
-        
-        // WASD for movement
-        float x = 0.0f;
-        float y = 0.0f;
-        if (GetAsyncKeyState('A') & 0x8000) x -= 1.0f;
-        if (GetAsyncKeyState('D') & 0x8000) x += 1.0f;
-        if (GetAsyncKeyState('W') & 0x8000) y += 1.0f;
-        if (GetAsyncKeyState('S') & 0x8000) y -= 1.0f;
-        float r = sqrtf(x * x + y * y);
-        if (r > 0.0f) {
-            x /= r;
-            y /= r;
-        }
-        if (x != 0.0f || y != 0.0f) {
-            inputs.stickX = x;
-            inputs.stickY = y;
-            stickActiveUntil = now + 100;
-        } else if (now < stickActiveUntil) {
-            inputs.stickX = 0;
-            inputs.stickY = 0;
-        }
-
         // Buttons
-        inputs.buttonA |= (GetAsyncKeyState(VK_SPACE) & 0x8000) ? 1 : 0;
-        inputs.buttonB |= (GetAsyncKeyState('F') & 0x8000) ? 1 : 0;
         inputs.buttonZ |= (GetAsyncKeyState(VK_SHIFT) & 0x8000) ? 1 : 0;
+    }
 
+    void updateMappedHaloControls(SM64MarioInputs& inputs) {
+        auto playerController = Engine::getPlayerControllerPointer();
+        if (playerController) {
+            bool cheifMelee = (playerController->actions & Engine::PlayerActionFlags::melee) != 0;
+            bool cheifJump = (playerController->actions & Engine::PlayerActionFlags::jump) != 0;
+            if (cheifMelee) inputs.buttonB = 1;
+            if (cheifJump) inputs.buttonA = 1;
+            inputs.stickX = -playerController->walkX;
+            inputs.stickY = playerController->walkY;
+        }
     }
 
     void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Engine::Camera* camera) {
         inputs = {};
         updateXboxControls(inputs);
         updateKeyboardControls(inputs);
+        updateMappedHaloControls(inputs);
+        
         if (camera) {
             inputs.camLookX = -camera->fwd.x;
             inputs.camLookZ = -camera->fwd.y;
-        }
-
-        auto playerController = Engine::getPlayerControllerPointer();
-        if (playerController) {
-            bool cheifMelee = (playerController->actions & Engine::PlayerActionFlags::melee) != 0;
-            if (cheifMelee) inputs.buttonB = 1;
         }
     }
 
