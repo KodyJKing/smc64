@@ -5,6 +5,8 @@
 namespace Mod::Mario {
 
     void renderPauseMenuTab() {
+        
+        #ifdef _DEBUG
         if (ImGui::BeginTabItem("Mario")) {
             if (ImGui::Button("Dump Mario Geometry")) {
                 dumpMarioGeometry();
@@ -13,6 +15,8 @@ namespace Mod::Mario {
             ImGui::EndTabItem();
         }
         renderSoundBoard();
+        #endif
+        
     }
 
 }
