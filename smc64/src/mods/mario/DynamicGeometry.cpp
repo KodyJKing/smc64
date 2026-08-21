@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <mutex>
 
+#include "libsm64.h"
 #include "decomp/surface_terrains.h"
 
 // #define DEBUG_DYNAMIC_GEOMETRY 1
@@ -268,8 +269,7 @@ namespace Mod::Mario::DynamicGeometry {
             if (!entityTangible(entity)) {
                 // Ugly hack: Just teleport it really far away.
                 transform.position[1] = marioState.position[1] - 10000.0f;
-
-                // This can cause Mario to teleport with a biped as it dies. We need to change how this works.
+                sm64_surface_object_detach_marios(surfaceObjectId);
             } 
 
             if (isElevator) {
