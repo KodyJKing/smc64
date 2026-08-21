@@ -226,6 +226,7 @@ namespace Mod::Mario {
     
     void init(Spark::ModId modId) {
         #ifdef ENABLE_MARIO
+        registerInputActions();
         // Get location of host exe file using Windows API
         char path[MAX_PATH];
         GetModuleFileNameA(nullptr, path, MAX_PATH);

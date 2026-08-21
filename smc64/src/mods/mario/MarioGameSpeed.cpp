@@ -3,10 +3,9 @@
 #include "MarioAudio.hpp"
 #include "MarioState.hpp"
 #include "engine/halo1.hpp"
+#include "spark/input/Bindings.hpp"
 
 #include <cstdio>
-#include <Windows.h>
-#include <Xinput.h>
 
 #include "decomp/sm64.h"
 
@@ -33,13 +32,7 @@ namespace Mod::Mario {
     }
 
     bool bulletTimeButtonDown() {
-        // X button or left control.
-        XINPUT_STATE state = {0};
-        XInputGetState(0, &state);
-        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) return true;
-        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) return true;
-        if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) return true;
-        return GetAsyncKeyState(VK_CONTROL) & 0x8000;
+        return Spark::Input::actionState("mario:bullet_time") & 0x80;
     }
 
     void updateGameSpeed(Engine::Entity& player) {
