@@ -6,14 +6,19 @@
 namespace Mod::Mario {
 
     void registerInputActions() {
+        Spark::Input::addAction("mario:bullet_time", { SPARK_GAMEPAD_LEFT_THUMB, SPARK_GAMEPAD_RIGHT_SHOULDER, DIK_LCONTROL });
+        
         Spark::Input::addAction("mario:crouch", { SPARK_GAMEPAD_LEFT_SHOULDER, DIK_LSHIFT });
-        Spark::Input::addAction("mario:bullet_time", { SPARK_GAMEPAD_DPAD_UP, SPARK_GAMEPAD_LEFT_THUMB, SPARK_GAMEPAD_RIGHT_SHOULDER, DIK_LCONTROL });
         Spark::Input::addAction("mario:jump",       {SPARK_GAMEPAD_A, DIK_SPACE });
         Spark::Input::addAction("mario:punch",      {SPARK_GAMEPAD_B, DIK_F});
+        
         Spark::Input::addAction("mario:walk_right", {SPARK_GAMEPAD_LEFT_STICK_RIGHT, DIK_D});
         Spark::Input::addAction("mario:walk_left",  {SPARK_GAMEPAD_LEFT_STICK_LEFT, DIK_A});
         Spark::Input::addAction("mario:walk_fwd",   {SPARK_GAMEPAD_LEFT_STICK_UP, DIK_W});
         Spark::Input::addAction("mario:walk_back",  {SPARK_GAMEPAD_LEFT_STICK_DOWN, DIK_S});
+
+        Spark::Input::addAction("mario:camera_zoom_in", { SPARK_GAMEPAD_DPAD_UP, DIK_EQUALS });
+        Spark::Input::addAction("mario:camera_zoom_out", { SPARK_GAMEPAD_DPAD_DOWN, DIK_MINUS });
     }
 
     void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Engine::Camera* camera) {
