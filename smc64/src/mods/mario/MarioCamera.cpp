@@ -31,6 +31,7 @@ namespace Mod::Mario::MarioCamera {
 
     
     static size_t zoomLevel = 2;
+    static bool toggleZoomed = false;
     static constexpr float CAM_MAX_DISTANCE_SCALE = 4.0f;
     static float CAM_ZOOM_LEVELS[] = {0.25f, 0.5f, 1.0f, 2.0f, CAM_MAX_DISTANCE_SCALE};
 
@@ -47,7 +48,9 @@ namespace Mod::Mario::MarioCamera {
     }
 
     float getDesiredDistanceScale() {
-        return CAM_ZOOM_LEVELS[zoomLevel];
+        auto toggleLevel = zoomLevel >= 2 ? 0 : 3;
+        auto level = toggleZoomed ? toggleLevel : zoomLevel;
+        return CAM_ZOOM_LEVELS[level];
     }
 
     static Vec3 getCameraPosition() {
@@ -95,6 +98,7 @@ namespace Mod::Mario::MarioCamera {
     void updateControls() {
         static unsigned char zoomInWasPressed = 0;
         static unsigned char zoomOutWasPressed = 0;
+        static unsigned char toggleZoomWasPressed = 0;
 
         if (Spark::Input::actionPressed("mario:camera_zoom_out", &zoomInWasPressed)) {
             if (zoomLevel < sizeof(CAM_ZOOM_LEVELS)/sizeof(CAM_ZOOM_LEVELS[0]) - 1) {
@@ -107,6 +111,10 @@ namespace Mod::Mario::MarioCamera {
                 zoomLevel--;
                 sm64_play_sound_global(SOUND_MENU_CAMERA_ZOOM_IN);
             }
+        }
+        if (Spark::Input::actionPressed("mario:camera_zoom_toggle", &toggleZoomWasPressed)) {
+            toggleZoomed = !toggleZoomed;
+            sm64_play_sound_global(SOUND_MENU_CLICK_CHANGE_VIEW);
         }
     }
 

@@ -19,6 +19,7 @@ namespace Mod::Mario {
 
         Spark::Input::addAction("mario:camera_zoom_in", { SPARK_GAMEPAD_DPAD_UP, DIK_EQUALS });
         Spark::Input::addAction("mario:camera_zoom_out", { SPARK_GAMEPAD_DPAD_DOWN, DIK_MINUS });
+        Spark::Input::addAction("mario:camera_zoom_toggle", { SPARK_GAMEPAD_LEFT_THUMB, DIK_0 });
     }
 
     void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Engine::Camera* camera) {

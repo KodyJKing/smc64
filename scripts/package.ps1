@@ -1,17 +1,20 @@
 param(
     [string]$Config = "Debug",
     [string]$IDE = "vs2022",
-    [string]$MCCPath = "C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection"
+    [string]$MCCPath = "C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection",
+    [boolean]$SkipMaps = $false
 )
 
-# /README.md
-# /halo1/maps/{a10,a30,a50,b30,b40,c10,c20,c40,d20,d40}.map  ; copied from $MCCPath\Halo1\maps
-# /MCC/Binaries/Win64/
-#                    /mods/smc64.dll
-#                    /spark.dll
-#                    /sm64.dll
-#                    /xaudio2_9redist.dll   (import-patched by setdll)
-#                    /xaudio2_9redist.dll~  (original backup left by setdll)
+# smc64-<config>.zip:
+#   /README.md
+#   /MCC/Binaries/Win64/
+#                      /mods/smc64.dll
+#                      /spark.dll
+#                      /sm64.dll
+#                      /xaudio2_9redist.dll   (import-patched by setdll)
+#                      /xaudio2_9redist.dll~  (original backup left by setdll)
+# smc64-<config>.maps.zip (skipped with -SkipMaps):
+#   /halo1/maps/{a10,a30,a50,b30,b40,c10,c20,c40,d20,d40}.map  ; copied from $MCCPath\Halo1\maps
 
 # Build the project.
 & "./scripts/build.ps1" -Config $Config -IDE $IDE
@@ -23,13 +26,6 @@ New-Item -Path $PackagePath -ItemType Directory -Force
 
 # Root-level README.
 Copy-Item -Path smc64\shipfiles\README.md -Destination $PackagePath\README.md -Force
-
-# Campaign maps.
-$MapsPackagePath = "$PackagePath\halo1\maps"
-New-Item -Path $MapsPackagePath -ItemType Directory -Force | Out-Null
-@("a10","a30","a50","b30","b40","c10","c20","c40","d20","d40") | ForEach-Object {
-    Copy-Item -Path "$MCCPath\Halo1\maps\$_.map" -Destination $MapsPackagePath -Force
-}
 
 # MCC/Binaries/Win64 layout.
 $Win64Path = "$PackagePath\MCC\Binaries\Win64"
@@ -53,8 +49,22 @@ Pop-Location
 
 # Zip the package directory.
 $ConfigLower = $Config.ToLower()
-$ZipPath = "bin\$Config-Win64\smc64-$ConfigLower.zip"
+$ZipPathName =  "bin\$Config-Win64\smc64-$ConfigLower"
+$ZipPath = "$ZipPathName.zip"
 Compress-Archive -Path $PackagePath\* -DestinationPath $ZipPath -Force
 
 # Cleanup package directory.
 Remove-Item -Path $PackagePath -Recurse -Force
+
+# Maps zip (separate, optional install; same halo1/maps/ shape).
+if (-not $SkipMaps) {
+    $MapsStaging = "bin\$Config-Win64\package-maps"
+    if (Test-Path $MapsStaging) { Remove-Item -Path $MapsStaging -Recurse -Force }
+    $MapsDestPath = "$MapsStaging\halo1\maps"
+    New-Item -Path $MapsDestPath -ItemType Directory -Force | Out-Null
+    @("a10","a30","a50","b30","b40","c10","c20","c40","d20","d40") | ForEach-Object {
+        Copy-Item -Path "$MCCPath\Halo1\maps\$_.map" -Destination $MapsDestPath -Force
+    }
+    Compress-Archive -Path $MapsStaging\* -DestinationPath "$ZipPathName.maps.zip" -Force
+    Remove-Item -Path $MapsStaging -Recurse -Force
+}
