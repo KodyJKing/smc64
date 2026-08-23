@@ -35,6 +35,8 @@ namespace Mod::Mario::MarioCamera {
     static constexpr float CAM_MAX_DISTANCE_SCALE = 4.0f;
     static float CAM_ZOOM_LEVELS[] = {0.25f, 0.5f, 1.0f, 2.0f, CAM_MAX_DISTANCE_SCALE};
 
+    static bool marioSideToggled = false;
+
     static bool isHanging() {
         return (marioState.action & ACT_FLAG_HANGING) != 0;
     }
@@ -53,6 +55,10 @@ namespace Mod::Mario::MarioCamera {
         return CAM_ZOOM_LEVELS[level];
     }
 
+    float cameraSideSign() {
+        return marioSideToggled ? -1.0f : 1.0f;
+    }
+
     static Vec3 getCameraPosition() {
         auto camera = Engine::getPlayerCameraPointer();
         if (!camera) return Vec3{0, 0, 0};
@@ -62,7 +68,7 @@ namespace Mod::Mario::MarioCamera {
 
         // Cast a ray from Mario's head height toward the desired camera position.
         // This lets us detect walls and pull the camera in to prevent clipping.
-        Vec3 rayDisp   = (camera->fwd * CAM_BACK + right * CAM_RIGHT) * CAM_MAX_DISTANCE_SCALE;
+        Vec3 rayDisp   = (camera->fwd * CAM_BACK + right * CAM_RIGHT * cameraSideSign()) * CAM_MAX_DISTANCE_SCALE;
         Vec3 rayOrigin = marioPos + Vec3{0, 0, cameraUp()} + rayDisp.normalize() * CAM_RAY_START_DIST;
         float rayLen   = rayDisp.length();
 
@@ -89,8 +95,8 @@ namespace Mod::Mario::MarioCamera {
                              : targetScale;
 
         Vec3 result = marioPos
-            + (camera->fwd * CAM_BACK + right * CAM_RIGHT) * camDistanceScale 
-            + right * CAM_RIGHT_FIXED
+            + (camera->fwd * CAM_BACK + right * CAM_RIGHT * cameraSideSign()) * camDistanceScale 
+            + right * CAM_RIGHT_FIXED * cameraSideSign()
             + Vec3{0, 0, cameraUp()};
         return result;
     }
@@ -99,7 +105,7 @@ namespace Mod::Mario::MarioCamera {
         static unsigned char zoomInWasPressed = 0;
         static unsigned char zoomOutWasPressed = 0;
         static unsigned char toggleZoomWasPressed = 0;
-
+        static unsigned char switchSideWasPressed = 0;
         if (Spark::Input::actionPressed("mario:camera_zoom_out", &zoomInWasPressed)) {
             if (zoomLevel < sizeof(CAM_ZOOM_LEVELS)/sizeof(CAM_ZOOM_LEVELS[0]) - 1) {
                 zoomLevel++;
@@ -114,6 +120,10 @@ namespace Mod::Mario::MarioCamera {
         }
         if (Spark::Input::actionPressed("mario:camera_zoom_toggle", &toggleZoomWasPressed)) {
             toggleZoomed = !toggleZoomed;
+            sm64_play_sound_global(SOUND_MENU_CLICK_CHANGE_VIEW);
+        }
+        if (Spark::Input::actionPressed("mario:camera_switch_sides", &switchSideWasPressed)) {
+            marioSideToggled = !marioSideToggled;
             sm64_play_sound_global(SOUND_MENU_CLICK_CHANGE_VIEW);
         }
     }
