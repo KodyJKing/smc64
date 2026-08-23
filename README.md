@@ -8,7 +8,7 @@ Download the latest [release](https://github.com/KodyJKing/smc64/releases) and f
 
 ## Developer Setup
 
-Clone the repository recursively to get submodules (including the `spark` mod-loader engine,
+Clone the repository recursively to get submodules (including the `spark` mod-loader,
 which lives at `vendor/spark`):
 
 ```powershell
