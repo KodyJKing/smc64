@@ -22,6 +22,8 @@
     - [Minor] Fix Mario visually sinking into fast elevators (seems to be caused by a 1-frame delay in the object transforms).
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.
     - [Major] Fix player not being able to drive until reentering a vehicle if they load a checkpoint in one.
+    - [Major] Clip triangles to Mario universe boundaries rather than culling them.
+    - [Blocker] Place a floor object under Mario at all times so he can still fall when there is no ground loaded under him.
 
 - Performance:
     - [Major] Optimize BSP loading transitions.

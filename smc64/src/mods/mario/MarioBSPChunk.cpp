@@ -13,10 +13,11 @@
 #include <cmath>
 #include <cstring>
 
-// #define DEBUG_BSP_CHUNK 1
+#define DEBUG_BSP_CHUNK 1
 
 #ifdef DEBUG_BSP_CHUNK
-    #define MAX_DISTANCE_WORLD_UNITS 2.0f
+    // #define MAX_DISTANCE_WORLD_UNITS 2.0f
+    #define MAX_DISTANCE_WORLD_UNITS 100.0f
     #include <iostream>
     #include "spark/overlay/ESP.hpp"
     #define LOG(x) std::cout << "[MarioBSPChunk] " << x << std::endl;
@@ -30,7 +31,7 @@ namespace Mod::Mario::MarioBSPChunk {
     // marioState.position) are expressed in. We allow Mario's local position to drift up
     // to chunkHalfExtent + reloadMargin from the chunk origin before performing an
     // atomic recenter + static reload.
-    float reloadMargin = 4096.0f;
+    float reloadMargin = 4096.0f / 2.0f;
 
     static SM64Surface* staticSurfaces    = nullptr;
     static size_t       staticSurfacesCount = 0;

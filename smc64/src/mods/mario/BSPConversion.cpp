@@ -219,8 +219,9 @@ namespace Mod::Mario::BSPConversion {
                            m.y < aabbMin.y || m.y > aabbMax.y ||
                            m.z < aabbMin.z || m.z > aabbMax.z;
                 };
-                // Any vertex outside is unsafe and could cause parallel universe collisions.
-                if (outside(m0) || outside(m1) || outside(m2)) continue; 
+                // // Any vertex outside is unsafe and could cause parallel universe collisions.
+                // if (outside(m0) || outside(m1) || outside(m2)) continue; 
+                if (outside(m0) && outside(m1) && outside(m2)) continue; // All vertices outside, skip.
 
                 auto v01 = p1->pos - p0->pos;
                 auto v02 = p2->pos - p0->pos;
