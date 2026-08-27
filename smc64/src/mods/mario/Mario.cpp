@@ -60,10 +60,20 @@
     #define LOG(x) ;
 #endif
 
+#define ROM_NAME "baserom.us.z64"
+
 namespace Mod::Mario {
 
     // Guards the geometry buffers and full update() body against concurrent free().
     static std::mutex s_updateMutex;
+
+    std::filesystem::path getRomPath() {
+        char path[MAX_PATH];
+        GetModuleFileNameA(nullptr, path, MAX_PATH);
+        std::filesystem::path modulePath = path;
+        std::filesystem::path romPath = modulePath.parent_path() / ROM_NAME;
+        return romPath;
+    }
 
     uint8_t* readRomFile(const char *path, size_t *fileLength) {
         FILE *f = fopen(path, "rb");
@@ -83,6 +93,17 @@ namespace Mod::Mario {
         if (fileLength) *fileLength = length;
 
         return buffer;
+    }
+
+    bool checkRom(bool showErrorMessage) {
+        std::filesystem::path romPath = getRomPath();
+        bool exists = std::filesystem::exists(romPath);
+        if (!exists && showErrorMessage) {
+            std::string pathStr = romPath.string();
+            std::string msg = "Missing required SM64 ROM file: " + pathStr + "\n\nPlease place the ROM file in the same directory as the SMC64 executable.";
+            MessageBoxA(nullptr, msg.c_str(), "Missing ROM", MB_ICONERROR | MB_OK);
+        }
+        return exists;
     }
 
     void debugPrint(const char *msg) {
@@ -227,11 +248,7 @@ namespace Mod::Mario {
     void init(Spark::ModId modId) {
         #ifdef ENABLE_MARIO
         registerInputActions();
-        // Get location of host exe file using Windows API
-        char path[MAX_PATH];
-        GetModuleFileNameA(nullptr, path, MAX_PATH);
-        std::filesystem::path modulePath = path;
-        std::filesystem::path romPath = modulePath.parent_path() / "baserom.us.z64";
+        std::filesystem::path romPath = getRomPath();
         std::string romPathStr = romPath.string();
         printf("Module path: %s\n", romPathStr.c_str());
 
@@ -345,22 +362,24 @@ namespace Mod::Mario {
 
         MarioCamera::onUpdate(marioWorldPosition());
 
+        #ifdef _DEBUG
         if (GetAsyncKeyState(VK_F3) & 1) enableMario = !enableMario;
         if (GetAsyncKeyState(VK_F4) & 1) {
             possessMario = !possessMario;
             if (possessMario) marioToCheif();
         }
-
         if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
             // sm64_set_mario_action_arg(marioId, ACT_RIDING_SHELL_GROUND, 0);
             // sm64_set_mario_action_arg(marioId, ACT_CRAZY_BOX_BOUNCE, 0);
             // sm64_set_mario_state(marioId, marioState.flags | MARIO_WING_CAP);
             // sm64_set_mario_action(marioId, ACT_FLYING_TRIPLE_JUMP);
             // sm64_set_mario_action(marioId, ACT_VERTICAL_WIND);
+            sm64_set_mario_action(marioId, ACT_HOLD_IDLE);
             // sm64_set_mario_velocity(marioId, 0, 150, 0);
-            Mod::Mario::killPlayer();
+            // Mod::Mario::killPlayer();
             // sm64_set_mario_action(marioId, ACT_GROUND_BONK);
         }
+        #endif
 
         if (marioId < 0 || !enableMario) {
             MarioCamera::onDisable();
