@@ -96,7 +96,7 @@ namespace Mod::Mario::MarioChiefPose {
 
     void initHandlers(Spark::ModId modId) {
 #ifdef BONE_MAPPING_EDITOR
-        Spark::UpdatePlayerControlsAndLook::addHandler(modId, +[](void*, Spark::UpdatePlayerControlsAndLook::Cursor next, uint32_t p1, uint32_t p2) {
+        Spark::UpdatePlayerControlsAndLook::addHandler(modId, +[](void*, Spark::UpdatePlayerControlsAndLook::Cursor next, float p1, uint32_t p2) {
             if (!s_inputEnabled)
                 next(p1, p2);
         }, nullptr, 10);
