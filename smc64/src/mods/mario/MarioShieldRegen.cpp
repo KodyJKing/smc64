@@ -26,7 +26,7 @@ namespace Mod::Mario {
         float actualRegen = player->shield - oldShield;
 
         if (actualRegen > 0.1f) {
-            sm64_play_sound_global(SOUND_GENERAL_HEART_SPIN);
+            // sm64_play_sound_global(SOUND_GENERAL_HEART_SPIN);
         }
     }
     

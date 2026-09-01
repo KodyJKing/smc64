@@ -87,6 +87,9 @@ namespace Mod::Mario::DynamicGeometry::ModelSwap {
         // Make door of cryotube intangible so Mario doesn't get stuck in it.
         { { "levels\\a10\\devices\\cryotube\\cryotube", 0 }, { ModelSwapType::Empty, {} } },
         { { "levels\\a10\\devices\\cryotube\\cryotube", 1 }, { ModelSwapType::Empty, {} } },
+
+        // // characters\flood_infection\flood_infection
+        // { { "characters\\flood_infection\\flood_infection", 0 }, { ModelSwapType::Empty, {} } },
     };
 
     // Build a closed box (12 triangles) centered at `center` with the given half extents.

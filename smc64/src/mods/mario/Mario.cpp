@@ -47,10 +47,13 @@
 #include "AdrenalineSystem.hpp"
 #include "MarioGoombaStomp.hpp"
 #include "MarioShell.hpp"
+#include "powerups/PowderKeg.hpp"
 #include "functions/MarioToCheif.hpp"
 #include "functions/CheifToMario.hpp"
 #include "functions/KillPlayer.hpp"
 #include "functions/SanitizeAction.hpp"
+#include "functions/UpdateMarioDebugControls.hpp"
+#include "functions/CreateSpawnPlatform.hpp"
 
 // #define DEBUG_MARIO 1
 
@@ -136,25 +139,6 @@ namespace Mod::Mario {
     void debugWorldText(float x, float y, float z, uint32_t colorRGBA, const char *text, uint32_t durationFrames) {
         Vec3 pos = Coordinates::marioLocalToHaloWorld(Vec3{ x, y, z }, marioChunk);
         Spark::Overlay::Gizmos::drawText(pos, text ? text : "", marioColorToImU32(colorRGBA), durationFrames);
-    }
-
-    void createSpawnPlatform(const Vec3& localPos) {
-        // Create a temporary square floor in mario-local space to support spawn.
-        // This is replaced with real BSP geometry immediately after by MarioBSPChunk::init.
-        int32_t fx = (int32_t)std::lround(localPos.x);
-        int32_t fz = (int32_t)std::lround(localPos.z);
-        int32_t fy = (int32_t)std::lround(localPos.y) - 200; // ~0.5m below spawn
-        int32_t half = 2000; // ~5m half-extent
-        SM64Surface floor[2] = {};
-        for (auto& s : floor) { s.type = SURFACE_DEFAULT; s.force = 0; s.terrain = TERRAIN_GRASS; }
-        // CCW winding (viewed from above) for upward normal
-        floor[0].vertices[0][0] = fx - half; floor[0].vertices[0][1] = fy; floor[0].vertices[0][2] = fz - half;
-        floor[0].vertices[1][0] = fx - half; floor[0].vertices[1][1] = fy; floor[0].vertices[1][2] = fz + half;
-        floor[0].vertices[2][0] = fx + half; floor[0].vertices[2][1] = fy; floor[0].vertices[2][2] = fz + half;
-        floor[1].vertices[0][0] = fx - half; floor[1].vertices[0][1] = fy; floor[1].vertices[0][2] = fz - half;
-        floor[1].vertices[1][0] = fx + half; floor[1].vertices[1][1] = fy; floor[1].vertices[1][2] = fz + half;
-        floor[1].vertices[2][0] = fx + half; floor[1].vertices[2][1] = fy; floor[1].vertices[2][2] = fz - half;
-        sm64_static_surfaces_load(floor, 2);
     }
 
     void initMario() {
@@ -328,6 +312,7 @@ namespace Mod::Mario {
         LOG("Mario death tick end");
 
         updateMarioPose(marioBoneMatrices);
+        Mario::PowderKeg::update();
     }
 
     void uninitializedTick() {
@@ -358,27 +343,11 @@ namespace Mod::Mario {
 
         updateGameSpeed(*player);
         updateShieldRegen(player);
-        // Engine::Scripting::submit("object_set_scale (player0) 0.4 1");
 
         MarioCamera::onUpdate(marioWorldPosition());
 
         #ifdef _DEBUG
-        if (GetAsyncKeyState(VK_F3) & 1) enableMario = !enableMario;
-        if (GetAsyncKeyState(VK_F4) & 1) {
-            possessMario = !possessMario;
-            if (possessMario) marioToCheif();
-        }
-        if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
-            // sm64_set_mario_action_arg(marioId, ACT_RIDING_SHELL_GROUND, 0);
-            // sm64_set_mario_action_arg(marioId, ACT_CRAZY_BOX_BOUNCE, 0);
-            // sm64_set_mario_state(marioId, marioState.flags | MARIO_WING_CAP);
-            // sm64_set_mario_action(marioId, ACT_FLYING_TRIPLE_JUMP);
-            // sm64_set_mario_action(marioId, ACT_VERTICAL_WIND);
-            sm64_set_mario_action(marioId, ACT_HOLD_IDLE);
-            // sm64_set_mario_velocity(marioId, 0, 150, 0);
-            // Mod::Mario::killPlayer();
-            // sm64_set_mario_action(marioId, ACT_GROUND_BONK);
-        }
+        updateMarioDebugControls();
         #endif
 
         if (marioId < 0 || !enableMario) {
@@ -389,11 +358,9 @@ namespace Mod::Mario {
         DynamicGeometry::update(marioState);
 
         if (marioInControl()) {
-            // std::cout << "Mario in control this tick" << std::endl;
             cheifToMario(player);
             Mario::updateInput(marioInputs, marioState, Engine::getPlayerCameraPointer());
         } else {
-            // std::cout << "Chief in control this tick" << std::endl;
             MarioCamera::onDisable();
             // Clear input state.
             marioInputs = {}; 
@@ -429,6 +396,7 @@ namespace Mod::Mario {
         sm64_mario_heal(marioId, 0xFF);
 
         Mod::Mario::Shell::updateShellState();
+        Mod::Mario::PowderKeg::update();
 
         // Save last_mario_action global.
         std::string command = "(set last_mario_action " + std::to_string(marioState.action) + ")";

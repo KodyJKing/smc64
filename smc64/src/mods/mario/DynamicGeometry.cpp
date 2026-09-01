@@ -290,6 +290,15 @@ namespace Mod::Mario::DynamicGeometry {
         if (category == Engine::EntityCategory_Biped) {
             auto playerEntity = Engine::getPlayerEntity();
             if (entity == playerEntity) return false;
+
+            auto tag = entity->tag();
+            if (tag) {
+                auto tagPath = tag->getResourcePath();
+                if (tagPath && std::string(tagPath).find("characters\\flood_infection\\flood_infection") != std::string::npos) {
+                    return false;
+                }
+            }
+
             return true;
         }
         return false;

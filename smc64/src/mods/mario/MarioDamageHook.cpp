@@ -76,6 +76,9 @@ namespace Mod::Mario::MarioDamageHook {
                         return;
                     }
                 }
+
+                bool isOvercharge = (damageTagPath.find("weapons\\plasma rifle\\charged bolt") != std::string::npos);
+                if (isOvercharge) sm64_set_mario_action(marioId, ACT_BURNING_GROUND);
             }
 
             // === Damage from the player ===

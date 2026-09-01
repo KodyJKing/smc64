@@ -22,7 +22,8 @@ namespace Mod::Mario::MarioCamera {
     static float    camDistanceScale      = 1.0f;
 
     static constexpr float CAM_BACK        = -1.2f;
-    static constexpr float CAM_RIGHT       =  0.125f;
+    // static constexpr float CAM_RIGHT       =  0.125f;
+    static constexpr float CAM_RIGHT       =  0.0f;
     static constexpr float CAM_RIGHT_FIXED =  0.125f;
     static constexpr float CAM_UP          =  0.25f;
     static constexpr float CAM_WALL_MARGIN =  0.1f;

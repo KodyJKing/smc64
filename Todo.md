@@ -25,6 +25,7 @@
 
 - Performance:
     - [Major] Optimize BSP loading transitions.
+    - [Major] Profile on second half of Keyes, find source of microstutters.
 
 - Testing:
     - [Blocker] Do a full playthrough on the release build.
