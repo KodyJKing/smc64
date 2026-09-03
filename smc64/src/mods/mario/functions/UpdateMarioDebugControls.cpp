@@ -6,6 +6,7 @@
 #include "engine/halo1.hpp"
 #include "spark/input/Bindings.hpp"
 #include <windows.h>
+#include "../powerups/PowderKeg.hpp"
 
 namespace Mod::Mario {
 
@@ -18,7 +19,7 @@ namespace Mod::Mario {
 
         static unsigned char debug1WasPressed = false;
         if (Spark::Input::actionPressed("mario:debug1", &debug1WasPressed)) {
-            // sm64_set_mario_action_arg(marioId, ACT_RIDING_SHELL_GROUND, 0);
+            sm64_set_mario_action_arg(marioId, ACT_RIDING_SHELL_GROUND, 0);
 
             // sm64_set_mario_action_arg(marioId, ACT_CRAZY_BOX_BOUNCE, 0);
             
@@ -34,6 +35,12 @@ namespace Mod::Mario {
             // Mod::Mario::killPlayer();
             
             // sm64_set_mario_action(marioId, ACT_GROUND_BONK);
+        }
+
+        static unsigned char debug2WasPressed = false;
+        if (Spark::Input::actionPressed("mario:debug2", &debug2WasPressed)) {
+            // toggle keg
+            Mod::Mario::PowderKeg::setKegEquiped(!Mod::Mario::PowderKeg::isKegEquiped());
         }
     }
 

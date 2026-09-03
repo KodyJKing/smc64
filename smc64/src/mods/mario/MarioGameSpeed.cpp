@@ -14,7 +14,14 @@ namespace Mod::Mario {
     float smoothedGameSpeed = 1.0f;
     float gamespeed = 1.0f;
 
+    uint64_t bulletTimeFreeUntil = 0;
+
     float shieldCostMultiplier() {
+        uint64_t currentTick = GetTickCount64();
+        if (currentTick < bulletTimeFreeUntil) {
+            return 0.0f; // No shield cost during free bullet time period.
+        }
+
         if (marioState.action == ACT_CRAZY_BOX_BOUNCE) {
             return 0.0f;
         }
@@ -36,12 +43,13 @@ namespace Mod::Mario {
     }
 
     void updateGameSpeed(Engine::Entity& player) {
+        float costMultiplier = shieldCostMultiplier();
         bool airborne = marioAirborne();
-        bool hasSheilds = player.shield > 0;
+        bool hasSheilds = player.shield > 0 || costMultiplier == 0.0f;
         bool canSlowdown = airborne && hasSheilds;
         bool slowDown = canSlowdown && bulletTimeButtonDown();
         if (slowDown) {
-            player.shield -= 0.05f * shieldCostMultiplier();
+            player.shield -= 0.05f * costMultiplier;
             gamespeed = 0.25f;
         } else {
             gamespeed = 1.0f;
@@ -52,6 +60,11 @@ namespace Mod::Mario {
         smoothedGameSpeed += (gamespeed - smoothedGameSpeed) * smoothingFactor;
 
         setGameSpeed(smoothedGameSpeed);
+    }
+
+    void grantFreeBulletTime(uint64_t durationMillis) {
+        uint64_t currentTick = GetTickCount64();
+        bulletTimeFreeUntil = currentTick + durationMillis;
     }
 
 }

@@ -117,6 +117,7 @@ namespace Mod::Mario::GoombaStomp {
             case ACT_GROUND_POUND:
             case ACT_BACKFLIP:
             case ACT_FORWARD_ROLLOUT:
+            case ACT_LAVA_BOOST:
                 return true;
             default:
                 return false;

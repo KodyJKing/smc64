@@ -8,7 +8,7 @@ namespace Mod::Mario {
     void damagePlayer(float amount, float multiplier) {
         if (!Spark::DamageEntity::original) return;
 
-        auto* tag = Engine::findTag("weapons\\assault rifle\\melee", "jpt!");
+        auto* tag = Engine::findTag("weapons\\plasma rifle\\bolt", "jpt!");
         if (!tag) return;
 
         uint32_t playerHandle = Engine::getPlayerHandle();

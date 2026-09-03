@@ -3,11 +3,23 @@
 #include "../functions/KillPlayer.hpp"
 #include "../MarioSkeleton.hpp"
 #include "../MarioState.hpp"
+#include "engine/halo1.hpp"
 #include "spark/input/Bindings.hpp"
 #include "decomp/sm64.h"
 #include "decomp/audio_defines.h"
+#include "../MarioGameSpeed.hpp"
 
 namespace Mod::Mario::PowderKeg {
+
+    bool kegEquipped = false;
+
+    bool isKegEquiped() {
+        return kegEquipped;
+    }
+
+    void setKegEquiped(bool active) {
+        kegEquipped = active;
+    }
 
     void updatePose() {
         // Copy chest transform to powder_keg
@@ -20,9 +32,16 @@ namespace Mod::Mario::PowderKeg {
         }
     }
 
-    void drainShield() {
-        auto player = Engine::getPlayerEntity();
-        if (player) player->shield = 0;
+    void spawnExplosionEffect() {
+        auto playerHandle = Engine::getPlayerHandle();
+        if (playerHandle == NULL_HANDLE) return;
+        uint32_t effectTagHandle = Engine::findTag("smc64\\powder_keg\\explosion", "effe")->tagID;
+        Engine::effectNewOnObjectMarker(effectTagHandle, playerHandle, "head");
+    }
+
+    void dealBoostDamage(float amount = 1.0f) {
+        Mod::Mario::damagePlayer(amount, 1.0f);
+        grantFreeBulletTime(1000);
     }
 
     void faceLook() {
@@ -36,7 +55,8 @@ namespace Mod::Mario::PowderKeg {
         auto camera = Engine::getPlayerCameraPointer();
         Vec3 velocity = camera->fwd * 0.25f;
         launchMario(velocity, setFaceAngle);
-        drainShield();
+        dealBoostDamage();
+        spawnExplosionEffect();
         sm64_play_sound_global(SOUND_OBJ_CANNON4);
     }
 
@@ -56,10 +76,19 @@ namespace Mod::Mario::PowderKeg {
             case ACT_JUMP_KICK:
             case ACT_SLIDE_KICK:
                 faceLook();
+                dealBoostDamage();
             case ACT_WALL_KICK_AIR:
                 sm64_set_mario_forward_velocity(marioId, 100.0f);
                 sm64_play_sound_global(SOUND_OBJ_CANNON4);
-                drainShield();
+                spawnExplosionEffect();
+                break;
+            case ACT_GROUND_POUND_LAND:
+                sm64_play_sound_global(SOUND_OBJ_CANNON4);
+                sm64_set_mario_action(marioId, ACT_LAVA_BOOST);
+                sm64_set_mario_forward_velocity(marioId, 50.0f);
+                sm64_set_mario_velocity(marioId, 0, 100.0f, 0);
+                dealBoostDamage();
+                spawnExplosionEffect();
                 break;
             default:
                 break;
@@ -84,8 +113,9 @@ namespace Mod::Mario::PowderKeg {
         };
 
         if (bonkDamage(currentAction) && !bonkDamage(lastAction)) {
-            auto damage = bonkDamage(currentAction) * lastSpeed / 1600.0f;
+            auto damage = bonkDamage(currentAction) * lastSpeed / 16.0f;
             Mod::Mario::damagePlayer((float) damage, 1.0f);
+            if (damage > 5.0f) spawnExplosionEffect();
         }
 
         lastAction = currentAction;
@@ -96,7 +126,9 @@ namespace Mod::Mario::PowderKeg {
         auto currentAction = marioState.action;
         auto static lastAction = currentAction;
 
-        if (marioState.animFrame == 0 && currentAction != lastAction) {
+        // auto animFrame = marioState.animFrame;
+        // if (animFrame == 0 && currentAction != lastAction) {
+        if (currentAction != lastAction) {
             onActionStart(currentAction, lastAction);
         }
 
@@ -104,6 +136,7 @@ namespace Mod::Mario::PowderKeg {
     }
 
     void update() {
+        if (!isKegEquiped()) return;
         updatePose();
         updateControls();
         updateMarioBonkDamage();
