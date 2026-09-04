@@ -37,6 +37,8 @@ namespace Mod::Mario::PowderKeg {
         if (playerHandle == NULL_HANDLE) return;
         uint32_t effectTagHandle = Engine::findTag("smc64\\powder_keg\\explosion", "effe")->tagID;
         Engine::effectNewOnObjectMarker(effectTagHandle, playerHandle, "head");
+        uint32_t smokeEffectTagHandle = Engine::findTag("smc64\\powder_keg\\smoke", "effe")->tagID;
+        Engine::effectNewOnObjectMarker(smokeEffectTagHandle, playerHandle, "head");
     }
 
     void dealBoostDamage(float amount = 1.0f) {
@@ -77,7 +79,7 @@ namespace Mod::Mario::PowderKeg {
             case ACT_SLIDE_KICK:
                 faceLook();
                 dealBoostDamage();
-            case ACT_WALL_KICK_AIR:
+            // case ACT_WALL_KICK_AIR:
                 sm64_set_mario_forward_velocity(marioId, 100.0f);
                 sm64_play_sound_global(SOUND_OBJ_CANNON4);
                 spawnExplosionEffect();
