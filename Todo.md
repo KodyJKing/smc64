@@ -22,6 +22,9 @@
     - [Minor] Fix Mario visually sinking into fast elevators (seems to be caused by a 1-frame delay in the object transforms).
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.
     - [Major] Fix player not being able to drive until reentering a vehicle if they load a checkpoint in one.
+    - Fix gun pose bug when Mario is standing on dynamic objects.
+        - Caused by Chief being in an "in-air" state.
+            - Forcing Cheif to face same direction as Mario may fix this.
 
 - Performance:
     - [Major] Optimize BSP loading transitions.

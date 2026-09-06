@@ -1,6 +1,8 @@
 #include "PowderKeg.hpp"
+#include "../functions/MarioWorldPosition.hpp"
 #include "../functions/MarioFunctions.hpp"
 #include "../functions/KillPlayer.hpp"
+#include "../functions/EquipmentFunctions.hpp"
 #include "../MarioSkeleton.hpp"
 #include "../MarioState.hpp"
 #include "engine/halo1.hpp"
@@ -11,24 +13,67 @@
 
 namespace Mod::Mario::PowderKeg {
 
-    bool kegEquipped = false;
+    bool isPowderKeg(Engine::Entity* entity) {
+        return entity && entity->fromResourcePath(POWDER_KEG_RESOURCE_PATH);
+    }
+
+    bool marioIsTouchingKegEquipment() {
+        auto marioPos = marioWorldPosition();
+        bool touching = false;
+        Engine::foreachEntityInRadius(marioPos, 0.3f, [&touching](Engine::Entity* entity) {
+            if (!touching && isPowderKeg(entity)) {
+                removeEquipmentEntity(entity);
+                touching = true;
+            }
+        });
+        return touching;
+    }
+
+    uint32_t getKegCharges() {
+        return Engine::Scripting::readGlobal("powder_keg_charges");
+    }
 
     bool isKegEquiped() {
-        return kegEquipped;
+        uint32_t charges = getKegCharges();
+        return charges > 0;
+    }
+
+    void setKegCharges(uint32_t charges) {
+        std::string command = "(set powder_keg_charges " + std::to_string(charges) + ")";
+        const char* commandCStr = command.c_str();
+        Engine::Scripting::submit(commandCStr);
     }
 
     void setKegEquiped(bool active) {
-        kegEquipped = active;
+        if (active) {
+            setKegCharges(20);
+        } else {
+            setKegCharges(0);
+        }
+    }
+
+    void consumeKegCharge() {
+        uint32_t charges = getKegCharges();
+        if (charges > 0) {
+            charges--;
+            setKegCharges(charges);
+        }
     }
 
     void updatePose() {
         // Copy chest transform to powder_keg
-        auto chest = getMarioBonePointerByName("frame chest");
         auto keg = getMarioBonePointerByName("frame powder_keg");
-        if (chest && keg) {
-            *keg = *chest;
-            keg->pos += keg->y * -0.08f;
-            keg->pos += keg->x * 0.02f;
+
+        if (isKegEquiped()) {
+            auto chest = getMarioBonePointerByName("frame chest");
+            if (chest && keg) {
+                *keg = *chest;
+                keg->pos += keg->y * -0.08f;
+                keg->pos += keg->x * 0.02f;
+            }
+        } else {
+            keg->pos = Vec3{0, 0, 0};
+            keg->w = 0.0f;
         }
     }
 
@@ -72,6 +117,7 @@ namespace Mod::Mario::PowderKeg {
         switch (action) {
             case ACT_DIVE:
                 superDive(wasTripleJump);
+                consumeKegCharge();
                 break;
             case ACT_PUNCHING:
             case ACT_MOVE_PUNCHING:
@@ -83,6 +129,7 @@ namespace Mod::Mario::PowderKeg {
                 sm64_set_mario_forward_velocity(marioId, 100.0f);
                 sm64_play_sound_global(SOUND_OBJ_CANNON4);
                 spawnExplosionEffect();
+                consumeKegCharge();
                 break;
             case ACT_GROUND_POUND_LAND:
                 sm64_play_sound_global(SOUND_OBJ_CANNON4);
@@ -91,6 +138,7 @@ namespace Mod::Mario::PowderKeg {
                 sm64_set_mario_velocity(marioId, 0, 100.0f, 0);
                 dealBoostDamage();
                 spawnExplosionEffect();
+                consumeKegCharge();
                 break;
             default:
                 break;
@@ -128,8 +176,6 @@ namespace Mod::Mario::PowderKeg {
         auto currentAction = marioState.action;
         auto static lastAction = currentAction;
 
-        // auto animFrame = marioState.animFrame;
-        // if (animFrame == 0 && currentAction != lastAction) {
         if (currentAction != lastAction) {
             onActionStart(currentAction, lastAction);
         }
@@ -138,10 +184,15 @@ namespace Mod::Mario::PowderKeg {
     }
 
     void update() {
-        if (!isKegEquiped()) return;
         updatePose();
-        updateControls();
-        updateMarioBonkDamage();
+        if (!isKegEquiped()) {
+            if (marioIsTouchingKegEquipment()) {
+                setKegEquiped(true);
+            }
+        } else {
+            updateControls();
+            updateMarioBonkDamage();
+        }
     }
 
 }
