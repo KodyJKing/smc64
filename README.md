@@ -8,7 +8,7 @@ A LibSM64 mod for Halo CE on MCC (Steam)
 
 I have mixed feelings about use of AI in development and am weening myself off of writing code with agents (and encourage any contributors to do the same).
 
-I still use coding assistants extensively for inline completions. (I am a terribly typist and can't remember APIs for my life.)
+I still use coding assistants extensively for inline completions. (I am a terrible typist and can't remember APIs for my life.)
 
 A few isolated features were written primarily by coding agents and I have used agents extensively for refactoring busy work.
 
