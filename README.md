@@ -12,7 +12,7 @@ I still use coding assistants extensively for inline completions. (I am a terrib
 
 A few isolated features were written primarily by coding agents and I have used agents extensively for refactoring busy work.
 
-I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
+I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP) and experimented with [Cheat Engine MCP](https://github.com/miscusi-peek/cheatengine-mcp-bridge) to help with dynamic analysis.
 
 I will *never* use AI generated art in this project and will not accept contributions I suspect use AI art. 
 
