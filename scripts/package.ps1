@@ -25,7 +25,10 @@ if (Test-Path $PackagePath) { Remove-Item -Path $PackagePath -Recurse -Force }
 New-Item -Path $PackagePath -ItemType Directory -Force
 
 # Root-level README.
-Copy-Item -Path smc64\shipfiles\README.md -Destination $PackagePath\README.md -Force
+# Copy-Item -Path smc64\shipfiles\README.md -Destination $PackagePath\README.md -Force
+
+# Copy all shipfiles from smc64 to the package directory.
+Copy-Item -Path smc64\shipfiles\* -Destination $PackagePath -Recurse -Force
 
 # MCC/Binaries/Win64 layout.
 $Win64Path = "$PackagePath\MCC\Binaries\Win64"

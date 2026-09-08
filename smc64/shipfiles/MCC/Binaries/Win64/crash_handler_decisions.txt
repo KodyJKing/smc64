@@ -1,0 +1,10 @@
+# CrashHandler decisions — '+CODE' = stop, '-CODE' = ignore
+-e06d7363
+-4001000a
++80000003
+-8001010d
+-40010006
+-c000001d
++c0000005
+-406d1388
+-6a6
