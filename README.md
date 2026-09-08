@@ -2,6 +2,8 @@
 
 A LibSM64 mod for Halo CE on MCC (Steam)
 
+[See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
+
 ## Installation
 
 Download the latest [release](https://github.com/KodyJKing/smc64/releases) and follow the installation instructions in the included `README.md`.
