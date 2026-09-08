@@ -14,7 +14,7 @@ A few isolated features were written primarily by coding agents and I have used 
 
 I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
 
-I will *never* use AI generated art in this project and will not accept contributions I suspect use them. 
+I will *never* use AI generated art in this project and will not accept contributions I suspect use AI art. 
 
 ## Installation
 
