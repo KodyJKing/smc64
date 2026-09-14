@@ -12,7 +12,7 @@ I still use coding assistants extensively for inline completions to supplement m
 
 A few isolated features were written primarily by coding agents. I still use agents extensively for rote refactoring.
 
-I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
+Most of the reverse engineering for this project was done by humans, but I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
 
 I don't use AI generated art in this project.
 
