@@ -4,6 +4,8 @@ A LibSM64 mod for Halo CE on MCC (Steam)
 
 [See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
 
+Check the [Discord](https://discord.gg/MzG7fqJtG) for the most up to date news and support.
+
 ## AI Disclosure
 
 I use AI for this project, but I have mixed feelings about use of AI in development. I'm weening myself off of writing new code with agents for my mental health.
