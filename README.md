@@ -8,7 +8,7 @@ Check the [Discord](https://discord.gg/MzG7fqJtG) for the most up to date news a
 
 ## AI Disclosure
 
-I use AI for this project, but I have mixed feelings about use of AI in development. I'm weening myself off of writing new code with agents for my mental health.
+I've used *some* AI for this project, but I have mixed feelings about use of AI in development. I'm weening myself off of writing new code with agents for my mental health.
 
 I still use coding assistants extensively for inline completions to supplement my poor memory and typing speed.
 
