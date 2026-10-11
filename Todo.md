@@ -23,10 +23,13 @@
     - [Minor] Fix Mario spazzing out near problem triangles in Covenant hallways.
     - [Major] Fix player not being able to drive until reentering a vehicle if they load a checkpoint in one.
     - [Major] Clip triangles to Mario universe boundaries rather than culling them.
-    - [Blocker] Place a floor object under Mario at all times so he can still fall when there is no ground loaded under him.
+    - Fix gun pose bug when Mario is standing on dynamic objects.
+        - Caused by Chief being in an "in-air" state.
+            - Forcing Cheif to face same direction as Mario may fix this.
 
 - Performance:
     - [Major] Optimize BSP loading transitions.
+    - [Major] Profile on second half of Keyes, find source of microstutters.
 
 - Testing:
     - [Blocker] Do a full playthrough on the release build.

@@ -52,7 +52,7 @@ void initHandlers(Spark::ModId modId) {
         renderUI(*static_cast<EditorState*>(ctx));
         next();
     }, &s_state);
-    Spark::UpdatePlayerControlsAndLook::addHandler(modId, +[](void* ctx, auto next, uint32_t param_1, uint32_t param_2) {
+    Spark::UpdatePlayerControlsAndLook::addHandler(modId, +[](void* ctx, auto next, float param_1, uint32_t param_2) {
         auto& state = *static_cast<EditorState*>(ctx);
         if (!(state.editorOpen && state.editorInputEnabled)) {
             next(param_1, param_2);

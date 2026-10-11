@@ -1,6 +1,22 @@
 # SMC64
 
-Super Master Chief 64
+A LibSM64 mod for Halo CE on MCC (Steam)
+
+[See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
+
+Check the [Discord](https://discord.gg/MzG7fqJtG) for the most up to date news and support.
+
+## AI Disclosure
+
+I've used *some* AI for this project, but I have mixed feelings about use of AI in development. I'm weening myself off of writing new code with agents for my mental health.
+
+I still use coding assistants extensively for inline completions to supplement my poor memory and typing speed.
+
+A few isolated features were written primarily by coding agents. I still use agents extensively for rote refactoring.
+
+Most of the reverse engineering for this project was done by humans, but I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
+
+I don't use AI generated art in this project.
 
 ## Installation
 
@@ -8,20 +24,22 @@ Download the latest [release](https://github.com/KodyJKing/smc64/releases) and f
 
 ## Developer Setup
 
-Clone the repository recursively to get submodules (including the `spark` mod-loader engine,
+- Clone the repository recursively to get submodules (including the `spark` mod-loader,
 which lives at `vendor/spark`):
 
-```powershell
-git clone --recursive
-```
+    ```powershell
+    git clone --recursive
+    # Or if you already cloned:
+    git submodule update --init --recursive
+    ```
 
-If you already have a clone without submodules initialized, run:
+- [Setup Spark](./vendor/spark/README.md#developer-setup)
 
-```powershell
-git submodule update --init --recursive
-```
+- [Setup LibSM64](./vendor/libsm64/README.md#building-on-windows)
 
-Install [Visual Studio 2022](https://visualstudio.microsoft.com/) and add MSBuild to your PATH. Location may vary. For me, it's located under `C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin`.
+- Add your MSYS install directory to your path (location may vary, `C:\msys64` for me)
+
+- Optionally, if you want debug symbols for LibSM64, download [cv2pdb](https://github.com/rainers/cv2pdb/releases) and add it to your path.
 
 ## Building and Running
 
@@ -101,7 +119,7 @@ Arguments:
 
 ### `package.ps1`
 
-Packages mod into a `.zip` file. Creates a copy of xaudio2_9redist.dll that imports the mod.
+Packages mod and Spark into a `.zip` file. Creates a copy of xaudio2_9redist.dll that loads Spark.
 
 You must manually run `build_setdll.bat` before running this script.
 

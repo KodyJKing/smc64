@@ -48,7 +48,8 @@ namespace Mod::Mario {
         {"frame right_foot"},
 
         // Additional bones for equipment like rideable shield.
-        {"frame shield"}
+        {"frame shield"},
+        {"frame powder_keg"}
     };
 
     std::vector<std::string> haloBones = {
@@ -64,6 +65,7 @@ namespace Mod::Mario {
         "frame right_shoulder",
         "frame right_thigh",
         "frame pelvis",
+        "frame powder_keg",
         "frame left_arm",
         "frame left_calf",
         "frame left_foot",
@@ -72,9 +74,7 @@ namespace Mod::Mario {
         "frame left_hip",
         "frame left_shoulder",
         "frame left_thigh",
-
-        // Additional bones for equipment like rideable shield.
-        "frame shield"
+        "frame shield",
     };
 
     bool haloBonesInvInitialized = false;
@@ -124,6 +124,7 @@ namespace Mod::Mario {
         {0}, // right_foot
 
         // Additional bones for equipment like rideable shield.
+        Engine::Transform::identity(),
         Engine::Transform::identity()
     };
 

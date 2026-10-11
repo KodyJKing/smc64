@@ -2,7 +2,7 @@
 
 Paste the contents of this archive under `...\Halo The Master Chief Collection`. Allow file replacement if prompted.
 
-Back up your map files first if you don't want to have to redownload them.
+If you don't have the latest maps, download them from the [latest release](https://github.com/KodyJKing/smc64/releases). Paste the contents of the maps archive into `...\Halo The Master Chief Collection`. Back up your map files first if you don't want to have to redownload them.
 
 Place a SM64 rom under `...\Halo The Master Chief Collection\MCC\Binaries\Win64` as `baserom.us.z64`
 

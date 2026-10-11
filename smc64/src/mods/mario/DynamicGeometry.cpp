@@ -17,7 +17,7 @@
 #include "libsm64.h"
 #include "decomp/surface_terrains.h"
 
-// #define DEBUG_DYNAMIC_GEOMETRY 1
+#define DEBUG_DYNAMIC_GEOMETRY 1
 
 #ifdef DEBUG_DYNAMIC_GEOMETRY
     #define IMGUI_DEFINE_MATH_OPERATORS
@@ -34,13 +34,29 @@ namespace Mod::Mario::DynamicGeometry {
 
     static std::mutex s_updateMutex;
 
+    bool isBridge(Engine::Tag* entityTag) {
+        // If entity tag path contains "bridge", consider it a bridge.
+        if (entityTag) {
+            auto path = entityTag->getResourcePath();
+            if (path && std::string(path).find("bridge") != std::string::npos) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool isCriticalSurface(Engine::Tag* entityTag) {
+        return isElevatorTag(entityTag) || isBridge(entityTag);
+    }
+
     float getAllocateRange(Engine::Tag* entityTag) {
-        if (isElevatorTag(entityTag)) return 100.0f;
+        // Todo: Use object's bounds to determine allocate range more accurately.
+        if (isCriticalSurface(entityTag)) return 100.0f;
         return 8.0f;
     }
 
     float getDeallocateRange(Engine::Tag* entityTag) {
-        if (isElevatorTag(entityTag)) return 200.0f;
+        if (isCriticalSurface(entityTag)) return 200.0f;
         return 10.0f;
     }
 
@@ -214,6 +230,7 @@ namespace Mod::Mario::DynamicGeometry {
     void allocateDynamicGeometryForEntity(Engine::EntityHandle entityHandle) {
         auto entity = Engine::getEntityPointer(entityHandle);
         if (!entity) return;
+        if (!Engine::entityValid(entity)) return;
 
         auto entityEntry = createEntityEntry(entityHandle, entity->worldBones.count());
         if (!entityEntry) return;
@@ -252,6 +269,7 @@ namespace Mod::Mario::DynamicGeometry {
     void updateObjectTransform(Engine::EntityHandle entityHandle, SM64MarioState& marioState) {
         auto entity = Engine::getEntityPointer(entityHandle);
         if (!entity) return;
+        if (!Engine::entityValid(entity)) return;
 
         auto entry = getEntityEntry(entityHandle);
         if (!entry) return;
@@ -290,6 +308,15 @@ namespace Mod::Mario::DynamicGeometry {
         if (category == Engine::EntityCategory_Biped) {
             auto playerEntity = Engine::getPlayerEntity();
             if (entity == playerEntity) return false;
+
+            auto tag = entity->tag();
+            if (tag) {
+                auto tagPath = tag->getResourcePath();
+                if (tagPath && std::string(tagPath).find("characters\\flood_infection\\flood_infection") != std::string::npos) {
+                    return false;
+                }
+            }
+
             return true;
         }
         return false;
@@ -323,6 +350,7 @@ namespace Mod::Mario::DynamicGeometry {
             if (!entityRecord) return;
             auto entity = entityRecord->entity();
             if (!entity) return;
+            if (!Engine::entityValid(entity)) return;
 
             if (!shouldCreateGeometryFor(entity)) return;
 

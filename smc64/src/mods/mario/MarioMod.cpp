@@ -22,6 +22,11 @@
 void MarioMod::init() {
     using Bus = Spark::EventBus<void>;
 
+    if (!Mod::Mario::checkRom()) {
+        LOG("SM64 ROM file not found. Mario mod will not be initialized.");
+        return;
+    }
+
     // Initialize Mario state first — sm64_global_init, geometry buffers, etc.
     // must all be complete before any hook can fire update().
     Mod::Mario::init(modId_);
@@ -135,5 +140,10 @@ void MarioMod::init() {
 }
 
 void MarioMod::free() {
+    if (!Mod::Mario::checkRom(false)) {
+        LOG("SM64 ROM file not found. Mario mod was not initialized, skipping free().");
+        return;
+    }
+
     Mod::Mario::free();
 }
