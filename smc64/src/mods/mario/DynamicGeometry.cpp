@@ -214,6 +214,7 @@ namespace Mod::Mario::DynamicGeometry {
     void allocateDynamicGeometryForEntity(Engine::EntityHandle entityHandle) {
         auto entity = Engine::getEntityPointer(entityHandle);
         if (!entity) return;
+        if (!Engine::entityValid(entity)) return;
 
         auto entityEntry = createEntityEntry(entityHandle, entity->worldBones.count());
         if (!entityEntry) return;
@@ -252,6 +253,7 @@ namespace Mod::Mario::DynamicGeometry {
     void updateObjectTransform(Engine::EntityHandle entityHandle, SM64MarioState& marioState) {
         auto entity = Engine::getEntityPointer(entityHandle);
         if (!entity) return;
+        if (!Engine::entityValid(entity)) return;
 
         auto entry = getEntityEntry(entityHandle);
         if (!entry) return;
@@ -323,6 +325,7 @@ namespace Mod::Mario::DynamicGeometry {
             if (!entityRecord) return;
             auto entity = entityRecord->entity();
             if (!entity) return;
+            if (!Engine::entityValid(entity)) return;
 
             if (!shouldCreateGeometryFor(entity)) return;
 
