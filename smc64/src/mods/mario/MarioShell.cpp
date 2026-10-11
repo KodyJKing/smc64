@@ -60,7 +60,7 @@ namespace Mod::Mario::Shell {
         static uint32_t wasRidingShell = false;
         if (wasRidingShell && isMarioInCrashState()) {
             // killPlayer();
-            damagePlayer(2.0f, 1.0f);
+            damagePlayer(20.0f, 1.0f);
         }
         wasRidingShell = isMarioInShellAction();
     }

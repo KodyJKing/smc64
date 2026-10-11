@@ -26,6 +26,7 @@ namespace Mod::Mario::Coordinates {
         return true;
     }
 
+    // Transform a Vec3 as a vector.
     Vec3 haloToMario(const Vec3& haloCoords) {
         // Convert Halo CE coordinates to Super Mario 64 coordinates
         return Vec3{ haloCoords.x * scaleFactor, haloCoords.z * scaleFactor, haloCoords.y * scaleFactor };
@@ -77,6 +78,7 @@ namespace Mod::Mario::Coordinates {
         return marioChunkForPosition(haloToMario(haloPos));
     }
 
+    // Transform a Vec3 as a point.
     Vec3 marioLocalToHaloWorld(const Vec3& localMario, const Vec3i& chunk) {
         return marioToHalo(marioLocalToWorld(localMario, chunk));
     }

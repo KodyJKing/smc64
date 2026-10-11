@@ -4,4 +4,5 @@
 
 namespace Mod::Mario {
     void updateGameSpeed(Engine::Entity& player);
+    void grantFreeBulletTime(uint64_t durationMillis);
 }

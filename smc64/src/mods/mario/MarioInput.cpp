@@ -21,6 +21,12 @@ namespace Mod::Mario {
         Spark::Input::addAction("mario:camera_zoom_out", { SPARK_GAMEPAD_DPAD_DOWN, DIK_MINUS });
         Spark::Input::addAction("mario:camera_zoom_toggle", { SPARK_GAMEPAD_LEFT_THUMB, DIK_0 });
         Spark::Input::addAction("mario:camera_switch_sides", { SPARK_GAMEPAD_DPAD_LEFT, DIK_3 });
+
+        #ifdef _DEBUG
+        Spark::Input::addAction("mario:debug1", { SPARK_GAMEPAD_BACK, DIK_NUMPAD1 });
+        Spark::Input::addAction("mario:debug2", { DIK_NUMPAD2 });
+        Spark::Input::addAction("mario:debug3", { DIK_NUMPAD3 });
+        #endif
     }
 
     void updateInput(SM64MarioInputs& inputs, SM64MarioState& marioState, Engine::Camera* camera) {

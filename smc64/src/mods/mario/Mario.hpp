@@ -18,8 +18,5 @@ namespace Mod::Mario {
     void update();
     void debugRender();
     void deinitMario();
-    
-    // Helper: create a temporary spawn platform below Mario's spawn point.
-    void createSpawnPlatform(const Vec3& localPos);
 
 }
