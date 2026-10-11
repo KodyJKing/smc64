@@ -47,6 +47,7 @@
 #include "AdrenalineSystem.hpp"
 #include "MarioGoombaStomp.hpp"
 #include "MarioShell.hpp"
+#include "MarioFalseFloor.hpp"
 #include "powerups/PowderKeg.hpp"
 #include "functions/MarioToCheif.hpp"
 #include "functions/CheifToMario.hpp"
@@ -214,6 +215,7 @@ namespace Mod::Mario {
 
     void deinitMario() {
         LOG("deinitMario() called, deleting Mario instance.");
+        Mod::Mario::freeFalseFloor();
         if (marioId >= 0) {
             std::lock_guard<std::mutex> sm64Lock(MarioAudio::sm64Mutex());
             sm64_mario_delete(marioId);
@@ -354,7 +356,8 @@ namespace Mod::Mario {
             MarioCamera::onDisable();
             return;
         }
-
+        
+        Mod::Mario::updateFalseFloor();
         DynamicGeometry::update(marioState);
 
         if (marioInControl()) {
