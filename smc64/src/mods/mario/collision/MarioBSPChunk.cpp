@@ -2,11 +2,13 @@
 
 #include "libsm64.h"
 
-#include "MarioState.hpp"
-#include "Coordinates.hpp"
 #include "BSPConversion.hpp"
 #include "DynamicGeometry.hpp"
-#include "level-edit/MarioLevelEdit.hpp"
+#include "MarioFalseFloor.hpp"
+
+#include "../MarioState.hpp"
+#include "../Coordinates.hpp"
+#include "../level-edit/MarioLevelEdit.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -118,6 +120,7 @@ namespace Mod::Mario::MarioBSPChunk {
     void maintain() {
         checkMovement();
         checkSignature();
+        Mod::Mario::updateFalseFloor();
     }
 
     void free() {
@@ -126,6 +129,7 @@ namespace Mod::Mario::MarioBSPChunk {
             staticSurfaces = nullptr;
             staticSurfacesCount = 0;
         }
+        Mod::Mario::freeFalseFloor();
     }
 
     bool hasValidLoadedChunk() {

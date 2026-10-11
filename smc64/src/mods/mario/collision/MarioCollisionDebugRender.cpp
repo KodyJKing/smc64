@@ -6,9 +6,9 @@
 
 #include "libsm64.h"
 
-#include "MarioState.hpp"
-#include "Mario.hpp"
-#include "Coordinates.hpp"
+#include "../MarioState.hpp"
+#include "../Mario.hpp"
+#include "../Coordinates.hpp"
 
 namespace Mod::Mario {
 

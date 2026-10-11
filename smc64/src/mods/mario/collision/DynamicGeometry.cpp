@@ -1,13 +1,13 @@
 #include "DynamicGeometry.hpp"
+#include "MoveElevatorSurfaceObject.hpp"
+#include "IsElevatorEntity.hpp"
 
 #include "engine/halo1.hpp"
-#include "./Coordinates.hpp"
+#include "../Coordinates.hpp"
 #include "BSPConversion.hpp"
 #include "ModelSwap.hpp"
 #include "MarioBSPChunk.hpp"
-#include "Mario.hpp"
-#include "functions/MoveElevatorSurfaceObject.hpp"
-#include "functions/IsElevatorEntity.hpp"
+#include "../Mario.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -149,8 +149,8 @@ namespace Mod::Mario::DynamicGeometry {
     }
 
     uint16_t surfaceTypeForEntity(Engine::Entity* entity) {
-        auto category = entity->entityCategory;
-        if (category == Engine::EntityCategory_Scenery) return SURFACE_HANGABLE;
+        // auto category = entity->entityCategory;
+        // if (category == Engine::EntityCategory_Scenery) return SURFACE_HANGABLE;
         return SURFACE_NOT_SLIPPERY;
     }
 

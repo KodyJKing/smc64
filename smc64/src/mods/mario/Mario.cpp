@@ -18,11 +18,11 @@
 #include <filesystem>
 #include "engine/halo1.hpp"
 #include "MarioInput.hpp"
-#include "BSPConversion.hpp"
-#include "MarioBSPChunk.hpp"
+#include "collision/BSPConversion.hpp"
+#include "collision/MarioBSPChunk.hpp"
+#include "collision/DynamicGeometry.hpp"
 #include "math/Vectors.hpp"
 #include "Coordinates.hpp"
-#include "DynamicGeometry.hpp"
 #include "MarioFacing.hpp"
 #include "MarioGameSpeed.hpp"
 #include "MarioShieldRegen.hpp"
@@ -47,7 +47,6 @@
 #include "AdrenalineSystem.hpp"
 #include "MarioGoombaStomp.hpp"
 #include "MarioShell.hpp"
-#include "MarioFalseFloor.hpp"
 #include "powerups/PowderKeg.hpp"
 #include "functions/MarioToCheif.hpp"
 #include "functions/CheifToMario.hpp"
@@ -215,7 +214,6 @@ namespace Mod::Mario {
 
     void deinitMario() {
         LOG("deinitMario() called, deleting Mario instance.");
-        Mod::Mario::freeFalseFloor();
         if (marioId >= 0) {
             std::lock_guard<std::mutex> sm64Lock(MarioAudio::sm64Mutex());
             sm64_mario_delete(marioId);
@@ -357,7 +355,6 @@ namespace Mod::Mario {
             return;
         }
         
-        Mod::Mario::updateFalseFloor();
         DynamicGeometry::update(marioState);
 
         if (marioInControl()) {

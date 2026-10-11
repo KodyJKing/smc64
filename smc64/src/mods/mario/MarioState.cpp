@@ -3,7 +3,7 @@
 #include "engine/halo1.hpp"
 #include "decomp/sm64.h"
 #include "level-edit/MarioLevelEdit.hpp"
-#include "MarioBSPChunk.hpp"
+#include "collision/MarioBSPChunk.hpp"
 
 namespace Mod::Mario {
     bool enableMario = true;

@@ -4,7 +4,7 @@
 #include "engine/halo1.hpp"
 #include "math/Vectors.hpp"
 #include "../Coordinates.hpp"
-#include "../MarioBSPChunk.hpp"
+#include "../collision/MarioBSPChunk.hpp"
 
 #include "libsm64.h"
 
