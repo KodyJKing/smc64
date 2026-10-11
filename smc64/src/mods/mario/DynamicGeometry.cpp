@@ -17,7 +17,7 @@
 #include "libsm64.h"
 #include "decomp/surface_terrains.h"
 
-#define DEBUG_DYNAMIC_GEOMETRY 1
+// #define DEBUG_DYNAMIC_GEOMETRY 1
 
 #ifdef DEBUG_DYNAMIC_GEOMETRY
     #define IMGUI_DEFINE_MATH_OPERATORS
@@ -386,6 +386,7 @@ namespace Mod::Mario::DynamicGeometry {
 
     void onLoadedChunkChanged(Vec3i /*oldChunk*/, Vec3i /*newChunk*/) {
         clearAll();
+        update(marioState);
     }
     
     void free() {

@@ -56,7 +56,7 @@
 #include "functions/UpdateMarioDebugControls.hpp"
 #include "functions/CreateSpawnPlatform.hpp"
 
-// #define DEBUG_MARIO 1
+#define DEBUG_MARIO 1
 
 #ifdef DEBUG_MARIO
     #define LOG(x) std::cout << "[Mario] " << x << std::endl;
@@ -377,10 +377,10 @@ namespace Mod::Mario {
         {
             std::lock_guard<std::mutex> sm64Lock(MarioAudio::sm64Mutex());
             if (marioInControl()) {
-                LOG("Mario tick start");
+                // LOG("Mario tick start");
                 sm64_mario_tick(marioId, &marioInputs, &marioState, &marioGeometry, marioBoneMatrices);
                 marioTickCount++; // Increment Mario tick count after each tick.
-                LOG("Mario tick end");
+                // LOG("Mario tick end");
             }
         }
         

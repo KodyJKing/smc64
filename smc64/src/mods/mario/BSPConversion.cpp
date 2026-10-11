@@ -4,6 +4,7 @@
 #include "Coordinates.hpp"
 #include "decomp/surface_terrains.h"
 #include "libsm64.h"
+#include "functions/ClipTriangle.hpp"
 
 #define BAN_PLANES 1
 
@@ -155,6 +156,10 @@ namespace Mod::Mario::BSPConversion {
     // Convert Halo CE static world geometry into mario-space surfaces for the chunk
     // neighborhood centered on `loadedChunk` (radius=1 -> 3x3x3 chunks).
     std::vector<SM64Surface> haloGeometryToMarioForChunk(Vec3i loadedChunk, int radius) {
+
+        // Todo: Implement LRU-cache for previously converted chunks to avoid redundant conversions.
+        // Todo: Traverse Halo's BSP structure to avoid iterating over irrelevant geometry.
+
         #ifdef BAN_PLANES
         int64_t bspSignature = Engine::getBSPSignature();
         #endif // BAN_PLANES
@@ -209,78 +214,90 @@ namespace Mod::Mario::BSPConversion {
                 auto p1 = &bspVertices[edge->endVertex];
                 auto p2 = firstVertex;
 
-                // Convert to mario world space first so we can filter against the chunk AABB.
-                Vec3 m0 = Coordinates::haloToMario(p0->pos);
-                Vec3 m1 = Coordinates::haloToMario(p1->pos);
-                Vec3 m2 = Coordinates::haloToMario(p2->pos);
+                auto addTriangle = [&](Vec3 m0, Vec3 m1, Vec3 m2) {
+                    Vec3 p0 = Coordinates::marioToHalo(m0);
+                    Vec3 p1 = Coordinates::marioToHalo(m1);
+                    Vec3 p2 = Coordinates::marioToHalo(m2);
 
-                auto outside = [&](const Vec3& m) {
-                    return m.x < aabbMin.x || m.x > aabbMax.x ||
-                           m.y < aabbMin.y || m.y > aabbMax.y ||
-                           m.z < aabbMin.z || m.z > aabbMax.z;
-                };
-                // // Any vertex outside is unsafe and could cause parallel universe collisions.
-                // if (outside(m0) || outside(m1) || outside(m2)) continue; 
-                if (outside(m0) && outside(m1) && outside(m2)) continue; // All vertices outside, skip.
+                    auto v01 = p1 - p0;
+                    auto v02 = p2 - p0;
+                    auto cross = v01.cross(v02);
+                    if (cross.lengthSquared() < 0.0001f) return;
 
-                auto v01 = p1->pos - p0->pos;
-                auto v02 = p2->pos - p0->pos;
-                auto cross = v01.cross(v02);
-                if (cross.lengthSquared() < 0.0001f) continue;
+                    if (surface->planeIndex >= bsp->planes.count) return;
 
-                if (surface->planeIndex >= bsp->planes.count) continue;
+                    #ifdef BAN_PLANES
+                    if (isPlaneBanned(surface->planeIndex, bspSignature)) return;
+                    #endif // BAN_PLANES
 
-                #ifdef BAN_PLANES
-                if (isPlaneBanned(surface->planeIndex, bspSignature)) continue;
-                #endif // BAN_PLANES
+                    Engine::BSPPlane* plane = &planes[surface->planeIndex];
 
-                Engine::BSPPlane* plane = &planes[surface->planeIndex];
-
-                Vec3* mPtrs[3] = { &m0, &m2, &m1 };
-                Vec3 normal = plane->normal * (surface->isFlipped ? -1.0f : 1.0f);
-                if (cross.dot(normal) < 0) {
-                    std::swap(mPtrs[1], mPtrs[2]);
-                }
-
-                bool hangable = -normal.z > 0.5f;
-                uint16_t surfaceType = hangable ? SURFACE_HANGABLE : SURFACE_WALL_MISC;
-
-                SM64Surface sm64Surface;
-                sm64Surface.type    = surfaceType;
-                sm64Surface.force   = 0;
-                sm64Surface.terrain = 0x0000;
-
-                for (int k = 0; k < 3; k++) {
-                    Vec3 local = { mPtrs[k]->x - chunkOriginMario.x,
-                                   mPtrs[k]->y - chunkOriginMario.y,
-                                   mPtrs[k]->z - chunkOriginMario.z };
-                    sm64Surface.vertices[k][0] = (int32_t) local.x;
-                    sm64Surface.vertices[k][1] = (int32_t) local.y;
-                    sm64Surface.vertices[k][2] = (int32_t) local.z;
-                }
-
-                result.push_back(sm64Surface);
-
-                if (surface->bits.twoSided) {
-                    // Create a second triangle with the opposite winding order.
-                    SM64Surface sm64Surface2;
-                    sm64Surface2.type    = surfaceType;
-                    sm64Surface2.force   = 0;
-                    sm64Surface2.terrain = 0x0000;
-
-                    Vec3 marioNormal = Coordinates::haloToMario(normal).normalize();
-
-                    for (int k = 0; k < 3; k++) {
-                        Vec3 local = { mPtrs[2-k]->x - chunkOriginMario.x - marioNormal.x * TWO_SIDED_MARGIN,
-                                       mPtrs[2-k]->y - chunkOriginMario.y - marioNormal.y * TWO_SIDED_MARGIN,
-                                       mPtrs[2-k]->z - chunkOriginMario.z - marioNormal.z * TWO_SIDED_MARGIN };
-                        sm64Surface2.vertices[k][0] = (int32_t) local.x;
-                        sm64Surface2.vertices[k][1] = (int32_t) local.y;
-                        sm64Surface2.vertices[k][2] = (int32_t) local.z;
+                    Vec3* mPtrs[3] = { &m0, &m2, &m1 };
+                    Vec3 normal = plane->normal * (surface->isFlipped ? -1.0f : 1.0f);
+                    if (cross.dot(normal) < 0) {
+                        std::swap(mPtrs[1], mPtrs[2]);
                     }
 
-                    result.push_back(sm64Surface2);
-                }
+                    uint16_t surfaceType = SURFACE_WALL_MISC;
+
+                    SM64Surface sm64Surface;
+                    sm64Surface.type    = surfaceType;
+                    sm64Surface.force   = 0;
+                    sm64Surface.terrain = 0x0000;
+
+                    for (int k = 0; k < 3; k++) {
+                        Vec3 local = { mPtrs[k]->x - chunkOriginMario.x,
+                                    mPtrs[k]->y - chunkOriginMario.y,
+                                    mPtrs[k]->z - chunkOriginMario.z };
+                        sm64Surface.vertices[k][0] = (int32_t) local.x;
+                        sm64Surface.vertices[k][1] = (int32_t) local.y;
+                        sm64Surface.vertices[k][2] = (int32_t) local.z;
+                    }
+
+                    result.push_back(sm64Surface);
+
+                    if (surface->bits.twoSided) {
+                        // Create a second triangle with the opposite winding order.
+                        SM64Surface sm64Surface2;
+                        sm64Surface2.type    = surfaceType;
+                        sm64Surface2.force   = 0;
+                        sm64Surface2.terrain = 0x0000;
+
+                        Vec3 marioNormal = Coordinates::haloToMario(normal).normalize();
+
+                        for (int k = 0; k < 3; k++) {
+                            Vec3 local = { mPtrs[2-k]->x - chunkOriginMario.x - marioNormal.x * TWO_SIDED_MARGIN,
+                                        mPtrs[2-k]->y - chunkOriginMario.y - marioNormal.y * TWO_SIDED_MARGIN,
+                                        mPtrs[2-k]->z - chunkOriginMario.z - marioNormal.z * TWO_SIDED_MARGIN };
+                            sm64Surface2.vertices[k][0] = (int32_t) local.x;
+                            sm64Surface2.vertices[k][1] = (int32_t) local.y;
+                            sm64Surface2.vertices[k][2] = (int32_t) local.z;
+                        }
+
+                        result.push_back(sm64Surface2);
+                    }
+                };
+
+                auto addTriangleClipped = [&](Vec3 p0, Vec3 p1, Vec3 p2) {
+                    auto m0 = Coordinates::haloToMario(p0);
+                    auto m1 = Coordinates::haloToMario(p1);
+                    auto m2 = Coordinates::haloToMario(p2);
+
+                    ClippedTriangle clipped;
+                    Triangle tri = { m0, m1, m2 };
+                    BoundingBox bbox = { aabbMin, aabbMax };
+                    clipTriangle(tri, bbox, clipped);
+                    
+                    for (unsigned int i = 0; i < clipped.vertexCount; i += 3) {
+                        addTriangle(
+                            clipped.vertices[i],
+                            clipped.vertices[i + 1],
+                            clipped.vertices[i + 2]
+                        );
+                    }
+                };
+
+                addTriangleClipped(p0->pos, p1->pos, p2->pos);
             }
         }
 
