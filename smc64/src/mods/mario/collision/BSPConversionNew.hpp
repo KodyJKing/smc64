@@ -22,5 +22,7 @@ namespace Mod::Mario::BSPConversion {
         Vec3 offset;
     };
 
-    std::vector<SM64Surface> convertBSP(BSPConversionRequest& request);
+    std::vector<SM64Surface> convertBSPFast(BSPConversionRequest &request);
+
+    std::vector<SM64Surface> convertBSP(BSPConversionRequest &request);
 }

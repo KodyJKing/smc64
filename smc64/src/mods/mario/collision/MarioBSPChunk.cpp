@@ -15,7 +15,7 @@
 #include <cmath>
 #include <cstring>
 
-// #define DEBUG_BSP_CHUNK 1
+#define DEBUG_BSP_CHUNK 1
 
 #ifdef DEBUG_BSP_CHUNK
     // #define MAX_DISTANCE_WORLD_UNITS 2.0f
@@ -194,7 +194,7 @@ namespace Mod::Mario::MarioBSPChunk {
     void debugRender() {
         #ifdef DEBUG_BSP_CHUNK
         drawStaticSurfaces();
-        drawChunkBounds();
+        // drawChunkBounds();
         #endif
     }
 

@@ -52,10 +52,10 @@ void MarioMod::init() {
 
         auto entity = request && Engine::entityValid(request->entityHandle) ? Engine::getEntityPointer(request->entityHandle) : nullptr;
 
-        auto tagContains = [&](const std::string& substring) {
+        auto tagContains = [&](const char* substring) {
             if (request && Engine::entityValid(request->entityHandle)) {
-                std::string tagPath = entity ? entity->getTagResourcePath() : "";
-                if (tagPath.find(substring) != std::string::npos) {
+                const char* tagPath = entity ? entity->getTagResourcePath() : "";
+                if (strstr(tagPath, substring) != nullptr) {
                     return true;
                 }
             }
@@ -81,6 +81,7 @@ void MarioMod::init() {
         if (!skip) {
             next(request);
         }
+
         Mod::Mario::MarioModel::renderEntity(request, Spark::RenderEntity::original);
     }, nullptr);
 

@@ -35,10 +35,9 @@ namespace Mod::Mario::DynamicGeometry {
     static std::mutex s_updateMutex;
 
     bool isBridge(Engine::Tag* entityTag) {
-        // If entity tag path contains "bridge", consider it a bridge.
         if (entityTag) {
             auto path = entityTag->getResourcePath();
-            if (path && std::string(path).find("bridge") != std::string::npos) {
+            if (path && strstr(path, "bridge") != nullptr) {
                 return true;
             }
         }

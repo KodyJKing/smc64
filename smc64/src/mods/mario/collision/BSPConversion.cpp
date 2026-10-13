@@ -7,11 +7,11 @@
 #include "ClipTriangle.hpp"
 #include "BSPConversionNew.hpp"
 
+#include "spark/overlay/Gizmos.hpp"
+
 #include <chrono>
 
 #define PROFILE_BSP_CONVERSION 1
-
-#define TWO_SIDED_MARGIN 10.0f
 
 namespace Mod::Mario::BSPConversion {
 
@@ -34,6 +34,10 @@ namespace Mod::Mario::BSPConversion {
     // Convert Halo CE static world geometry into mario-space surfaces for the chunk
     // neighborhood centered on `loadedChunk` (radius=1 -> 3x3x3 chunks).
     std::vector<SM64Surface> haloGeometryToMarioForChunk(Vec3i loadedChunk, int radius) {
+        #ifdef PROFILE_BSP_CONVERSION
+        auto startTime = std::chrono::high_resolution_clock::now();
+        #endif // PROFILE_BSP_CONVERSION
+        
         // Neighborhood AABB in mario world space.
         
         BSPConversion::BSPConversionRequest request;
@@ -48,10 +52,25 @@ namespace Mod::Mario::BSPConversion {
         boundingBox.min = { chunkOriginMario.x - reach, chunkOriginMario.y - reach, chunkOriginMario.z - reach };
         boundingBox.max = { chunkOriginMario.x + reach, chunkOriginMario.y + reach, chunkOriginMario.z + reach };
         request.boundingBox = &boundingBox;
-        
+
         request.offset = chunkOriginMario * -1.0f;
 
+        #define USE_FAST 1
+        #if USE_FAST
+        // Convert to halo coords.
+        boundingBox.min = Coordinates::marioToHalo(boundingBox.min);
+        boundingBox.max = Coordinates::marioToHalo(boundingBox.max);
+        Spark::Overlay::Gizmos::drawBox(boundingBox.min, boundingBox.max, 0xFFFFFFFF, 60);
+        auto surfaces = BSPConversion::convertBSPFast(request);
+        #else
         auto surfaces = BSPConversion::convertBSP(request);
+        #endif // USE_FAST
+
+        #ifdef PROFILE_BSP_CONVERSION
+        auto endTime = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+        printf("BSP conversion took %lld microseconds\n", duration);
+        #endif // PROFILE_BSP_CONVERSION
 
         return surfaces;
     }
