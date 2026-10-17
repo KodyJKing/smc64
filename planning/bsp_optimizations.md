@@ -1,0 +1,4 @@
+- Traverse BSP to minimize irrelevant geometry visited.
+    - Add surfaceIterator(bsp, bounds) APIs to Spark.
+- Cache BSP conversions. (LRU cache if naive cache is too large)
+- Precompute nearby BSP chunks in background thread.

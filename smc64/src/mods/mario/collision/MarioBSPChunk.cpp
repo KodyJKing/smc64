@@ -2,11 +2,13 @@
 
 #include "libsm64.h"
 
-#include "MarioState.hpp"
-#include "Coordinates.hpp"
 #include "BSPConversion.hpp"
 #include "DynamicGeometry.hpp"
-#include "level-edit/MarioLevelEdit.hpp"
+#include "MarioFalseFloor.hpp"
+
+#include "../MarioState.hpp"
+#include "../Coordinates.hpp"
+#include "../level-edit/MarioLevelEdit.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -16,7 +18,8 @@
 // #define DEBUG_BSP_CHUNK 1
 
 #ifdef DEBUG_BSP_CHUNK
-    #define MAX_DISTANCE_WORLD_UNITS 2.0f
+    // #define MAX_DISTANCE_WORLD_UNITS 2.0f
+    #define MAX_DISTANCE_WORLD_UNITS 100.0f
     #include <iostream>
     #include "spark/overlay/ESP.hpp"
     #define LOG(x) std::cout << "[MarioBSPChunk] " << x << std::endl;
@@ -30,7 +33,7 @@ namespace Mod::Mario::MarioBSPChunk {
     // marioState.position) are expressed in. We allow Mario's local position to drift up
     // to chunkHalfExtent + reloadMargin from the chunk origin before performing an
     // atomic recenter + static reload.
-    float reloadMargin = 4096.0f;
+    float reloadMargin = 4096.0f / 4.0f;
 
     static SM64Surface* staticSurfaces    = nullptr;
     static size_t       staticSurfacesCount = 0;
@@ -51,12 +54,6 @@ namespace Mod::Mario::MarioBSPChunk {
         }
 
         staticSurfacesCount = surfaces.size();
-        if (staticSurfacesCount == 0) {
-            LOG("No static surfaces for chunk (" << chunk.x << ", " << chunk.y << ", " << chunk.z << ")");
-            sm64_static_surfaces_load(nullptr, 0);
-            return;
-        }
-
         staticSurfaces = (SM64Surface*) malloc(sizeof(SM64Surface) * staticSurfacesCount);
         memcpy(staticSurfaces, surfaces.data(), sizeof(SM64Surface) * staticSurfacesCount);
 
@@ -117,6 +114,7 @@ namespace Mod::Mario::MarioBSPChunk {
     void maintain() {
         checkMovement();
         checkSignature();
+        Mod::Mario::updateFalseFloor();
     }
 
     void free() {
@@ -125,10 +123,11 @@ namespace Mod::Mario::MarioBSPChunk {
             staticSurfaces = nullptr;
             staticSurfacesCount = 0;
         }
+        Mod::Mario::freeFalseFloor();
     }
 
     bool hasValidLoadedChunk() {
-        return staticSurfaces != nullptr && staticSurfacesCount > 0;
+        return staticSurfaces != nullptr;
     }
 
     #ifdef DEBUG_BSP_CHUNK
@@ -151,7 +150,6 @@ namespace Mod::Mario::MarioBSPChunk {
             ESP::drawLine(v0, v1, color);
             ESP::drawLine(v1, v2, color);
             ESP::drawLine(v2, v0, color);
-
             
             Vec3 normal = (v2 - v0).cross(v1 - v0).normalize();
             Vec3 center = (v0 + v1 + v2) / 3.0f;
@@ -165,11 +163,32 @@ namespace Mod::Mario::MarioBSPChunk {
             ESP::drawPoint(center, color);
         }
     }
+
+    static void drawChunkBounds() {
+        namespace ESP = Spark::Overlay::ESP;
+        constexpr ImU32 color = IM_COL32(0, 128, 255, 80);
+
+        float ext = Coordinates::chunkExtent;
+        float half = ext / 2.0f;
+
+        Vec3 marioLocalMin = Vec3{-half, -half, -half};
+        Vec3 marioLocalMax = Vec3{half, half, half};
+
+        Vec3 minBound = Coordinates::marioLocalToHaloWorld(marioLocalMin, marioChunk);
+        Vec3 maxBound = Coordinates::marioLocalToHaloWorld(marioLocalMax, marioChunk);
+
+        Vec3 center = Coordinates::marioLocalToHaloWorld(Vec3{0, 0, 0}, marioChunk);
+        Vec3 size = maxBound - minBound;
+
+        ESP::drawBox(center, size, color);
+    }
+
     #endif // DEBUG_BSP_CHUNK
 
     void debugRender() {
         #ifdef DEBUG_BSP_CHUNK
         drawStaticSurfaces();
+        // drawChunkBounds();
         #endif
     }
 

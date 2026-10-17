@@ -1,13 +1,13 @@
 #include "DynamicGeometry.hpp"
+#include "MoveElevatorSurfaceObject.hpp"
+#include "IsElevatorEntity.hpp"
 
 #include "engine/halo1.hpp"
-#include "./Coordinates.hpp"
+#include "../Coordinates.hpp"
 #include "BSPConversion.hpp"
 #include "ModelSwap.hpp"
 #include "MarioBSPChunk.hpp"
-#include "Mario.hpp"
-#include "functions/MoveElevatorSurfaceObject.hpp"
-#include "functions/IsElevatorEntity.hpp"
+#include "../Mario.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -17,7 +17,7 @@
 #include "libsm64.h"
 #include "decomp/surface_terrains.h"
 
-#define DEBUG_DYNAMIC_GEOMETRY 1
+// #define DEBUG_DYNAMIC_GEOMETRY 1
 
 #ifdef DEBUG_DYNAMIC_GEOMETRY
     #define IMGUI_DEFINE_MATH_OPERATORS
@@ -35,10 +35,9 @@ namespace Mod::Mario::DynamicGeometry {
     static std::mutex s_updateMutex;
 
     bool isBridge(Engine::Tag* entityTag) {
-        // If entity tag path contains "bridge", consider it a bridge.
         if (entityTag) {
             auto path = entityTag->getResourcePath();
-            if (path && std::string(path).find("bridge") != std::string::npos) {
+            if (path && strstr(path, "bridge") != nullptr) {
                 return true;
             }
         }
@@ -149,8 +148,8 @@ namespace Mod::Mario::DynamicGeometry {
     }
 
     uint16_t surfaceTypeForEntity(Engine::Entity* entity) {
-        auto category = entity->entityCategory;
-        if (category == Engine::EntityCategory_Scenery) return SURFACE_HANGABLE;
+        // auto category = entity->entityCategory;
+        // if (category == Engine::EntityCategory_Scenery) return SURFACE_HANGABLE;
         return SURFACE_NOT_SLIPPERY;
     }
 
@@ -386,6 +385,7 @@ namespace Mod::Mario::DynamicGeometry {
 
     void onLoadedChunkChanged(Vec3i /*oldChunk*/, Vec3i /*newChunk*/) {
         clearAll();
+        update(marioState);
     }
     
     void free() {

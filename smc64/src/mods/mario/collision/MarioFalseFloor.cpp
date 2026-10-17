@@ -1,4 +1,4 @@
-#include "MarioState.hpp"
+#include "../MarioState.hpp"
 #include "MarioFalseFloor.hpp"
 #include "libsm64.h"
 #include "decomp/surface_terrains.h"

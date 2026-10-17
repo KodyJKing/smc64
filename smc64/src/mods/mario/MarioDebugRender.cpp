@@ -10,10 +10,10 @@
 #include "MarioModel.hpp"
 #include "MarioSkeleton.hpp"
 #include "MarioMelee.hpp"
-#include "MarioBSPChunk.hpp"
+#include "collision/MarioBSPChunk.hpp"
+#include "collision/DynamicGeometry.hpp"
+#include "collision/MarioCollisionDebugRender.hpp"
 #include "Coordinates.hpp"
-#include "DynamicGeometry.hpp"
-#include "MarioCollisionDebugRender.hpp"
 #include "MarioChiefPose.hpp"
 
 // #define DEBUG_MARIO_GEOMETRY 1

@@ -2,6 +2,8 @@
 #include "math/Vectors.hpp"
 
 namespace Mod::Mario::Coordinates {
+    extern const float maxSafeMarioCoord;
+    
     extern const float scaleFactor;
     extern const float invScaleFactor;
 

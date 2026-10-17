@@ -1,12 +1,11 @@
 #include "DynamicGeometry.hpp"
+#include "BSPConversion.hpp"
+#include "MarioBSPChunk.hpp"
 #include "ModelSwap.hpp"
 
 #include "engine/halo1.hpp"
-#include "./Coordinates.hpp"
-#include "BSPConversion.hpp"
-#include "MarioBSPChunk.hpp"
-#include "Mario.hpp"
-#include "functions/MoveElevatorSurfaceObject.hpp"
+#include "../Coordinates.hpp"
+#include "../Mario.hpp"
 
 #include <unordered_map>
 #include <unordered_set>

@@ -11,7 +11,7 @@ namespace Mod::Mario::Coordinates {
     const float scaleFactor = 400.0f;
     const float invScaleFactor = 1.0f / scaleFactor;
 
-    float chunkExtent = 32768.0f;
+    float chunkExtent = 32768.0f / 16.0f;
     float chunkHalfExtent() { return chunkExtent * 0.5f; }
 
     const float maxSafeMarioCoord = 50000.0f;
