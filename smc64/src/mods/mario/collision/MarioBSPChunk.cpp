@@ -15,7 +15,7 @@
 #include <cmath>
 #include <cstring>
 
-#define DEBUG_BSP_CHUNK 1
+// #define DEBUG_BSP_CHUNK 1
 
 #ifdef DEBUG_BSP_CHUNK
     // #define MAX_DISTANCE_WORLD_UNITS 2.0f
@@ -54,12 +54,6 @@ namespace Mod::Mario::MarioBSPChunk {
         }
 
         staticSurfacesCount = surfaces.size();
-        if (staticSurfacesCount == 0) {
-            LOG("No static surfaces for chunk (" << chunk.x << ", " << chunk.y << ", " << chunk.z << ")");
-            sm64_static_surfaces_load(nullptr, 0);
-            return;
-        }
-
         staticSurfaces = (SM64Surface*) malloc(sizeof(SM64Surface) * staticSurfacesCount);
         memcpy(staticSurfaces, surfaces.data(), sizeof(SM64Surface) * staticSurfacesCount);
 

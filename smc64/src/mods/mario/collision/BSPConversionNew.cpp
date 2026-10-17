@@ -35,11 +35,6 @@ namespace Mod::Mario::BSPConversion {
         query.center = (request.boundingBox->min + request.boundingBox->max) * 0.5f;
         query.radius = (request.boundingBox->max - request.boundingBox->min).length() * 0.5f;
 
-        auto contained = [&](Vec3& point) {
-            Vec3 diff = point - query.center;
-            return diff.lengthSquared() <= query.radius * query.radius;
-        };
-
         auto addTriangle = [&](Vec3 p0, Vec3 p1, Vec3 p2, BSPSurface* surface) {
             Vec3 m0 = Coordinates::haloToMario(p0);
             Vec3 m1 = Coordinates::haloToMario(p1);
@@ -102,11 +97,6 @@ namespace Mod::Mario::BSPConversion {
         };
 
         auto addTriangleClipped = [&](Vec3 p0, Vec3 p1, Vec3 p2, BSPSurface* surface) {
-            if (contained(p0) && contained(p1) && contained(p2)) {
-                addTriangle(p0, p1, p2, surface);
-                return;
-            }
-
             ClippedTriangle clipped;
             Triangle tri = { p0, p1, p2 };
             clipTriangle(tri, *request.boundingBox, clipped);

@@ -1,5 +1,4 @@
 #include "ClipTriangle.hpp"
-#include <utility>
 
 namespace Mod::Mario {
 
