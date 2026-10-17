@@ -53,11 +53,13 @@ namespace Mod::Mario::PowderKeg {
     }
 
     void consumeKegCharge() {
-        uint32_t charges = getKegCharges();
-        if (charges > 0) {
-            charges--;
-            setKegCharges(charges);
-        }
+        // Still experimenting with how to balance this. Gonna let players have unlimited charges for now.
+
+        // uint32_t charges = getKegCharges();
+        // if (charges > 0) {
+        //     charges--;
+        //     setKegCharges(charges);
+        // }
     }
 
     void updatePose() {
@@ -86,7 +88,7 @@ namespace Mod::Mario::PowderKeg {
         Engine::effectNewOnObjectMarker(smokeEffectTagHandle, playerHandle, "head");
     }
 
-    void dealBoostDamage(float amount = 1.0f) {
+    void dealBoostDamage(float amount = 0.5f) {
         Mod::Mario::damagePlayer(amount, 1.0f);
         grantFreeBulletTime(1000);
     }
