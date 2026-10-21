@@ -26,6 +26,8 @@ group "Dependencies"
    include "vendor/spark/vendor/zydis"
 group ""
 
+include "vendor/spark/spark-lib/premake5.lua"
 include "vendor/spark/spark/premake5.lua"
 include "vendor/spark/spark-launcher/premake5.lua"
+include "vendor/spark/spool/premake5.lua"
 include "smc64/premake5.lua"

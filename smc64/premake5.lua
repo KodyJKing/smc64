@@ -28,6 +28,7 @@ project "smc64"
         ".",
         "src",
         "../vendor/spark/spark/src",
+        "../vendor/spark/spark-lib/src",
         -- Needed because spark's own headers (e.g. Hook.hpp) include MinHook.h.
         "../vendor/spark/vendor/minhook/include",
         "../vendor/spark/vendor/imgui",
