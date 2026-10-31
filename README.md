@@ -4,7 +4,7 @@ A LibSM64 mod for Halo CE on MCC (Steam)
 
 [See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
 
-Check the [Discord](https://discord.gg/MzG7fqJtG) for the most up to date news and support.
+Check the [Discord](https://discord.gg/7KXsGX3Qvz) for the most up to date news and support.
 
 ## AI Disclosure
 
