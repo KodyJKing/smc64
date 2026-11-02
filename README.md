@@ -4,19 +4,11 @@ A LibSM64 mod for Halo CE on MCC (Steam)
 
 [See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
 
-
-
 Check the [Discord](https://discord.gg/7KXsGX3Qvz) for the most up to date news and support.
 
 ## AI Disclosure
 
-I've used *some* AI for this project, but I have mixed feelings about use of AI in development. I'm weening myself off of writing new code with agents for my mental health.
-
-I still use coding assistants extensively for inline completions to supplement my poor memory and typing speed.
-
-A few isolated features were written primarily by coding agents. I still use agents extensively for rote refactoring.
-
-Most of the reverse engineering for this project was done by humans, but I have made moderate use of agents for static analysis via [Ghidra MCP](https://github.com/LaurieWired/GhidraMCP).
+I'd like to think I am principled about preserving my own understanding and fulfillment with this project, but I do make moderate use of coding assistants.
 
 I don't use AI generated art in this project.
 
