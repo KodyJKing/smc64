@@ -4,6 +4,8 @@ A LibSM64 mod for Halo CE on MCC (Steam)
 
 [See it in action here.](https://www.youtube.com/watch?v=tj5fAk7KkHA)
 
+
+
 Check the [Discord](https://discord.gg/7KXsGX3Qvz) for the most up to date news and support.
 
 ## AI Disclosure
@@ -21,6 +23,10 @@ I don't use AI generated art in this project.
 ## Installation
 
 Download the latest [release](https://github.com/KodyJKing/smc64/releases) and follow the installation instructions in the included `README.md`.
+
+See this [Gist](https://gist.github.com/KodyJKing/65df9dc18bfd35b53a71902e32bcb902) for more information.
+
+Everything below this is only necessary for setting up a dev environment. End users can ignore it.
 
 ## Developer Setup
 
